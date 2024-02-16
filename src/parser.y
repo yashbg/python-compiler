@@ -85,13 +85,17 @@ statement:
 ;
 
 simple_stmts:
-  simple_stmt simple_stmt_list NEWLINE
-| simple_stmt simple_stmt_list ';' NEWLINE
+  simple_stmt simple_stmt_list semicolon_opt NEWLINE
 ;
 
 simple_stmt_list:
   %empty
 | simple_stmt_list ';' simple_stmt
+;
+
+semicolon_opt:
+  %empty
+| ';'
 ;
 
 /* NOTE: assignment MUST precede expression, else parsing a simple assignment */
@@ -129,23 +133,26 @@ compound_stmt:
 
 /* NOTE: annotated_rhs may start with 'yield'; yield_expr must start with 'yield' */
 assignment:
-  NAME ':' expression
-| NAME ':' expression '=' annotated_rhs
-| '(' single_target ')' ':' expression
-| '(' single_target ')' ':' expression '=' annotated_rhs
-| single_subscript_attribute_target ':' expression
-| single_subscript_attribute_target ':' expression '=' annotated_rhs
-| star_targets '=' star_targets_list yield_expr
-| star_targets '=' star_targets_list yield_expr TYPE_COMMENT
-| star_targets '=' star_targets_list star_expressions
-| star_targets '=' star_targets_list star_expressions TYPE_COMMENT
-| single_target augassign yield_expr
-| single_target augassign star_expressions
+  NAME ':' expression annotated_rhs_opt
+| '(' single_target ')' ':' expression annotated_rhs_opt
+| single_subscript_attribute_target ':' expression annotated_rhs_opt
+| star_targets '=' star_targets_list annotated_rhs type_comment_opt
+| single_target augassign annotated_rhs
 ;
 
 star_targets_list:
   %empty
 | star_targets_list star_targets '='
+;
+
+annotated_rhs_opt:
+  %empty
+| '=' annotated_rhs
+;
+
+type_comment_opt:
+  %empty
+| TYPE_COMMENT
 ;
 
 annotated_rhs:
@@ -170,14 +177,22 @@ augassign:
 ;
 
 return_stmt:
-  RETURN
-| RETURN star_expressions
+  RETURN star_expressions_opt
+;
+
+star_expressions_opt:
+  %empty
+| star_expressions
 ;
 
 raise_stmt:
   RAISE
-| RAISE expression
-| RAISE expression FROM expression
+| RAISE expression from_expr_opt
+;
+
+from_expr_opt:
+  %empty
+| FROM expression
 ;
 
 global_stmt:
@@ -202,8 +217,12 @@ yield_stmt:
 ;
 
 assert_stmt:
-  ASSERT expression
-| ASSERT expression ',' expression
+  ASSERT expression comma_expr_opt
+;
+
+comma_expr_opt:
+  %empty
+| ',' expression
 ;
 
 import_stmt:
