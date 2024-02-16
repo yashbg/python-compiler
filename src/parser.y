@@ -69,6 +69,7 @@ s.e+
 
 file:
   statements
+;
 
 /* GENERAL STATEMENTS */
 /* ================== */
@@ -76,18 +77,22 @@ file:
 statements:
   %empty
 | statements statement
+;
 
 statement:
   compound_stmt
 | simple_stmts
+;
 
 simple_stmts:
   simple_stmt simple_stmts_list NEWLINE
-| simple_stmt simple_stmts_list ; NEWLINE
+| simple_stmt simple_stmts_list ';' NEWLINE
+;
 
 simple_stmts_list:
   %empty
-| ; simple_stmt simple_stmts_list
+| ';' simple_stmt simple_stmts_list
+;
 
 /* NOTE: assignment MUST precede expression, else parsing a simple assignment */
 /* will throw a SyntaxError. */
@@ -106,6 +111,7 @@ simple_stmt:
 | CONTINUE
 | global_stmt
 | nonlocal_stmt
+;
 
 compound_stmt:
   function_def
@@ -116,6 +122,7 @@ compound_stmt:
 | try_stmt
 | while_stmt
 | match_stmt
+;
 
 /* SIMPLE STATEMENTS */
 /* ================= */
