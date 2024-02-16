@@ -85,13 +85,13 @@ statement:
 ;
 
 simple_stmts:
-  simple_stmt simple_stmts_list NEWLINE
-| simple_stmt simple_stmts_list ';' NEWLINE
+  simple_stmt simple_stmt_list NEWLINE
+| simple_stmt simple_stmt_list ';' NEWLINE
 ;
 
-simple_stmts_list:
+simple_stmt_list:
   %empty
-| ';' simple_stmt simple_stmts_list
+| simple_stmt_list ';' simple_stmt
 ;
 
 /* NOTE: assignment MUST precede expression, else parsing a simple assignment */
@@ -129,50 +129,87 @@ compound_stmt:
 
 /* NOTE: annotated_rhs may start with 'yield'; yield_expr must start with 'yield' */
 assignment:
-    | NAME ':' expression ['=' annotated_rhs ]
-    | ('(' single_target ')'
-         | single_subscript_attribute_target) ':' expression ['=' annotated_rhs ]
-    | (star_targets '=' )+ (yield_expr | star_expressions) !'=' [TYPE_COMMENT]
-    | single_target augassign ~ (yield_expr | star_expressions)
+  NAME ':' expression
+| NAME ':' expression '=' annotated_rhs
+| '(' single_target ')' ':' expression
+| '(' single_target ')' ':' expression '=' annotated_rhs
+| single_subscript_attribute_target ':' expression
+| single_subscript_attribute_target ':' expression '=' annotated_rhs
+| star_targets '=' star_targets_list yield_expr
+| star_targets '=' star_targets_list yield_expr TYPE_COMMENT
+| star_targets '=' star_targets_list star_expressions
+| star_targets '=' star_targets_list star_expressions TYPE_COMMENT
+| single_target augassign yield_expr
+| single_target augassign star_expressions
+;
 
-annotated_rhs: yield_expr | star_expressions
+star_targets_list:
+  %empty
+| star_targets_list star_targets '='
+;
+
+annotated_rhs:
+  yield_expr
+| star_expressions
+;
 
 augassign:
-    | '+='
-    | '-='
-    | '*='
-    | '@='
-    | '/='
-    | '%='
-    | '&='
-    | '|='
-    | '^='
-    | '<<='
-    | '>>='
-    | '**='
-    | '//='
+  PLUSEQUAL
+| MINEQUAL
+| STAREQUAL
+| ATEQUAL
+| SLASHEQUAL
+| PERCENTEQUAL
+| AMPEREQUAL
+| VBAREQUAL
+| CIRCUMFLEXEQUAL
+| LEFTSHIFTEQUAL
+| RIGHTSHIFTEQUAL
+| DOUBLESTAREQUAL
+| DOUBLESLASHEQUAL
+;
 
 return_stmt:
-    | 'return' [star_expressions]
+  RETURN
+| RETURN star_expressions
+;
 
 raise_stmt:
-    | 'raise' expression ['from' expression ]
-    | 'raise'
+  RAISE
+| RAISE expression
+| RAISE expression FROM expression
+;
 
-global_stmt: 'global' ','.NAME+
+global_stmt:
+  GLOBAL NAME name_list
+;
 
-nonlocal_stmt: 'nonlocal' ','.NAME+
+nonlocal_stmt:
+  NONLOCAL NAME name_list
+;
+
+name_list:
+  %empty
+| name_list ',' NAME
+;
 
 del_stmt:
-    | 'del' del_targets &(';' | NEWLINE)
+  DEL del_targets
+;
 
-yield_stmt: yield_expr
+yield_stmt:
+  yield_expr
+;
 
-assert_stmt: 'assert' expression [',' expression ]
+assert_stmt:
+  ASSERT expression
+| ASSERT expression ',' expression
+;
 
 import_stmt:
-    | import_name
-    | import_from
+  import_name
+| import_from
+;
 
 /* Import statements */
 /* ----------------- */
