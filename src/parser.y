@@ -348,44 +348,97 @@ arguments_opt:
 /* -------------------- */
 
 function_def:
-    | decorators function_def_raw
-    | function_def_raw
+  decorators function_def_raw
+| function_def_raw
+;
 
 function_def_raw:
-    | 'def' NAME [type_params] '(' [params] ')' ['->' expression ] ':' [func_type_comment] block
-    | ASYNC 'def' NAME [type_params] '(' [params] ')' ['->' expression ] ':' [func_type_comment] block
+  DEF NAME type_params_opt '(' params_opt ')' arrow_expr_opt ':' func_type_comment_opt block
+| ASYNC DEF NAME type_params_opt '(' params_opt ')' arrow_expr_opt ':' func_type_comment_opt block
+;
+
+/*
+ARROW : '->'
+*/
+
+arrow_expr_opt:
+  %empty
+| ARROW expression 
+;
+
+func_type_comment_opt:
+  %empty
+| func_type_comment
+;
+
+params_opt:
+  %empty
+| params
+;
 
 /* Function parameters */
 /* ------------------- */
 
 params:
-    | parameters
+  parameters
+;
 
 parameters:
-    | slash_no_default param_no_default* param_with_default* [star_etc]
-    | slash_with_default param_with_default* [star_etc]
-    | param_no_default+ param_with_default* [star_etc]
-    | param_with_default+ [star_etc]
-    | star_etc
+  slash_no_default param_no_default_list param_with_default_list star_etc_opt
+| slash_with_default param_with_default_list star_etc_opt
+| param_no_default param_no_default_list param_with_default_list star_etc_opt
+| param_with_default param_with_default_list star_etc_opt
+| star_etc
+;
+
+param_no_default_list: 
+  %empty
+| param_no_default_list param_no_default 
+;
+
+param_with_default_list: 
+  %empty
+| param_with_default_list param_with_default 
+;
+
+star_etc_opt:
+  %empty
+| star_etc
+;
 
 /* Some duplication here because we can't write (',' | &')'), */
 /* which is because we don't support empty alternatives (yet). */
 
 slash_no_default:
-    | param_no_default+ '/' ','
-    | param_no_default+ '/' &')'
+  param_no_default param_no_default_list '/' ','
+| param_no_default param_no_default_list '/'
+;
+
 slash_with_default:
-    | param_no_default* param_with_default+ '/' ','
-    | param_no_default* param_with_default+ '/' &')'
+  param_no_default_list param_with_default param_with_default_list '/' ','
+| param_no_default_list param_with_default param_with_default_list '/' 
+;
 
 star_etc:
-    | '*' param_no_default param_maybe_default* [kwds]
-    | '*' param_no_default_star_annotation param_maybe_default* [kwds]
-    | '*' ',' param_maybe_default+ [kwds]
-    | kwds
+  '*' param_no_default param_maybe_default_list kwds_opt
+| '*' param_no_default_star_annotation param_maybe_default_list kwds_opt
+| '*' ',' param_maybe_default param_maybe_default_list kwds_opt
+| kwds
+;
+
+param_maybe_default_list:
+  %empty
+| param_maybe_default_list param_maybe_default
+;
+
+kwds_opt:
+  %empty
+| kwds
+;
 
 kwds:
-    | '**' param_no_default
+  '**' param_no_default
+;
 
 /* One parameter.  This *includes* a following comma and type comment. */
 /* */
@@ -401,22 +454,60 @@ kwds:
 /* */
 
 param_no_default:
-    | param ',' TYPE_COMMENT?
-    | param TYPE_COMMENT? &')'
+  param ',' TYPE_COMMENT_opt
+| param TYPE_COMMENT_opt
+;
+
+TYPE_COMMENT_opt:
+  %empty
+| TYPE_COMMENT
+;
+
 param_no_default_star_annotation:
-    | param_star_annotation ',' TYPE_COMMENT?
-    | param_star_annotation TYPE_COMMENT? &')'
+  param_star_annotation ',' TYPE_COMMENT_opt
+| param_star_annotation TYPE_COMMENT_opt 
+;
+
 param_with_default:
-    | param default ',' TYPE_COMMENT?
-    | param default TYPE_COMMENT? &')'
+  param default ',' TYPE_COMMENT_opt
+| param default TYPE_COMMENT_opt
+;
+
 param_maybe_default:
-    | param default? ',' TYPE_COMMENT?
-    | param default? TYPE_COMMENT? &')'
-param: NAME annotation?
-param_star_annotation: NAME star_annotation
-annotation: ':' expression
-star_annotation: ':' star_expression
-default: '=' expression  | invalid_default
+  param default_opt ',' TYPE_COMMENT_opt
+| param default_opt TYPE_COMMENT_opt 
+;
+
+param_default_opt:
+  %empty
+| param_default 
+;
+
+param:
+  NAME annotation_opt
+;
+
+annotation_opt:
+  %empty
+| annotation
+;
+
+param_star_annotation:
+  NAME star_annotation
+;
+
+annotation:
+  ':' expression
+;
+
+star_annotation:
+  ':' star_expression
+;
+
+default:
+  '=' expression
+| invalid_default
+;
 
 /* If statement */
 /* ------------ */
