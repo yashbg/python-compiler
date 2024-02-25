@@ -608,147 +608,234 @@ match_stmt:
 ;
 
 case_block_list:
-  case_block_list case_block
+  %empty
+| case_block_list case_block
 ;
 
 subject_expr:
-    | star_named_expression ',' star_named_expressions?
-    | named_expression
+  star_named_expression ',' star_named_expressions_opt
+| named_expression
+;
+
+star_named_expressions_opt:
+  %empty
+| star_named_expressions
+;
 
 case_block:
-    | "case" patterns guard? ':' block
+  CASE patterns guard_opt ':' block
+;
 
-guard: 'if' named_expression
+guard_opt:
+  %empty
+| guard
+;
+
+guard:
+  IF named_expression
+;
 
 patterns:
-    | open_sequence_pattern
-    | pattern
+  open_sequence_pattern
+| pattern
+;
 
 pattern:
-    | as_pattern
-    | or_pattern
+  as_pattern
+| or_pattern
+;
 
 as_pattern:
-    | or_pattern 'as' pattern_capture_target
+  or_pattern AS pattern_capture_target
+;
 
 or_pattern:
-    | '|'.closed_pattern+
+  closed_pattern vertical_slash_closed_pattern_list
+;
+
+vertical_slash_closed_pattern_list:
+  %empty
+| vertical_slash_closed_pattern_list '|' closed_pattern
+;
 
 closed_pattern:
-    | literal_pattern
-    | capture_pattern
-    | wildcard_pattern
-    | value_pattern
-    | group_pattern
-    | sequence_pattern
-    | mapping_pattern
-    | class_pattern
+  literal_pattern
+| capture_pattern
+| wildcard_pattern
+| value_pattern
+| group_pattern
+| sequence_pattern
+| mapping_pattern
+| class_pattern
+;
 
 /* Literal patterns are used for equality and identity constraints */
 literal_pattern:
-    | signed_number !('+' | '-')
-    | complex_number
-    | strings
-    | 'None'
-    | 'True'
-    | 'False'
+  signed_number 
+| complex_number
+| strings
+| NONE
+| TRUE
+| FALSE
+;
 
 /* Literal expressions are used to restrict permitted mapping pattern keys */
 literal_expr:
-    | signed_number !('+' | '-')
-    | complex_number
-    | strings
-    | 'None'
-    | 'True'
-    | 'False'
+  signed_number 
+| complex_number
+| strings
+| NONE
+| TRUE
+| FALSE
+;
 
 complex_number:
-    | signed_real_number '+' imaginary_number
-    | signed_real_number '-' imaginary_number
+  signed_real_number '+' imaginary_number
+| signed_real_number '-' imaginary_number
+;
 
 signed_number:
-    | NUMBER
-    | '-' NUMBER
+  NUMBER
+| '-' NUMBER
+;
 
 signed_real_number:
-    | real_number
-    | '-' real_number
+  real_number
+| '-' real_number
+;
 
 real_number:
-    | NUMBER
+  NUMBER
+;
 
 imaginary_number:
-    | NUMBER
+  NUMBER
+;
 
 capture_pattern:
-    | pattern_capture_target
+  pattern_capture_target
+;
 
 pattern_capture_target:
-    | !"_" NAME !('.' | '(' | '=')
+  NAME 
+;
 
 wildcard_pattern:
-    | "_"
+  "_"
+;
 
 value_pattern:
-    | attr !('.' | '(' | '=')
+  attr 
+;
 
 attr:
-    | name_or_attr '.' NAME
+  name_or_attr '.' NAME
+;
 
 name_or_attr:
-    | attr
-    | NAME
+  attr
+| NAME
+;
 
 group_pattern:
-    | '(' pattern ')'
+  '(' pattern ')'
+;
 
 sequence_pattern:
-    | '[' maybe_sequence_pattern? ']'
-    | '(' open_sequence_pattern? ')'
+  '[' maybe_sequence_pattern_opt ']'
+| '(' open_sequence_pattern_opt ')'
+;
+
+maybe_sequence_pattern_opt:
+  %empty
+| maybe_sequence_pattern
+;
+
+open_sequence_pattern_opt:
+  %empty
+| open_sequence_pattern
+;
 
 open_sequence_pattern:
-    | maybe_star_pattern ',' maybe_sequence_pattern?
+  maybe_star_pattern ',' maybe_sequence_pattern_opt
+;
 
 maybe_sequence_pattern:
-    | ','.maybe_star_pattern+ ','?
+  maybe_star_pattern comma_maybe_star_pattern_list comma_opt
+;
+  
+comma_maybe_star_pattern_list:
+  %empty
+| comma_maybe_star_pattern_list ',' maybe_star_pattern
+;
 
 maybe_star_pattern:
-    | star_pattern
-    | pattern
+  star_pattern
+| pattern
+;
 
 star_pattern:
-    | '*' pattern_capture_target
-    | '*' wildcard_pattern
+  '*' pattern_capture_target
+| '*' wildcard_pattern
+;
 
 mapping_pattern:
-    | '{' '}'
-    | '{' double_star_pattern ','? '}'
-    | '{' items_pattern ',' double_star_pattern ','? '}'
-    | '{' items_pattern ','? '}'
+  '{' '}'
+| '{' double_star_pattern comma_opt '}'
+| '{' items_pattern ',' double_star_pattern comma_opt '}'
+| '{' items_pattern comma_opt '}'
+;
 
 items_pattern:
-    | ','.key_value_pattern+
+  key_value_pattern comma_key_value_pattern_list
+;
+
+comma_key_value_pattern_list:
+  %empty
+| comma_key_value_pattern_list ',' key_value_pattern 
+;
 
 key_value_pattern:
-    | (literal_expr | attr) ':' pattern
+  literal_expr_or_attr ':' pattern
+;
+
+literal_expr_or_attr:
+  literal_expr
+| attr
+;
 
 double_star_pattern:
-    | '**' pattern_capture_target
+  '**' pattern_capture_target
+;
 
 class_pattern:
-    | name_or_attr '(' ')'
-    | name_or_attr '(' positional_patterns ','? ')'
-    | name_or_attr '(' keyword_patterns ','? ')'
-    | name_or_attr '(' positional_patterns ',' keyword_patterns ','? ')'
+  name_or_attr '(' ')'
+| name_or_attr '(' positional_patterns comma_opt ')'
+| name_or_attr '(' keyword_patterns comma_opt ')'
+| name_or_attr '(' positional_patterns ',' keyword_patterns comma_opt ')'
+;
 
 positional_patterns:
-    | ','.pattern+
+  pattern comma_pattern_list
+;
+
+comma_pattern_list:
+  %empty
+| comma_pattern_list ',' pattern
+;
 
 keyword_patterns:
-    | ','.keyword_pattern+
+  keyword_pattern comma_keyword_pattern_list
+;
+
+comma_keyword_pattern_list:
+  %empty 
+| comma_keyword_pattern_list ',' keyword_pattern
+;
 
 keyword_pattern:
-    | NAME '=' pattern
+  NAME '=' pattern
+;
 
 /* Type statement */
 /* --------------- */
