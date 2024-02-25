@@ -233,26 +233,72 @@ import_stmt:
 /* Import statements */
 /* ----------------- */
 
-import_name: 'import' dotted_as_names
+import_name: IMPORT dotted_as_names
 /* note below: the ('.' | '...') is necessary because '...' is tokenized as ELLIPSIS */
+
 import_from:
-    | 'from' ('.' | '...')* dotted_name 'import' import_from_targets
-    | 'from' ('.' | '...')+ 'import' import_from_targets
+  FROM one_or_three_dots_list dotted_name IMPORT import_from_targets
+| FROM one_or_three_dots one_or_three_dots_list IMPORT import_from_targets
+;
+
+/* 
+    one_or_three_dots : '.' | '...'
+*/
+
+one_or_three_dots_list:
+  one_or_three_dots_list one_or_three_dots
+;
+
 import_from_targets:
-    | '(' import_from_as_names [','] ')'
-    | import_from_as_names !','
-    | '*'
+  '(' import_from_as_names comma_opt ')'
+| import_from_as_names 
+| '*'
+;
+
+comma_opt:
+  %empty
+| ','
+;
+
 import_from_as_names:
-    | ','.import_from_as_name+
+  import_from_as_name comma_import_from_as_name_list
+;
+
+comma_import_from_as_name_list:
+  %empty
+| comma_import_from_as_name_list ',' import_from_as_name
+;
+    
 import_from_as_name:
-    | NAME ['as' NAME ]
+  NAME as_NAME_opt
+;
+
+as_NAME_opt:
+  %empty
+| 'as' NAME
+; 
+
 dotted_as_names:
-    | ','.dotted_as_name+
+  dotted_as_name comma_dotted_as_name_list
+;
+
+comma_dotted_as_name_list:
+  comma_dotted_as_name_list
+;
+
+comma_dotted_as_name_list:
+  %empty
+| ',' dotted_as_name 
+;
+
 dotted_as_name:
-    | dotted_name ['as' NAME ]
+  dotted_name as_NAME_opt
+;
+
 dotted_name:
-    | dotted_name '.' NAME
-    | NAME
+  dotted_name '.' NAME
+| NAME
+;
 
 /* COMPOUND STATEMENTS */
 /* =================== */
