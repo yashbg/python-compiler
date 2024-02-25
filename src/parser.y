@@ -283,10 +283,6 @@ dotted_as_names:
 ;
 
 comma_dotted_as_name_list:
-  comma_dotted_as_name_list
-;
-
-comma_dotted_as_name_list:
   %empty
 | ',' dotted_as_name 
 ;
