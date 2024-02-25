@@ -1104,38 +1104,87 @@ power:
 /* Primary elements are things like "obj.something.something", "obj[something]", "obj */(something)", "obj" ...
 
 await_primary:
-    | AWAIT primary
-    | primary
+  AWAIT primary
+| primary
+;
 
 primary:
-    | primary '.' NAME
-    | primary genexp
-    | primary '(' [arguments] ')'
-    | primary '[' slices ']'
-    | atom
+  primary '.' NAME
+| primary genexp
+| primary '(' arguments_opt ')'
+| primary '[' slices ']'
+| atom
+;
 
 slices:
-    | slice !','
-    | ','.(slice | starred_expression)+ [',']
+  slice
+| slice_or_starred_expression comma_slice_or_starred_expression_list comma_opt
+;
+
+slice_or_starred_expression:
+  slice
+| starred_expression
+;
+
+comma_slice_or_starred_expression_list:
+  %empty
+| comma_slice_or_starred_expression_list ',' slice_or_starred_expression
+;
 
 slice:
-    | [expression] ':' [expression] [':' [expression] ]
-    | named_expression
+  expression_opt ':' expression_opt colon_expression_opt_opt
+| named_expression
+;
+
+expression_opt:
+  %empty
+| expression
+;
+
+colon_expression_opt_opt:
+  %empty
+| ':' expression_opt
+;
 
 atom:
-    | NAME
-    | 'True'
-    | 'False'
-    | 'None'
-    | strings
-    | NUMBER
-    | (tuple | group | genexp)
-    | (list | listcomp)
-    | (dict | set | dictcomp | setcomp)
-    | '...'
+  NAME
+| TRUE
+| FALSE
+| NONE
+| strings
+| NUMBER
+| tuple_or_group_or_genexp
+| list_or_listcomp
+| dict_or_set_or_dictcomp_or_setcomp
+| '...'
+;
+
+tuple_or_group_or_genexp:
+  tuple
+| group
+| genexp
+;
+
+list_or_listcomp:
+  list
+| listcomp
+;
+
+dict_or_set_or_dictcomp_or_setcomp:
+  dict
+| set
+| dictcomp
+| setcomp
+;
 
 group:
-    | '(' (yield_expr | named_expression) ')'
+  '(' yield_expr_or_named_expr ')'
+;
+
+yield_expr_or_named_expr:
+  yield_expr
+| named_expression
+;
 
 /* Lambda functions */
 /* ---------------- */
