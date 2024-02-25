@@ -303,20 +303,45 @@ dotted_name:
 /* --------------- */
 
 block:
-    | NEWLINE INDENT statements DEDENT
-    | simple_stmts
+  NEWLINE INDENT statements DEDENT
+| simple_stmts
+;
 
-decorators: ('@' named_expression NEWLINE )+
+decorators: 
+  '@' named_expression NEWLINE AT_named_expression_newline_list
+;
+
+AT_named_expression_newline_list:
+  %empty
+| AT_named_expression_newline_list '@' named_expression NEWLINE 
+;
 
 /* Class definitions */
 /* ----------------- */
 
 class_def:
-    | decorators class_def_raw
-    | class_def_raw
+  decorators class_def_raw
+| class_def_raw
+;
 
 class_def_raw:
-    | 'class' NAME [type_params] ['(' [arguments] ')' ] ':' block
+  CLASS NAME type_params_opt parenthesis_arguments_opt ':' block
+;
+
+type_params_opt:
+  %empty
+| type_params 
+;
+
+parenthesis_arguments_opt:
+  %empty 
+| '(' arguments_opt ')'
+;
+
+arguments_opt:
+  %empty
+| arguments 
+;
 
 /* Function definitions */
 /* -------------------- */
