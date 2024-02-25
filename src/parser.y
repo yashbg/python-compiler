@@ -343,6 +343,7 @@ arguments_opt:
 | arguments 
 ;
 
+
 /* Function definitions */
 /* -------------------- */
 
