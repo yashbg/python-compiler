@@ -841,151 +841,262 @@ keyword_pattern:
 /* --------------- */
 
 type_alias:
-    | "type" NAME [type_params] '=' expression
+  TYPE NAME type_params_opt '=' expression
+;
 
 /* Type parameter declaration */
 /* -------------------------- */
 
-type_params: '[' type_param_seq  ']'
+type_params:
+  '[' type_param_seq  ']'
+;
 
-type_param_seq: ','.type_param+ [',']
+type_param_seq:
+  type_param comma_type_param_list
+;
+
+comma_type_param_list:
+  %empty
+| comma_type_param_list ',' type_param comma_opt
+;
 
 type_param:
-    | NAME [type_param_bound]
-    | '*' NAME ':' expression
-    | '*' NAME
-    | '**' NAME ':' expression
-    | '**' NAME
+  NAME type_param_bound_opt
+| '*' NAME ':' expression
+| '*' NAME
+| '**' NAME ':' expression
+| '**' NAME
+;
 
-type_param_bound: ':' expression
+type_param_bound_opt:
+  %empty
+| type_param_bound
+;
+
+type_param_bound:
+  ':' expression
+;
 
 /* EXPRESSIONS */
 /* ----------- */
 
 expressions:
-    | expression (',' expression )+ [',']
-    | expression ','
-    | expression
+  expression ',' expression comma_expr_list comma_opt
+| expression ','
+| expression
+;
+
+comma_expr_list:
+  %empty
+| comma_expr_list ',' expression  
+;
 
 expression:
-    | disjunction 'if' disjunction 'else' expression
-    | disjunction
-    | lambdef
+  disjunction IF disjunction ELSE expression
+| disjunction
+| lambdef
+;
 
 yield_expr:
-    | 'yield' 'from' expression
-    | 'yield' [star_expressions]
+  YIELD FROM expression
+| YIELD star_expressions_opt
+;
 
 star_expressions:
-    | star_expression (',' star_expression )+ [',']
-    | star_expression ','
-    | star_expression
+  star_expression ',' star_expression comma_star_expression_list comma_opt
+| star_expression ','
+| star_expression
+;
+
+comma_star_expression_list:
+  %empty
+| comma_star_expression_list ',' star_expression
+;
 
 star_expression:
-    | '*' bitwise_or
-    | expression
+  '*' bitwise_or
+| expression
+;
 
-star_named_expressions: ','.star_named_expression+ [',']
+star_named_expressions:
+  star_named_expression comma_star_named_expression_list comma_opt
+;
+
+comma_star_named_expression_list:
+  %empty
+| comma_star_named_expression_list ',' star_named_expression
+;
 
 star_named_expression:
-    | '*' bitwise_or
-    | named_expression
+  '*' bitwise_or
+| named_expression
+;
 
 assignment_expression:
-    | NAME ':=' ~ expression
+  NAME COLON_EQUAL expression
+;
+
+/*
+ COLON_EQUAL : ':='
+*/
 
 named_expression:
-    | assignment_expression
-    | expression !':='
+  assignment_expression
+| expression
+;
 
 disjunction:
-    | conjunction ('or' conjunction )+
-    | conjunction
+  conjunction OR conjunction or_conjunction_list
+| conjunction
+;
+
+or_conjunction_list:
+  %empty
+| or_conjunction_list OR conjunction
+;
 
 conjunction:
-    | inversion ('and' inversion )+
-    | inversion
+  inversion AND inversion and_inversion_list
+| inversion
+;
+
+and_inversion_list:
+  %empty
+| and_inversion_list AND inversion
+;
 
 inversion:
-    | 'not' inversion
-    | comparison
+  NOT inversion
+| comparison
+;
 
 /* Comparison operators */
 /* -------------------- */
 
 comparison:
-    | bitwise_or compare_op_bitwise_or_pair+
-    | bitwise_or
+  bitwise_or compare_op_bitwise_or_pair compare_op_bitwise_or_pair_list
+| bitwise_or
+;
+
+compare_op_bitwise_or_pair_list:
+  %empty
+| compare_op_bitwise_or_pair_list compare_op_bitwise_or_pair
+;
 
 compare_op_bitwise_or_pair:
-    | eq_bitwise_or
-    | noteq_bitwise_or
-    | lte_bitwise_or
-    | lt_bitwise_or
-    | gte_bitwise_or
-    | gt_bitwise_or
-    | notin_bitwise_or
-    | in_bitwise_or
-    | isnot_bitwise_or
-    | is_bitwise_or
+  eq_bitwise_or
+| noteq_bitwise_or
+| lte_bitwise_or
+| lt_bitwise_or
+| gte_bitwise_or
+| gt_bitwise_or
+| notin_bitwise_or
+| in_bitwise_or
+| isnot_bitwise_or
+| is_bitwise_or
+;
 
-eq_bitwise_or: '==' bitwise_or
+eq_bitwise_or:
+  DOUBLEEQUAL bitwise_or
+;
+
+/**
+ DOUBLEEQUAL : '=='
+/
+
 noteq_bitwise_or:
-    | ('!=' ) bitwise_or
-lte_bitwise_or: '<=' bitwise_or
-lt_bitwise_or: '<' bitwise_or
-gte_bitwise_or: '>=' bitwise_or
-gt_bitwise_or: '>' bitwise_or
-notin_bitwise_or: 'not' 'in' bitwise_or
-in_bitwise_or: 'in' bitwise_or
-isnot_bitwise_or: 'is' 'not' bitwise_or
-is_bitwise_or: 'is' bitwise_or
+  NOTEQUAL bitwise_or
+;
+
+/*
+ NOTEQUAL: '!='
+*/
+
+lte_bitwise_or:
+  LESSTHANEQUAL bitwise_or
+;
+
+lt_bitwise_or:
+  LESSTHAN bitwise_or
+;
+
+gte_bitwise_or: 
+  GREATERTHANEQUAL bitwise_or
+;
+
+gt_bitwise_or:
+  GREATERTHAN bitwise_or
+;
+
+notin_bitwise_or:
+  NOT IN bitwise_or
+;
+
+in_bitwise_or:
+  IN bitwise_or
+;
+
+isnot_bitwise_or:
+ IS NOT bitwise_or
+;
+
+is_bitwise_or:
+  IS bitwise_or
+;
 
 /* Bitwise operators */
 /* ----------------- */
 
 bitwise_or:
-    | bitwise_or '|' bitwise_xor
-    | bitwise_xor
+  bitwise_or '|' bitwise_xor
+| bitwise_xor
+;
 
 bitwise_xor:
-    | bitwise_xor '^' bitwise_and
-    | bitwise_and
+  bitwise_xor '^' bitwise_and
+| bitwise_and
+;
 
 bitwise_and:
-    | bitwise_and '&' shift_expr
-    | shift_expr
+  bitwise_and '&' shift_expr
+| shift_expr
+;
 
 shift_expr:
-    | shift_expr '<<' sum
-    | shift_expr '>>' sum
-    | sum
+  shift_expr LEFTSHIFT sum
+| shift_expr RIGHTSHIFT sum
+| sum
+;
 
 /* Arithmetic operators */
 /* -------------------- */
 
 sum:
-    | sum '+' term
-    | sum '-' term
-    | term
+  sum '+' term
+| sum '-' term
+| term
+;
 
 term:
-    | term '*' factor
-    | term '/' factor
-    | term '//' factor
-    | term '%' factor
-    | term '@' factor
-    | factor
+  term '*' factor
+| term '/' factor
+| term DOUBLESLASH factor
+| term '%' factor
+| term '@' factor
+| factor
+;
 
 factor:
-    | '+' factor
-    | '-' factor
-    | '~' factor
-    | power
+  '+' factor
+| '-' factor
+| '~' factor
+| power
+;
 
 power:
-    | await_primary '**' factor
-    | await_primary
+  await_primary DOUBLESTAR factor
+| await_primary
+;
 
 /* Primary elements */
 /* ---------------- */
