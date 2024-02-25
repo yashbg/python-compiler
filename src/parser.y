@@ -284,7 +284,7 @@ dotted_as_names:
 
 comma_dotted_as_name_list:
   %empty
-| ',' dotted_as_name 
+| comma_dotted_as_name_list ',' dotted_as_name 
 ;
 
 dotted_as_name:
