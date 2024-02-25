@@ -137,7 +137,7 @@ assignment:
 | '(' single_target ')' ':' expression annotated_rhs_opt
 | single_subscript_attribute_target ':' expression annotated_rhs_opt
 | star_targets '=' star_targets_list annotated_rhs type_comment_opt
-| single_target augassign annotated_rhs
+| single_target augassign annotated_rhs   /*---- ~ used here -------*/
 ;
 
 star_targets_list:
@@ -275,7 +275,7 @@ import_from_as_name:
 
 as_NAME_opt:
   %empty
-| 'as' NAME
+| AS NAME
 ; 
 
 dotted_as_names:
@@ -513,65 +513,103 @@ default:
 /* ------------ */
 
 if_stmt:
-    | 'if' named_expression ':' block elif_stmt
-    | 'if' named_expression ':' block [else_block]
+  IF named_expression ':' block elif_stmt
+| IF named_expression ':' block else_block_opt
+;
+
+else_block_opt:
+  %empty
+| else_block 
+;
+
 elif_stmt:
-    | 'elif' named_expression ':' block elif_stmt
-    | 'elif' named_expression ':' block [else_block]
+  ELIF named_expression ':' block elif_stmt
+| ELIF named_expression ':' block else_block_opt 
+;
+
 else_block:
-    | 'else' ':' block
+  ELSE ':' block
+;
 
 /* While statement */
 /* --------------- */
 
 while_stmt:
-    | 'while' named_expression ':' block [else_block]
+  WHILE named_expression ':' block else_block_opt
+;
 
 /* For statement */
 /* ------------- */
 
 for_stmt:
-    | 'for' star_targets 'in' ~ star_expressions ':' [TYPE_COMMENT] block [else_block]
-    | ASYNC 'for' star_targets 'in' ~ star_expressions ':' [TYPE_COMMENT] block [else_block]
+  FOR star_targets IN star_expressions ':' TYPE_COMMENT_opt block else_block_opt /*---- ~ used here -------*/
+| ASYNC FOR star_targets IN star_expressions ':' TYPE_COMMENT_opt block else_block_opt /*---- ~ used here -------*/
 
 /* With statement */
 /* -------------- */
 
 with_stmt:
-    | 'with' '(' ','.with_item+ ','? ')' ':' block
-    | 'with' ','.with_item+ ':' [TYPE_COMMENT] block
-    | ASYNC 'with' '(' ','.with_item+ ','? ')' ':' block
-    | ASYNC 'with' ','.with_item+ ':' [TYPE_COMMENT] block
+  WITH '(' with_item comma_with_item_list comma_opt ')' ':' block
+| WITH with_item comma_with_item_list ':' TYPE_COMMENT_opt block
+| ASYNC WITH '(' with_item comma_with_item_list comma_opt ')' ':' block
+| ASYNC WITH with_item comma_with_item_list ':' TYPE_COMMENT_opt block
+;
 
 with_item:
-    | expression 'as' star_target &(',' | ')' | ':')
-    | expression
+  expression AS star_target 
+| expression
+;
 
 /* Try statement */
 /* ------------- */
 
 try_stmt:
-    | 'try' ':' block finally_block
-    | 'try' ':' block except_block+ [else_block] [finally_block]
-    | 'try' ':' block except_star_block+ [else_block] [finally_block]
+  TRY ':' block finally_block
+| TRY ':' block except_block except_block_list else_block_opt finally_block_opt
+| TRY ':' block except_star_block except_star_block_list else_block_opt finally_block_opt
+
+except_block_list:
+  %empty
+| except_block_list except_block
+;
+
+except_star_block_list:
+  %empty
+| except_star_block_list except_star_block
+;
+
+finally_block_opt:
+  %empty
+| finally_block 
+;
 
 
 /* Except statement */
 /* ---------------- */
 
 except_block:
-    | 'except' expression ['as' NAME ] ':' block
-    | 'except' ':' block
+  EXCEPT expression as_NAME_opt ':' block
+| EXCEPT ':' block
+;
+
 except_star_block:
-    | 'except' '*' expression ['as' NAME ] ':' block
+  EXCEPT '*' expression as_NAME_opt ':' block
+;
+
 finally_block:
-    | 'finally' ':' block
+  FINALLY ':' block
+;
 
 /* Match statement */
 /* --------------- */
 
 match_stmt:
-    | "match" subject_expr ':' NEWLINE INDENT case_block+ DEDENT
+  MATCH subject_expr ':' NEWLINE INDENT case_block case_block_list DEDENT
+;
+
+case_block_list:
+  case_block_list case_block
+;
 
 subject_expr:
     | star_named_expression ',' star_named_expressions?
