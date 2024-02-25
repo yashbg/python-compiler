@@ -1190,47 +1190,95 @@ yield_expr_or_named_expr:
 /* ---------------- */
 
 lambdef:
-    | 'lambda' [lambda_params] ':' expression
+  LAMBDA lambda_params_opt ':' expression
+;
+
+lambda_params_opt:
+  %empty
+| lambda_params
+;
 
 lambda_params:
-    | lambda_parameters
+  lambda_parameters
+;
 
 /* lambda_parameters etc. duplicates parameters but without annotations */
 /* or type comments, and if there's no comma after a parameter, we expect */
 /* a colon, not a close parenthesis.  (For more, see parameters above.) */
 /* */
 lambda_parameters:
-    | lambda_slash_no_default lambda_param_no_default* lambda_param_with_default* [lambda_star_etc]
-    | lambda_slash_with_default lambda_param_with_default* [lambda_star_etc]
-    | lambda_param_no_default+ lambda_param_with_default* [lambda_star_etc]
-    | lambda_param_with_default+ [lambda_star_etc]
-    | lambda_star_etc
+  lambda_slash_no_default lambda_param_no_default_list lambda_param_with_default_list lambda_star_etc_opt
+| lambda_slash_with_default lambda_param_with_default_list lambda_star_etc_opt
+| lambda_param_no_default lambda_param_no_default_list lambda_param_with_default_list lambda_star_etc_opt
+| lambda_param_with_default_list lambda_param_with_default lambda_star_etc_opt
+| lambda_star_etc
+;
+
+lambda_param_no_default_list:
+  %empty
+| lambda_param_no_default_list lambda_param_no_default
+;
+
+lambda_param_with_default_list:
+  %empty
+| lambda_param_with_default_list lambda_param_with_default
+;
+
+lambda_star_etc_opt:
+  %empty
+| lambda_star_etc
+;
 
 lambda_slash_no_default:
-    | lambda_param_no_default+ '/' ','
-    | lambda_param_no_default+ '/' &':'
+  lambda_param_no_default lambda_param_no_default_list '/' ','
+| lambda_param_no_default lambda_param_no_default_list '/'
+;
 
 lambda_slash_with_default:
-    | lambda_param_no_default* lambda_param_with_default+ '/' ','
-    | lambda_param_no_default* lambda_param_with_default+ '/' &':'
+  lambda_param_no_default_list lambda_param_with_default lambda_param_with_default_list '/' ','
+| lambda_param_no_default_list lambda_param_with_default lambda_param_with_default_list '/'
+;
 
 lambda_star_etc:
-    | '*' lambda_param_no_default lambda_param_maybe_default* [lambda_kwds]
-    | '*' ',' lambda_param_maybe_default+ [lambda_kwds]
-    | lambda_kwds
+  '*' lambda_param_no_default lambda_param_maybe_default_list lambda_kwds_opt
+| '*' ',' lambda_param_maybe_default lambda_param_maybe_default_list lambda_kwds_opt
+| lambda_kwds
+;
+
+lambda_param_maybe_default_list:
+  %empty
+| lambda_param_maybe_default_list lambda_param_maybe_default
+;
+
+lambda_kwds_opt:
+  %empty
+| lambda_kwds
+;
 
 lambda_kwds:
-    | '**' lambda_param_no_default
+  DOUBLESTAR lambda_param_no_default
+;
 
 lambda_param_no_default:
-    | lambda_param ','
-    | lambda_param &':'
+  lambda_param ','
+| lambda_param
+;
+
 lambda_param_with_default:
-    | lambda_param default ','
-    | lambda_param default &':'
+  lambda_param default ','
+| lambda_param default
+;
+
 lambda_param_maybe_default:
-    | lambda_param default? ','
-    | lambda_param default? &':'
+  lambda_param default_opt ','
+| lambda_param default_opt
+;
+
+default_opt:
+  %empty
+| default
+;
+
 lambda_param: NAME
 
 /* LITERALS */
