@@ -1097,23 +1097,19 @@ yield_expr_or_named_expr:
 /* LITERALS */
 /* ======== */
 
-fstring_middle:
-    | fstring_replacement_field
-    | FSTRING_MIDDLE
-fstring_replacement_field:
-    | '{' (yield_expr | star_expressions) '='? [fstring_conversion] [fstring_full_format_spec] '}'
-fstring_conversion:
-    | "!" NAME
-fstring_full_format_spec:
-    | ':' fstring_format_spec*
-fstring_format_spec:
-    | FSTRING_MIDDLE
-    | fstring_replacement_field
-fstring:
-    | FSTRING_START fstring_middle* FSTRING_END
 
-string: STRING
-strings: (fstring|string)+
+string: 
+  STRING
+;
+
+strings:
+  string string_list
+;
+
+string_list:
+  %empty
+| string_list string
+; 
 
 list:
     | '[' [star_named_expressions] ']'
