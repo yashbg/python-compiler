@@ -68,7 +68,7 @@ s.e+
 /* ============== */
 
 file:
-  statements
+  statements NEWLINE
 ;
 
 /* GENERAL STATEMENTS */
