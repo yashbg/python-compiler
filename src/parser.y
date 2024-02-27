@@ -122,7 +122,6 @@ compound_stmt:
 | class_def
 | with_stmt
 | for_stmt
-| try_stmt
 | while_stmt
 | match_stmt
 ;
@@ -245,10 +244,6 @@ block:
 | simple_stmts
 ;
 
-decorators: 
-  '@' named_expression NEWLINE AT_named_expression_newline_list
-;
-
 AT_named_expression_newline_list:
   %empty
 | AT_named_expression_newline_list '@' named_expression NEWLINE 
@@ -258,8 +253,7 @@ AT_named_expression_newline_list:
 /* ----------------- */
 
 class_def:
-  decorators class_def_raw
-| class_def_raw
+  class_def_raw
 ;
 
 class_def_raw:
@@ -286,8 +280,7 @@ arguments_opt:
 /* -------------------- */
 
 function_def:
-  decorators function_def_raw
-| function_def_raw
+  function_def_raw
 ;
 
 function_def_raw:
