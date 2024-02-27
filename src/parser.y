@@ -106,7 +106,6 @@ simple_stmt:
 | star_expressions
 | return_stmt
 | raise_stmt
-| yield_stmt
 | assert_stmt
 | BREAK
 | CONTINUE
@@ -151,7 +150,6 @@ type_comment_opt:
 ;
 
 annotated_rhs:
-  yield_expr
 | star_expressions
 ;
 
@@ -202,10 +200,6 @@ name_list:
 | name_list ',' NAME
 ;
 
-
-yield_stmt:
-  yield_expr
-;
 
 assert_stmt:
   ASSERT expression comma_expr_opt
@@ -774,11 +768,6 @@ expression:
 | lambdef
 ;
 
-yield_expr:
-  YIELD FROM expression
-| YIELD star_expressions_opt
-;
-
 star_expressions:
   star_expression ',' star_expression comma_star_expression_list comma_opt
 | star_expression ','
@@ -1026,13 +1015,9 @@ atom:
 
 
 group:
-  '(' yield_expr_or_named_expr ')'
+  '(' named_expression ')'
 ;
 
-yield_expr_or_named_expr:
-  yield_expr
-| named_expression
-;
 
 /* Lambda functions */
 /* ---------------- */
