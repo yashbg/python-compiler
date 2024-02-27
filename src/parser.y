@@ -501,42 +501,8 @@ with_item:
 /* Try statement */
 /* ------------- */
 
-try_stmt:
-  TRY ':' block finally_block
-| TRY ':' block except_block except_block_list else_block_opt finally_block_opt
-| TRY ':' block except_star_block except_star_block_list else_block_opt finally_block_opt
-
-except_block_list:
-  %empty
-| except_block_list except_block
-;
-
-except_star_block_list:
-  %empty
-| except_star_block_list except_star_block
-;
-
-finally_block_opt:
-  %empty
-| finally_block 
-;
-
-
 /* Except statement */
 /* ---------------- */
-
-except_block:
-  EXCEPT expression as_NAME_opt ':' block
-| EXCEPT ':' block
-;
-
-except_star_block:
-  EXCEPT '*' expression as_NAME_opt ':' block
-;
-
-finally_block:
-  FINALLY ':' block
-;
 
 /* Match statement */
 /* --------------- */
