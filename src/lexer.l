@@ -88,6 +88,29 @@ yield                      {yyval.tokenname=yytext; line=yylineno; return YIELD;
 "->"            {yyval.tokenname=yytext; line=yylineno; return ARROW;}
 
 
+"+"            {yyval.tokenname=yytext; line=yylineno; return '+';}
+"-"            {yyval.tokenname=yytext; line=yylineno; return '-';}
+"*"            {yyval.tokenname=yytext; line=yylineno; return '*';}
+"/"            {yyval.tokenname=yytext; line=yylineno; return '/';}
+"%"            {yyval.tokenname=yytext; line=yylineno; return '%';}
+"|"            {yyval.tokenname=yytext; line=yylineno; return '|';}
+"&"            {yyval.tokenname=yytext; line=yylineno; return '&';}
+"~"            {yyval.tokenname=yytext; line=yylineno; return '~';}
+"^"            {yyval.tokenname=yytext; line=yylineno; return '^';}
+"<"            {yyval.tokenname=yytext; line=yylineno; return LESSTHAN;}
+"<="            {yyval.tokenname=yytext; line=yylineno; return LESSTHANEQUAL;}
+">"            {yyval.tokenname=yytext; line=yylineno; return GREATERTHAN;}
+">="            {yyval.tokenname=yytext; line=yylineno; return GREATERTHANEQUAL;}
+">>"            {yyval.tokenname=yytext; line=yylineno; return RIGHTSHIFT;}
+"<<"            {yyval.tokenname=yytext; line=yylineno; return LEFTSHIFT;}
+"//"            {yyval.tokenname=yytext; line=yylineno; return DOUBLESLASH;}
+"**"            {yyval.tokenname=yytext; line=yylineno; return DOUBLESTAR;}
+"=="            {yyval.tokenname=yytext; line=yylineno; return DOUBLEEQUAL;}
+"!="            {yyval.tokenname=yytext; line=yylineno; return NOTEQUAL;}
+":="            {yyval.tokenname=yytext; line=yylineno; return COLON_EQUAL;}
+
+
+{NEWLINE}            {yyval.tokenname=yytext; line=yylineno; return NEWLINE;}
 {WHITESPACE}            
 {OTHER}                 {yylval.tokenname=yytext; line=yylineno; return OTHER;}
 
