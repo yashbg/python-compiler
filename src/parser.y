@@ -292,7 +292,6 @@ function_def:
 
 function_def_raw:
   DEF NAME type_params_opt '(' params_opt ')' arrow_expr_opt ':' func_type_comment_opt block
-| ASYNC DEF NAME type_params_opt '(' params_opt ')' arrow_expr_opt ':' func_type_comment_opt block
 ;
 
 /*
@@ -481,7 +480,7 @@ while_stmt:
 
 for_stmt:
   FOR star_targets IN star_expressions ':' TYPE_COMMENT_opt block else_block_opt /*---- ~ used here -------*/
-| ASYNC FOR star_targets IN star_expressions ':' TYPE_COMMENT_opt block else_block_opt /*---- ~ used here -------*/
+;
 
 /* With statement */
 /* -------------- */
@@ -489,8 +488,6 @@ for_stmt:
 with_stmt:
   WITH '(' with_item comma_with_item_list comma_opt ')' ':' block
 | WITH with_item comma_with_item_list ':' TYPE_COMMENT_opt block
-| ASYNC WITH '(' with_item comma_with_item_list comma_opt ')' ':' block
-| ASYNC WITH with_item comma_with_item_list ':' TYPE_COMMENT_opt block
 ;
 
 with_item:
@@ -1008,13 +1005,11 @@ power:
 /* Primary elements are things like "obj.something.something", "obj[something]", "obj */(something)", "obj" ...
 
 await_primary:
-  AWAIT primary
-| primary
+  primary
 ;
 
 primary:
   primary '.' NAME
-| primary genexp
 | primary '(' arguments_opt ')'
 | primary '[' slices ']'
 | atom
@@ -1107,9 +1102,8 @@ for_if_clauses:
     | for_if_clause+
 
 for_if_clause:
-    | ASYNC 'for' star_targets 'in' ~ disjunction ('if' disjunction )*
-    | 'for' star_targets 'in' ~ disjunction ('if' disjunction )*
-
+  'for' star_targets 'in' ~ disjunction ('if' disjunction )*
+;
 
 /* FUNCTION CALL ARGUMENTS */
 /* ======================= */
