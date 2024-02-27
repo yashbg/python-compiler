@@ -200,7 +200,6 @@ name_list:
 | name_list ',' NAME
 ;
 
-
 assert_stmt:
   ASSERT expression comma_expr_opt
 ;
@@ -261,7 +260,6 @@ arguments_opt:
   %empty
 | arguments 
 ;
-
 
 /* Function definitions */
 /* -------------------- */
@@ -1057,25 +1055,12 @@ arguments:
 ;
 
 args:
-    | ','.(starred_expression | expression)+ [',' kwargs ]
-    | kwargs
+  expression comma_expr_list;
 ;
 
-kwargs:
-    | ','.kwarg_or_starred+ ',' ','.kwarg_or_double_starred+
-    | ','.kwarg_or_starred+
-    | ','.kwarg_or_double_starred+
-
 starred_expression:
-    | '*' expression
-
-kwarg_or_starred:
-    | NAME '=' expression
-    | starred_expression
-
-kwarg_or_double_starred:
-    | NAME '=' expression
-    | '**' expression
+  '*' expression
+;
 
 /* ASSIGNMENT TARGETS */
 /* ================== */
