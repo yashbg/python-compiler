@@ -106,7 +106,6 @@ simple_stmt:
 | star_expressions
 | return_stmt
 | raise_stmt
-| del_stmt
 | yield_stmt
 | assert_stmt
 | BREAK
@@ -203,9 +202,6 @@ name_list:
 | name_list ',' NAME
 ;
 
-del_stmt:
-  DEL del_targets
-;
 
 yield_stmt:
   yield_expr
@@ -1076,8 +1072,9 @@ arguments:
 ;
 
 args:
-    | ','.(starred_expression | expression !'=')+ [',' kwargs ]
+    | ','.(starred_expression | expression)+ [',' kwargs ]
     | kwargs
+;
 
 kwargs:
     | ','.kwarg_or_starred+ ',' ','.kwarg_or_double_starred+
@@ -1147,19 +1144,6 @@ t_lookahead: '(' | '[' | '.'
 
 /* Targets for del statements */
 /* -------------------------- */
-
-del_targets: ','.del_target+ [',']
-
-del_target:
-    | t_primary '.' NAME !t_lookahead
-    | t_primary '[' slices ']' !t_lookahead
-    | del_t_atom
-
-del_t_atom:
-    | NAME
-    | '(' del_target ')'
-    | '(' [del_targets] ')'
-    | '[' [del_targets] ']'
 
 /* TYPING ELEMENTS */
 /* --------------- */
