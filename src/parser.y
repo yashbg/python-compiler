@@ -1057,29 +1057,10 @@ atom:
 | NONE
 | strings
 | NUMBER
-| tuple_or_group_or_genexp
-| list_or_listcomp
-| dict_or_set_or_dictcomp_or_setcomp
-| '...'
-;
-
-tuple_or_group_or_genexp:
-  tuple
 | group
-| genexp
+| list
 ;
 
-list_or_listcomp:
-  list
-| listcomp
-;
-
-dict_or_set_or_dictcomp_or_setcomp:
-  dict
-| set
-| dictcomp
-| setcomp
-;
 
 group:
   '(' yield_expr_or_named_expr ')'
@@ -1114,24 +1095,10 @@ string_list:
 list:
     | '[' [star_named_expressions] ']'
 
-tuple:
-    | '(' [star_named_expression ',' [star_named_expressions]  ] ')'
-
-set: '{' star_named_expressions '}'
 
 /* Dicts */
 /* ----- */
 
-dict:
-    | '{' [double_starred_kvpairs] '}'
-
-double_starred_kvpairs: ','.double_starred_kvpair+ [',']
-
-double_starred_kvpair:
-    | '**' bitwise_or
-    | kvpair
-
-kvpair: expression ':' expression
 
 /* Comprehensions & Generators */
 /* --------------------------- */
@@ -1143,17 +1110,6 @@ for_if_clause:
     | ASYNC 'for' star_targets 'in' ~ disjunction ('if' disjunction )*
     | 'for' star_targets 'in' ~ disjunction ('if' disjunction )*
 
-listcomp:
-    | '[' named_expression for_if_clauses ']'
-
-setcomp:
-    | '{' named_expression for_if_clauses '}'
-
-genexp:
-    | '(' ( assignment_expression | expression !':=') for_if_clauses ')'
-
-dictcomp:
-    | '{' kvpair for_if_clauses '}'
 
 /* FUNCTION CALL ARGUMENTS */
 /* ======================= */
