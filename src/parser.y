@@ -106,7 +106,6 @@ simple_stmt:
 | star_expressions
 | return_stmt
 | raise_stmt
-| PASS
 | del_stmt
 | yield_stmt
 | assert_stmt
@@ -161,7 +160,6 @@ augassign:
   PLUSEQUAL
 | MINEQUAL
 | STAREQUAL
-| ATEQUAL
 | SLASHEQUAL
 | PERCENTEQUAL
 | AMPEREQUAL
@@ -1072,26 +1070,18 @@ string_list:
 list:
     | '[' [star_named_expressions] ']'
 
-
 /* Dicts */
 /* ----- */
 
-
 /* Comprehensions & Generators */
 /* --------------------------- */
-
-for_if_clauses:
-    | for_if_clause+
-
-for_if_clause:
-  'for' star_targets 'in' ~ disjunction ('if' disjunction )*
-;
 
 /* FUNCTION CALL ARGUMENTS */
 /* ======================= */
 
 arguments:
-    | args [','] &')'
+  args comma_opt
+;
 
 args:
     | ','.(starred_expression | ( assignment_expression | expression !':=') !'=')+ [',' kwargs ]
