@@ -813,17 +813,9 @@ star_named_expression:
 | named_expression
 ;
 
-assignment_expression:
-  NAME COLON_EQUAL expression
-;
-
-/*
- COLON_EQUAL : ':='
-*/
 
 named_expression:
-  assignment_expression
-| expression
+  expression
 ;
 
 disjunction:
@@ -1084,7 +1076,7 @@ arguments:
 ;
 
 args:
-    | ','.(starred_expression | ( assignment_expression | expression !':=') !'=')+ [',' kwargs ]
+    | ','.(starred_expression | expression !'=')+ [',' kwargs ]
     | kwargs
 
 kwargs:
