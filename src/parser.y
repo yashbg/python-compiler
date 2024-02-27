@@ -120,7 +120,6 @@ compound_stmt:
   function_def
 | if_stmt
 | class_def
-| with_stmt
 | for_stmt
 | while_stmt
 | match_stmt
@@ -477,16 +476,6 @@ for_stmt:
 
 /* With statement */
 /* -------------- */
-
-with_stmt:
-  WITH '(' with_item comma_with_item_list comma_opt ')' ':' block
-| WITH with_item comma_with_item_list ':' TYPE_COMMENT_opt block
-;
-
-with_item:
-  expression AS star_target 
-| expression
-;
 
 /* Try statement */
 /* ------------- */
