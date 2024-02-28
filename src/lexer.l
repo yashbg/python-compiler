@@ -1,6 +1,5 @@
 %option noyywrap
 %option yylineno
-%option case-insensitive
 
 %{
     #include <stdio.h>
@@ -10,16 +9,51 @@
     #include <bits/stdc++.h>
     using namespace std;
     extern int line;
+
+    // FSTRING_START MIDDLE END - ignore
+    // NAME - done
+    // TYPE_COMMENT - done
+    // STRING - done 
+    // INDENT DEDENT 
 %}
+
 DIGIT               [0-9]
+HEX_DIGIT           [0-9a-fA-F]
+OCT_DIGIT           [0-7]
+BIN_DIGIT           [01]
+HEX_INTEGER         "0"[Xx]("_"?{HEX_DIGIT})+
+OCT_INTEGER         "0"[Oo]("_"?{OCT_DIGIT})+
+BIN_INTEGER         "0"[Bb]("_"?{BIN_DIGIT})+
+DEC_INTEGER         [1-9]("_"?{DIGIT})*|"0"("_"?"0")*
+INTEGER             {HEX_INTEGER}|{OCT_INTEGER}|{BIN_INTEGER}|{DEC_INTEGER}
+DIGITPART           {DIGIT}("_"?{DIGIT})*
+EXPONENT            [eE][+-]?{DIGITPART}
+DOT                 "."
+FRACTION            {DOT}{DIGITPART}
+POINT_FLOAT         {DIGITPART}?{FRACTION}|{DIGITPART}{DOT}
+EXPONENT_FLOAT      ({POINT_FLOAT}|{DIGITPART}){EXPONENT}
+FLOAT_NUMBER        {POINT_FLOAT}|{EXPONENT_FLOAT}
+IMAGINARY           ({FLOAT_NUMBER}|{DIGITPART})("j"|"J")
+
 LETTER              [_a-zA-Z]        
 WHITESPACE          " "|"\t"|"\f"
 NEWLINE             "\n"
-KEYWORD             "False" | "await" | "else" | "import" | "pass" | "None" | "break" | "except" | "in" | "raise" | "True" | "class" | "finally" | "is" | "return" | "and" | "continue" | "for" | "lambda" | "try" |"as" | "def" | "from" | "nonlocal" | "while" | "assert" | "del" | "global" | "not" | "with" | "async" | "elif" | "if" | "or" | "yield"
-DELIMITERS          "(" | ")" | "[" | "]" | "{" | "}" | "," | ":" | "." | ";" | "@" | "=" | "->" | "+=" | "-=" | "*=" | "/=" | "//=" | "%=" | "@=" | "&=" | "|=" | "^=" | ">>=" | "<<=" | "**="
-OPERATORS           "+" | "-" | "*" | "**" | "/" | "//" | "%" | "@" | "<<" | ">>" | "&" | "|" | "^" | "~" | ":=" | "<" | ">" | "<=" | ">=" | "==" | "!="
+KEYWORD             "False"|"await"|"else"|"import"|"pass"|"None"|"break"|"except"| "in"|"raise"|"True"|"class"|"finally"|"is"|"return"|"and"|"continue"|"for"|"lambda"|"try" |"as"|"def"|"from"|"nonlocal"|"while"|"assert"|"del"|"global"|"not"|"with"|"async"|"elif"|"if"|"or"|"yield"
+DELIMITERS          "("|")"|"["|"]"|"{"|"}"|","|":"|"."|";"|"@"|"="|"->"|"+="|"-="|"*="|"/="|"//="|"%="|"@="|"&="|"|="|"^="|">>="|"<<="|"**="
+OPERATORS           "+"|"-"|"*"|"**"|"/"|"//"|"%"|"@"|"<<"|">>"|"&"|"|"|"^"|"~"|":="|"<"|">"|"<="|">="|"=="|"!="
+NAME                {LETTER}({LETTER}|{DIGIT})*
 
+STRING_PREFIX       "r"|"u"|"R"|"U"|"f"|"F"|("fr"|"Fr"|"fR"|"FR"|"rf"|"rF"|"Rf"|"RF")
+SHORT_STRING        \"([^\"\'\\]|\\.)*\"|\'([^\'\"\\]|\\.)*\'
+LONG_STRING         "'''"([^'\\]|\\.|'{1,2})*"'''"|'"""'([^"\\]|\\.|"{1,2})*'"""'
+BYTE_STRING_PREFIX  "b"|"B"|("br"|"Br"|"bR"|"BR"|"rb"|"rB"|"Rb"|"RB")
+STRING_BODY         ({SHORT_STRING}|{LONG_STRING})
+BYTE_STRING         ({BYTE_STRING_PREFIX}{STRING_BODY})
+STRING              {STRING_PREFIX}?{STRING_BODY}
+     
+COMMENT             "#"(.*\n)|(''')(.*\n)*(.*)(''')
 OTHER               .
+
 
 %%
 
@@ -60,46 +94,46 @@ or                         {yyval.tokenname=yytext; line=yylineno; return OR;}
 yield                      {yyval.tokenname=yytext; line=yylineno; return YIELD;}
 
 
-"+="            {yyval.tokenname=yytext; line=yylineno; return PLUSEQUAL;}
-"-="             {yyval.tokenname=yytext; line=yylineno; return MINEQUAL;}
-"*="            {yyval.tokenname=yytext; line=yylineno; return STAREQUAL;}
-"@="              {yyval.tokenname=yytext; line=yylineno; return ATEQUAL;}
-"/="           {yyval.tokenname=yytext; line=yylineno; return SLASHEQUAL;}
-"%="         {yyval.tokenname=yytext; line=yylineno; return PERCENTEQUAL;}
-"&="           {yyval.tokenname=yytext; line=yylineno; return AMPEREQUAL;}
-"|="            {yyval.tokenname=yytext; line=yylineno; return VBAREQUAL;}
-"^="      {yyval.tokenname=yytext; line=yylineno; return CIRCUMFLEXEQUAL;}
-"<<="       {yyval.tokenname=yytext; line=yylineno; return LEFTSHIFTEQUAL;}
-">>="      {yyval.tokenname=yytext; line=yylineno; return RIGHTSHIFTEQUAL;}
-"**="      {yyval.tokenname=yytext; line=yylineno; return DOUBLESTAREQUAL;}
-"//="     {yyval.tokenname=yytext; line=yylineno; return DOUBLESLASHEQUAL;}
-"\("              {yyval.tokenname=yytext; line=yylineno; return '(';}
-"\)"              {yyval.tokenname=yytext; line=yylineno; return ')';}
-"\["              {yyval.tokenname=yytext; line=yylineno; return '[';}
-"\]"              {yyval.tokenname=yytext; line=yylineno; return ']';}
-"\{"              {yyval.tokenname=yytext; line=yylineno; return '{';}
-"\}"              {yyval.tokenname=yytext; line=yylineno; return '\}';}
-","              {yyval.tokenname=yytext; line=yylineno; return ',';}
-":"              {yyval.tokenname=yytext; line=yylineno; return ':';}
-"."              {yyval.tokenname=yytext; line=yylineno; return '.';}
-";"              {yyval.tokenname=yytext; line=yylineno; return ';';}
-"@"              {yyval.tokenname=yytext; line=yylineno; return "@";}
-"="              {yyval.tokenname=yytext; line=yylineno; return '=';}
-"->"            {yyval.tokenname=yytext; line=yylineno; return ARROW;}
+"+="                    {yyval.tokenname=yytext; line=yylineno; return PLUSEQUAL;}
+"-="                    {yyval.tokenname=yytext; line=yylineno; return MINEQUAL;}
+"*="                    {yyval.tokenname=yytext; line=yylineno; return STAREQUAL;}
+"@="                    {yyval.tokenname=yytext; line=yylineno; return ATEQUAL;}
+"/="                    {yyval.tokenname=yytext; line=yylineno; return SLASHEQUAL;}
+"%="                    {yyval.tokenname=yytext; line=yylineno; return PERCENTEQUAL;}
+"&="                    {yyval.tokenname=yytext; line=yylineno; return AMPEREQUAL;}
+"|="                    {yyval.tokenname=yytext; line=yylineno; return VBAREQUAL;}
+"^="                    {yyval.tokenname=yytext; line=yylineno; return CIRCUMFLEXEQUAL;}
+"<<="                   {yyval.tokenname=yytext; line=yylineno; return LEFTSHIFTEQUAL;}
+">>="                   {yyval.tokenname=yytext; line=yylineno; return RIGHTSHIFTEQUAL;}
+"**="                   {yyval.tokenname=yytext; line=yylineno; return DOUBLESTAREQUAL;}
+"//="                   {yyval.tokenname=yytext; line=yylineno; return DOUBLESLASHEQUAL;}
+"("                     {yyval.tokenname=yytext; line=yylineno; return '(';}
+")"                     {yyval.tokenname=yytext; line=yylineno; return ')';}
+"["                     {yyval.tokenname=yytext; line=yylineno; return '[';}
+"]"                     {yyval.tokenname=yytext; line=yylineno; return ']';}
+"{"                     {yyval.tokenname=yytext; line=yylineno; return '{';}
+"}"                     {yyval.tokenname=yytext; line=yylineno; return '}';}
+","                     {yyval.tokenname=yytext; line=yylineno; return ',';}
+":"                     {yyval.tokenname=yytext; line=yylineno; return ':';}
+"."                     {yyval.tokenname=yytext; line=yylineno; return '.';}
+";"                     {yyval.tokenname=yytext; line=yylineno; return ';';}
+"@"                     {yyval.tokenname=yytext; line=yylineno; return "@";}
+"="                     {yyval.tokenname=yytext; line=yylineno; return '=';}
+"->"                    {yyval.tokenname=yytext; line=yylineno; return ARROW;}
 
 
-"+"            {yyval.tokenname=yytext; line=yylineno; return '+';}
-"-"            {yyval.tokenname=yytext; line=yylineno; return '-';}
-"*"            {yyval.tokenname=yytext; line=yylineno; return '*';}
-"/"            {yyval.tokenname=yytext; line=yylineno; return '/';}
-"%"            {yyval.tokenname=yytext; line=yylineno; return '%';}
-"|"            {yyval.tokenname=yytext; line=yylineno; return '|';}
-"&"            {yyval.tokenname=yytext; line=yylineno; return '&';}
-"~"            {yyval.tokenname=yytext; line=yylineno; return '~';}
-"^"            {yyval.tokenname=yytext; line=yylineno; return '^';}
-"<"            {yyval.tokenname=yytext; line=yylineno; return LESSTHAN;}
+"+"             {yyval.tokenname=yytext; line=yylineno; return '+';}
+"-"             {yyval.tokenname=yytext; line=yylineno; return '-';}
+"*"             {yyval.tokenname=yytext; line=yylineno; return '*';}
+"/"             {yyval.tokenname=yytext; line=yylineno; return '/';}
+"%"             {yyval.tokenname=yytext; line=yylineno; return '%';}
+"|"             {yyval.tokenname=yytext; line=yylineno; return '|';}
+"&"             {yyval.tokenname=yytext; line=yylineno; return '&';}
+"~"             {yyval.tokenname=yytext; line=yylineno; return '~';}
+"^"             {yyval.tokenname=yytext; line=yylineno; return '^';}
+"<"             {yyval.tokenname=yytext; line=yylineno; return LESSTHAN;}
 "<="            {yyval.tokenname=yytext; line=yylineno; return LESSTHANEQUAL;}
-">"            {yyval.tokenname=yytext; line=yylineno; return GREATERTHAN;}
+">"             {yyval.tokenname=yytext; line=yylineno; return GREATERTHAN;}
 ">="            {yyval.tokenname=yytext; line=yylineno; return GREATERTHANEQUAL;}
 ">>"            {yyval.tokenname=yytext; line=yylineno; return RIGHTSHIFT;}
 "<<"            {yyval.tokenname=yytext; line=yylineno; return LEFTSHIFT;}
@@ -109,10 +143,17 @@ yield                      {yyval.tokenname=yytext; line=yylineno; return YIELD;
 "!="            {yyval.tokenname=yytext; line=yylineno; return NOTEQUAL;}
 ":="            {yyval.tokenname=yytext; line=yylineno; return COLON_EQUAL;}
 
+{INTEGER}                           {yyval.tokenname=yytext; line=yylineno; return INTEGER;}
+{FLOAT_NUMBER}                      {yyval.tokenname=yytext; line=yylineno; return FLOAT;}
+{IMAGINARY}                         {yyval.tokenname=yytext; line=yylineno; return IMAGINARY;}
+{BYTE_STRING}                       {yyval.tokenname=yytext; line=yylineno; return BYTE_STRING;}
+{STRING}                            {yyval.tokenname=yytext; line=yylineno; return STRING;}
 
-{NEWLINE}            {yyval.tokenname=yytext; line=yylineno; return NEWLINE;}
-{WHITESPACE}            
-{OTHER}                 {yylval.tokenname=yytext; line=yylineno; return OTHER;}
+{NAME}                              {yyval.tokenname=yytext; line=yylineno; return NAME;}
+{COMMENT}                   {yyval.tokenname=yytext; line=yylineno; return TYPE_COMMENT;}
+{NEWLINE}                   {yyval.tokenname=yytext; line=yylineno; return NEWLINE;}
+{WHITESPACE}           
+{OTHER}                     
 
 %%
 
