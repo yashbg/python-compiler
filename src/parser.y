@@ -352,7 +352,7 @@ kwds_opt:
 ;
 
 kwds:
-  '**' param_no_default
+  DOUBLESTAR param_no_default
 ;
 
 /* One parameter.  This *includes* a following comma and type comment. */
@@ -674,7 +674,7 @@ literal_expr_or_attr:
 ;
 
 double_star_pattern:
-  '**' pattern_capture_target
+  DOUBLESTAR pattern_capture_target
 ;
 
 class_pattern:
@@ -733,8 +733,8 @@ type_param:
   NAME type_param_bound_opt
 | '*' NAME ':' expression
 | '*' NAME
-| '**' NAME ':' expression
-| '**' NAME
+| DOUBLESTAR NAME ':' expression
+| DOUBLESTAR NAME
 ;
 
 type_param_bound_opt:
@@ -1069,48 +1069,66 @@ starred_expression:
 /* --------------- */
 
 /* NOTE: star_targets may contain *bitwise_or, targets may not. */
+
 star_targets:
-    | star_target !','
-    | star_target (',' star_target )* [',']
+  star_target
+| star_target comma_star_target_list comma_opt
+;
 
-star_targets_list_seq: ','.star_target+ [',']
+star_targets_list_seq:
+  star_target comma_star_target_list comma_opt
+;
 
-star_targets_tuple_seq:
-    | star_target (',' star_target )+ [',']
-    | star_target ','
+comma_star_target_list:
+  %empty
+| comma_star_target_list ',' star target
+;
 
 star_target:
-    | '*' (!'*' star_target)
-    | target_with_star_atom
+  '*' star_target
+| target_with_star_atom
+;
 
 target_with_star_atom:
-    | t_primary '.' NAME !t_lookahead
-    | t_primary '[' slices ']' !t_lookahead
-    | star_atom
+  t_primary '.' NAME 
+| t_primary '[' slices ']' 
+| star_atom
+;
 
 star_atom:
-    | NAME
-    | '(' target_with_star_atom ')'
-    | '(' [star_targets_tuple_seq] ')'
-    | '[' [star_targets_list_seq] ']'
+  NAME
+| '(' target_with_star_atom ')'
+| '[' star_targets_list_seq_opt ']'
+;
+
+star_targets_list_seq_opt:
+  %empty
+| star_targets_list_seq
+;
 
 single_target:
-    | single_subscript_attribute_target
-    | NAME
-    | '(' single_target ')'
+  single_subscript_attribute_target
+| NAME
+| '(' single_target ')'
+;
 
 single_subscript_attribute_target:
-    | t_primary '.' NAME !t_lookahead
-    | t_primary '[' slices ']' !t_lookahead
+  t_primary '.' NAME
+| t_primary '[' slices ']'
+;
 
 t_primary:
-    | t_primary '.' NAME &t_lookahead
-    | t_primary '[' slices ']' &t_lookahead
-    | t_primary genexp &t_lookahead
-    | t_primary '(' [arguments] ')' &t_lookahead
-    | atom &t_lookahead
+  t_primary '.' NAME 
+| t_primary '[' slices ']'
+| t_primary '(' arguments_opt ')' 
+| atom 
+;
 
-t_lookahead: '(' | '[' | '.'
+t_lookahead:
+  '(' 
+| '['
+| '.'
+;
 
 /* Targets for del statements */
 /* -------------------------- */
@@ -1120,17 +1138,19 @@ t_lookahead: '(' | '[' | '.'
 
 /* type_expressions allow */** but ignore them */
 type_expressions:
-    | ','.expression+ ',' '*' expression ',' '**' expression
-    | ','.expression+ ',' '*' expression
-    | ','.expression+ ',' '**' expression
-    | '*' expression ',' '**' expression
-    | '*' expression
-    | '**' expression
-    | ','.expression+
+  expression comma_expr_list ',' '*' expression ',' DOUBLESTAR expression
+| expression comma_expr_list ',' '*' expression
+| expression comma_expr_list ',' DOUBLESTAR expression
+| '*' expression ',' DOUBLESTAR expression
+| '*' expression
+| DOUBLESTAR expression
+| expression comma_expr_list
+;
 
 func_type_comment:
-    | NEWLINE TYPE_COMMENT &(NEWLINE INDENT)   /* Must be followed by indented block */
-    | TYPE_COMMENT
+  NEWLINE TYPE_COMMENT   /* Must be followed by indented block */
+| TYPE_COMMENT
+;
 
 /* ========================= END OF THE GRAMMAR =========================== */
 
