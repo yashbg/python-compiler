@@ -3,67 +3,6 @@
 
 %%
 
-/*
-PEG grammar for Python
-
-
-
-========================= START OF THE GRAMMAR =========================
-
-General grammatical elements and rules:
-
-* Strings with double quotes (") denote SOFT KEYWORDS
-* Strings with single quotes (') denote KEYWORDS
-* Upper case names (NAME) denote tokens in the Grammar/Tokens file
-* Rule names starting with "invalid_" are used for specialized syntax errors
-    - These rules are NOT used in the first pass of the parser.
-    - Only if the first pass fails to parse, a second pass including the invalid
-      rules will be executed.
-    - If the parser fails in the second phase with a generic syntax error, the
-      location of the generic failure of the first pass will be used (this avoids
-      reporting incorrect locations due to the invalid rules).
-    - The order of the alternatives involving invalid rules matter
-      (like any rule in PEG).
-
-Grammar Syntax (see PEP 617 for more information):
-
-rule_name: expression
-  Optionally, a type can be included right after the rule name, which
-  specifies the return type of the C or Python function corresponding to the
-  rule:
-rule_name[return_type]: expression
-  If the return type is omitted, then a void * is returned in C and an Any in
-  Python.
-e1 e2
-  Match e1, then match e2.
-e1 | e2
-  Match e1 or e2.
-  The first alternative can also appear on the line after the rule name for
-  formatting purposes. In that case, a | must be used before the first
-  alternative, like so:
-      rule_name[return_type]:
-            | first_alt
-            | second_alt
-( e )
-  Match e (allows also to use other operators in the group like '(e)*')
-[ e ] or e?
-  Optionally match e.
-e*
-  Match zero or more occurrences of e.
-e+
-  Match one or more occurrences of e.
-s.e+
-  Match one or more occurrences of e, separated by s. The generated parse tree
-  does not include the separator. This is otherwise identical to (e (s e)*).
-&e
-  Succeed if e can be parsed, without consuming any input.
-!e
-  Fail if e can be parsed, without consuming any input.
-~
-  Commit to the current alternative, even if it fails to parse. 
-*/
-
-
 /* STARTING RULES */
 /* ============== */
 
@@ -130,7 +69,7 @@ assignment:
 | '(' single_target ')' ':' expression annotated_rhs_opt
 | single_subscript_attribute_target ':' expression annotated_rhs_opt
 | star_targets '=' star_targets_list annotated_rhs type_comment_opt
-| single_target augassign annotated_rhs   /*---- ~ used here -------*/
+| single_target augassign annotated_rhs 
 ;
 
 star_targets_list:
@@ -149,7 +88,7 @@ type_comment_opt:
 ;
 
 annotated_rhs:
-| star_expressions
+  star_expressions
 ;
 
 augassign:
@@ -730,38 +669,7 @@ await_primary:
 primary:
   primary '.' NAME
 | primary '(' arguments_opt ')'
-| primary '[' slices ']'
 | atom
-;
-
-slices:
-  slice
-| slice_or_starred_expression comma_slice_or_starred_expression_list comma_opt
-;
-
-slice_or_starred_expression:
-  slice
-| starred_expression
-;
-
-comma_slice_or_starred_expression_list:
-  %empty
-| comma_slice_or_starred_expression_list ',' slice_or_starred_expression
-;
-
-slice:
-  expression_opt ':' expression_opt colon_expression_opt_opt
-| named_expression
-;
-
-expression_opt:
-  %empty
-| expression
-;
-
-colon_expression_opt_opt:
-  %empty
-| ':' expression_opt
 ;
 
 atom:
@@ -855,8 +763,7 @@ star_target:
 ;
 
 target_with_star_atom:
-  t_primary '.' NAME 
-| t_primary '[' slices ']' 
+  t_primary '.' NAME
 | star_atom
 ;
 
@@ -879,12 +786,10 @@ single_target:
 
 single_subscript_attribute_target:
   t_primary '.' NAME
-| t_primary '[' slices ']'
 ;
 
 t_primary:
-  t_primary '.' NAME 
-| t_primary '[' slices ']'
+  t_primary '.' NAME
 | t_primary '(' arguments_opt ')' 
 | atom 
 ;
