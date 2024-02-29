@@ -145,9 +145,9 @@ yield                      {yyval.tokenname=yytext; line=yylineno; return YIELD;
 "!="            {yyval.tokenname=yytext; line=yylineno; return NOTEQUAL;}
 ":="            {yyval.tokenname=yytext; line=yylineno; return COLON_EQUAL;}
 
-{INTEGER}                           {yyval.tokenname=yytext; line=yylineno; return INTEGER;}
-{FLOAT_NUMBER}                      {yyval.tokenname=yytext; line=yylineno; return FLOAT;}
-{IMAGINARY}                         {yyval.tokenname=yytext; line=yylineno; return IMAGINARY;}
+{INTEGER}                           {yyval.tokenname=yytext; line=yylineno; return NUMBER;}
+{FLOAT_NUMBER}                      {yyval.tokenname=yytext; line=yylineno; return NUMBER;}
+{IMAGINARY}                         {yyval.tokenname=yytext; line=yylineno; return NUMBER;}
 {BYTE_STRING}                       {yyval.tokenname=yytext; line=yylineno; return BYTE_STRING;}
 {STRING}                            {yyval.tokenname=yytext; line=yylineno; return STRING;}
 {NAME}                              {yyval.tokenname=yytext; line=yylineno; return NAME;}
