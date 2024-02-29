@@ -9,7 +9,9 @@
     #include <bits/stdc++.h>
     using namespace std;
     extern int line;
-
+    int column;
+    int indent[100];
+    int top=0;
     // FSTRING_START MIDDLE END - ignore
     // NAME - done
     // TYPE_COMMENT - done
@@ -36,7 +38,7 @@ FLOAT_NUMBER        {POINT_FLOAT}|{EXPONENT_FLOAT}
 IMAGINARY           ({FLOAT_NUMBER}|{DIGITPART})("j"|"J")
 
 LETTER              [_a-zA-Z]        
-WHITESPACE          " "|"\t"|"\f"
+WHITESPACE          " "|"\f"
 NEWLINE             "\n"
 KEYWORD             "False"|"await"|"else"|"import"|"pass"|"None"|"break"|"except"| "in"|"raise"|"True"|"class"|"finally"|"is"|"return"|"and"|"continue"|"for"|"lambda"|"try" |"as"|"def"|"from"|"nonlocal"|"while"|"assert"|"del"|"global"|"not"|"with"|"async"|"elif"|"if"|"or"|"yield"
 DELIMITERS          "("|")"|"["|"]"|"{"|"}"|","|":"|"."|";"|"@"|"="|"->"|"+="|"-="|"*="|"/="|"//="|"%="|"@="|"&="|"|="|"^="|">>="|"<<="|"**="
@@ -148,8 +150,36 @@ yield                      {yyval.tokenname=yytext; line=yylineno; return YIELD;
 {IMAGINARY}                         {yyval.tokenname=yytext; line=yylineno; return IMAGINARY;}
 {BYTE_STRING}                       {yyval.tokenname=yytext; line=yylineno; return BYTE_STRING;}
 {STRING}                            {yyval.tokenname=yytext; line=yylineno; return STRING;}
-
 {NAME}                              {yyval.tokenname=yytext; line=yylineno; return NAME;}
+
+
+^[\t ]* {
+    int spaces=0;
+    if(top==0) indent[top]=0;
+    column=0;
+    while(isspace(yytext[spaces])) {
+        if(yytext[spaces]=='\t') column+=4;
+        else column++;
+        spaces++;
+    }
+    if(column>indent[top]) {
+        indent[++top]=column;
+        return INDENT;
+    }
+    else
+    {
+        while(column<indent[top]) {
+            top--;
+            if(column!=indent[top]) {
+                printf("IndentationError: unindent does not match any outer indentation level\n");
+                exit(1);
+            }
+            return DEDENT;
+        }
+    }
+}
+
+
 {COMMENT}                   {yyval.tokenname=yytext; line=yylineno; return TYPE_COMMENT;}
 {NEWLINE}                   {yyval.tokenname=yytext; line=yylineno; return NEWLINE;}
 {WHITESPACE}           
