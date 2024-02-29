@@ -7,15 +7,18 @@
   extern int yylex();
   extern int yylineno;
   extern char* yytext;
+  int line = 0;
 %}
 
 /* 
   %token ',' ';' ':' '=' '(' ')' '[' ']' '+' '-' '~' '*' '/' '%' 
 */
-%token PLUSEQUAL MINEQUAL STAREQUAL SLASHEQUAL PERCENTEQUAL AMPEREQUAL VBAREQUAL CIRCUMFLEXEQUAL LEFTSHIFTEQUAL
-%token RIGHTSHIFTEQUAL DOUBLESTAREQUAL DOUBLESLASHEQUAL DOUBLESLASH DOUBLESTAR NUMBER STRING NONE TRUE FALSE
-%token NEWLINE ARROW DEF NAME BREAK CONTINUE RETURN GLOBAL ASSERT IF WHILE FOR ELSE ELIF 
-%token AND OR NOT LESSTHAN GREATERTHAN DOUBLEEQUAL GREATERTHANEQUAL LESSTHANEQUAL NOTEQUAL IN NOT IS
+
+%union {char* tokenname;}
+%token<tokenname> PLUSEQUAL MINEQUAL STAREQUAL SLASHEQUAL PERCENTEQUAL AMPEREQUAL VBAREQUAL CIRCUMFLEXEQUAL LEFTSHIFTEQUAL
+%token<tokenname> RIGHTSHIFTEQUAL DOUBLESTAREQUAL DOUBLESLASHEQUAL DOUBLESLASH DOUBLESTAR NUMBER STRING NONE TRUE FALSE
+%token<tokenname> NEWLINE ARROW DEF NAME BREAK CONTINUE RETURN GLOBAL ASSERT IF WHILE FOR ELSE ELIF INDENT DEDENT
+%token<tokenname> AND OR NOT LESSTHAN GREATERTHAN DOUBLEEQUAL GREATERTHANEQUAL LESSTHANEQUAL NOTEQUAL IN IS LEFTSHIFT RIGHTSHIFT CLASS
 
 %%
 
@@ -115,7 +118,7 @@ small_stmt:
 ;
 
 expr_stmt:
-  testlist_star_expr expr_stmt_suffix_choices:
+  testlist_star_expr expr_stmt_suffix_choices
 ;
 
 expr_stmt_suffix_choices:
@@ -162,7 +165,7 @@ augassign:
 | DOUBLESLASHEQUAL
 ;
 
-# For normal and annotated assignments, additional restrictions enforced by the interpreter
+/* For normal and annotated assignments, additional restrictions enforced by the interpreter*/
 
 flow_stmt:
   break_stmt 
@@ -234,9 +237,16 @@ elif_test_colon_suite_list:
 | elif_test_colon_suite_list ELIF test ':' suite
 ;
 
-# NB compile.c makes sure that the default except clause is last
+/* NB compile.c makes sure that the default except clause is last*/
 
-suite: simple_stmt | NEWLINE INDENT stmt+ DEDENT
+suite:
+  simple_stmt | NEWLINE INDENT stmt stmt_list DEDENT
+;
+
+stmt_list:
+  %empty
+| stmt_list stmt
+;
 
 test: 
   or_test if_or_test_else_test_opt
@@ -283,8 +293,9 @@ comp_op_expr_list:
 | comp_op_expr_list comp_op expr
 ;
 
-# <> isn't actually a valid comparison operator in Python. It's here for the
-# sake of a __future__ import described in PEP 401 (which really works :-)
+/* <> isn't actually a valid comparison operator in Python. It's here for the
+   sake of a __future__ import described in PEP 401 (which really works :-)
+*/
 comp_op:
   LESSTHAN
 | GREATERTHAN
@@ -394,7 +405,12 @@ doublestar_factor_opt:
 ;
 
 atom_expr:
-  atom trailer*
+  atom trailer trailer_list
+;
+
+trailer_list:
+  %empty
+| trailer_list trailer
 ;
 
 atom:
@@ -507,15 +523,15 @@ comma_argument_list:
 | comma_argument_list ',' argument
 ;
 
-# The reason that keywords are test nodes instead of NAME is that using NAME
-# results in an ambiguity. ast.c makes sure it's a NAME.
-# "test '=' test" is really "keyword '=' test", but we have no such token.
-# These need to be in a single rule to avoid grammar that is ambiguous
-# to our LL(1) parser. Even though 'test' includes '*expr' in star_expr,
-# we explicitly match '*' here, too, to give it proper precedence.
-# Illegal combinations and orderings are blocked in ast.c:
-# multiple (test comp_for) arguments are blocked; keyword unpackings
-# that precede iterable unpackings are blocked; etc.
+/* The reason that keywords are test nodes instead of NAME is that using NAME */
+/* results in an ambiguity. ast.c makes sure it's a NAME.*/
+/* "test '=' test" is really "keyword '=' test", but we have no such token.*/
+/* These need to be in a single rule to avoid grammar that is ambiguous*/
+/* to our LL(1) parser. Even though 'test' includes '*expr' in star_expr,*/
+/* we explicitly match '*' here, too, to give it proper precedence.*/
+/* Illegal combinations and orderings are blocked in ast.c:*/
+/* multiple (test comp_for) arguments are blocked; keyword unpackings*/
+/* that precede iterable unpackings are blocked; etc.*/
 
 argument:
   test comp_for_opt
@@ -547,14 +563,14 @@ comp_iter_opt:
 | comp_iter
 ;
 
-# not used in grammar, but may appear in "node" passed from Parser to Compiler
+/* not used in grammar, but may appear in "node" passed from Parser to Compiler */
 encoding_decl: NAME
 
 
 %%
 
 void yyerror(const char* s) {
-  fprintf(stderr, "Parse error: %s at line number %d\n", s, line_number);
+  fprintf(stderr, "Parse error: %s at line number %d\n", s, line);
   exit(1);
 }
 
