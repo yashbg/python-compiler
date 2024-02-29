@@ -44,12 +44,8 @@ simple_stmt:
 | type_alias
 | star_expressions
 | return_stmt
-| raise_stmt
-| assert_stmt
 | BREAK
 | CONTINUE
-| global_stmt
-| nonlocal_stmt
 ;
 
 compound_stmt:
@@ -115,32 +111,11 @@ star_expressions_opt:
 | star_expressions
 ;
 
-raise_stmt:
-  RAISE
-| RAISE expression from_expr_opt
-;
-
 from_expr_opt:
   %empty
 | FROM expression
 ;
 
-global_stmt:
-  GLOBAL NAME name_list
-;
-
-nonlocal_stmt:
-  NONLOCAL NAME name_list
-;
-
-name_list:
-  %empty
-| name_list ',' NAME
-;
-
-assert_stmt:
-  ASSERT expression comma_expr_opt
-;
 
 comma_expr_opt:
   %empty
@@ -213,7 +188,6 @@ arrow_expr_opt:
   %empty
 | ARROW expression 
 ;
-
 
 params_opt:
   %empty
