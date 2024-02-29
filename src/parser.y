@@ -202,7 +202,7 @@ function_def:
 ;
 
 function_def_raw:
-  DEF NAME type_params_opt '(' params_opt ')' arrow_expr_opt ':' func_type_comment_opt block
+  DEF NAME type_params_opt '(' params_opt ')' arrow_expr_opt ':' block
 ;
 
 /*
@@ -214,10 +214,6 @@ arrow_expr_opt:
 | ARROW expression 
 ;
 
-func_type_comment_opt:
-  %empty
-| func_type_comment
-;
 
 params_opt:
   %empty
@@ -805,26 +801,6 @@ t_lookahead:
 
 /* TYPING ELEMENTS */
 /* --------------- */
-
-/* type_expressions allow */** but ignore them */
-type_expressions:
-  expression comma_expr_list ',' '*' expression ',' DOUBLESTAR expression
-| expression comma_expr_list ',' '*' expression
-| expression comma_expr_list ',' DOUBLESTAR expression
-| '*' expression ',' DOUBLESTAR expression
-| '*' expression
-| DOUBLESTAR expression
-| expression comma_expr_list
-;
-
-func_type_comment:
-  NEWLINE TYPE_COMMENT   /* Must be followed by indented block */
-| TYPE_COMMENT
-;
-
-/* ========================= END OF THE GRAMMAR =========================== */
-
-
 
 /* ========================= START OF INVALID RULES ======================= */
 
