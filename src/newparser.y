@@ -1,4 +1,12 @@
 %{
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+  extern FILE *yyin;
+  void yyerror(const char *);
+  extern int yylex();
+  extern int yylineno;
+  extern char* yytext;
 %}
 
 /* 
