@@ -3,23 +3,6 @@
 
 %%
 
-# Grammar for Python
-
-# NOTE WELL: You should also follow all the steps listed at
-# https://devguide.python.org/grammar/
-
-# Start symbols for the grammar:
-#       single_input is a single interactive statement;
-#       file_input is a module or sequence of commands read from an input file;
-#       eval_input is the input for the eval() functions.
-# NB: compound_stmt in single_input is followed by extra NEWLINE!
-
-single_input:
-  NEWLINE
-| simple_stmt
-| compound_stmt NEWLINE
-;
-
 file_input:
   newline_or_stmt_list NEWLINE
 ;
@@ -35,7 +18,7 @@ newline_or_stmt_list:
 ;
 
 /*
-   ARROW : '->'
+  ARROW : '->'
 */
 
 funcdef:
@@ -553,3 +536,28 @@ encoding_decl: NAME
 
 
 %%
+
+void yyerror(const char* s) {
+  fprintf(stderr, "Parse error: %s at line number %d\n", s, line_number);
+  exit(1);
+}
+
+int main(int argc, char** argv) {
+  if (argc < 2) {
+    fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
+    return 1;
+  }
+
+  FILE* input_file = fopen(argv[1], "r");
+  if(!input_file) {
+    perror("Error opening file");
+    return 1;
+  }
+
+  yyin = input_file;
+  yyparse();
+
+  fclose(input_file);
+
+  return 0;
+}
