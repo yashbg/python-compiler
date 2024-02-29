@@ -170,12 +170,12 @@ yield                      {yyval.tokenname=yytext; line=yylineno; return YIELD;
     {
         while(column<indent[top]) {
             top--;
+            return DEDENT;   //change this if single and multiple DDEDENT different
+        }
             if(column!=indent[top]) {
                 printf("IndentationError: unindent does not match any outer indentation level\n");
                 exit(1);
             }
-            return DEDENT;
-        }
     }
 }
 
