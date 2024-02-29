@@ -46,6 +46,7 @@ simple_stmt:
 | return_stmt
 | BREAK
 | CONTINUE
+| global_stmt
 ;
 
 compound_stmt:
@@ -106,16 +107,19 @@ return_stmt:
   RETURN star_expressions_opt
 ;
 
+global_stmt:
+  GLOBAL NAME comma_name_list
+;
+
+comma_name_list:
+  %empty
+| comma_name_list ',' NAME
+;
+
 star_expressions_opt:
   %empty
 | star_expressions
 ;
-
-from_expr_opt:
-  %empty
-| FROM expression
-;
-
 
 comma_expr_opt:
   %empty
@@ -126,11 +130,6 @@ comma_opt:
   %empty
 | ','
 ;
-
-as_NAME_opt:
-  %empty
-| AS NAME
-; 
 
 /* COMPOUND STATEMENTS */
 /* =================== */
@@ -360,7 +359,7 @@ while_stmt:
 /* ------------- */
 
 for_stmt:
-  FOR star_targets IN star_expressions ':' TYPE_COMMENT_opt block else_block_opt /*---- ~ used here -------*/
+  FOR star_targets IN star_expressions ':' TYPE_COMMENT_opt block else_block_opt
 ;
 
 /* With statement */
@@ -382,10 +381,6 @@ star_named_expressions_opt:
 
 /* Type statement */
 /* --------------- */
-
-type_alias:
-  TYPE NAME type_params_opt '=' expression
-;
 
 /* Type parameter declaration */
 /* -------------------------- */
@@ -653,19 +648,15 @@ atom:
 | list
 ;
 
-
 group:
   '(' named_expression ')'
 ;
 
-
 /* Lambda functions */
 /* ---------------- */
 
-
 /* LITERALS */
 /* ======== */
-
 
 string: 
   STRING
