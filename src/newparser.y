@@ -11,7 +11,7 @@
 %}
 
 /* 
-  %token ',' ';' ':' '=' '(' ')' '[' ']' '+' '-' '~' '*' '/' '%' 
+  %token ',' ';' ':' '(' ')' '[' ']' '=' '+' '-' '~' '*' '/' '%' '^' '&' '|' 
 */
 
 %union {char* tokenname;}
@@ -66,11 +66,6 @@ tfpdef:
   NAME colon_test_opt
 ;
 
-tfpdef_opt:
-  %empty
-| tfpdef
-;
-
 comma_opt:
   %empty
 | ','
@@ -94,6 +89,7 @@ colon_test_opt:
 stmt:
   simple_stmt
 | compound_stmt
+| NEWLINE
 ;
 
 semicolon_opt:
@@ -241,6 +237,11 @@ elif_test_colon_suite_list:
 
 suite:
   simple_stmt | NEWLINE INDENT stmt stmt_list DEDENT
+;
+
+NEWLINE_list:
+  %empty
+| NEWLINE_list NEWLINE
 ;
 
 stmt_list:
@@ -405,7 +406,7 @@ doublestar_factor_opt:
 ;
 
 atom_expr:
-  atom trailer trailer_list
+  atom trailer_list
 ;
 
 trailer_list:
@@ -465,21 +466,12 @@ comma_subscript_list:
 
 subscript:
   test
-| test_opt ':' test_opt sliceop_opt
-;
-
-sliceop:
-  ':' test_opt
+| test_opt ':' test_opt
 ;
 
 test_opt: 
   %empty
 | test
-;
-
-sliceop_opt:
-  %empty
-| sliceop
 ;
 
 exprlist:
@@ -564,7 +556,9 @@ comp_iter_opt:
 ;
 
 /* not used in grammar, but may appear in "node" passed from Parser to Compiler */
+/*
 encoding_decl: NAME
+*/
 
 
 %%
