@@ -94,6 +94,40 @@ OTHER               .
     }
 }
 
+^[\n\t ]+ {
+    int spaces=0;
+    if(top==0) indent[top]=0;
+    column=0;
+    while(isspace(yytext[spaces])) {
+        if(yytext[spaces]=='\t') column+=4;
+        else if(yytext[spaces]=='\n') column=0;
+        else column++;
+        spaces++;
+    }
+    printf("\ncolumn = %d, top = %d, indent[top] = %d\n", column, top, indent[top]);
+    if(column>indent[top]) {
+        indent[++top]=column;
+        printf("INDENT\n");
+        return INDENT;
+    }
+    else
+    {
+        while(column<indent[top]) {
+            top--;
+            printf("DEDENT\n");
+            /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
+            return DEDENT;
+        }
+        if(column!=indent[top]) {
+            printf("IndentationError: unindent does not match any outer indentation level\n");
+            exit(1);
+        }
+    }
+}
+
+
+
+
 False                      {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return FALSE;}
 else                       {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ELSE;}
 None                       {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return NONE;}
