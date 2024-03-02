@@ -104,7 +104,7 @@ OTHER               .
         else column++;
         spaces++;
     }
-    printf("\ncolumn = %d, top = %d, indent[top] = %d\n", column, top, indent[top]);
+    //printf("\ncolumn = %d, top = %d, indent[top] = %d\n", column, top, indent[top]);
     if(column>indent[top]) {
         indent[++top]=column;
         printf("INDENT\n");
@@ -120,7 +120,7 @@ OTHER               .
         }
         if(column!=indent[top]) {
             printf("IndentationError: unindent does not match any outer indentation level\n");
-            exit(1);
+            //exit(1);
         }
     }
 }
