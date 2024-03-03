@@ -1,25 +1,19 @@
-%option C++ noyywrap
+%option noyywrap
 %option yylineno
 
 %{
     #include <stdio.h>
     #include <string>
-    // #define YY_DECL int yylex()
-    // #include "newparser.tab.h"
+    #include "newparser.tab.h"
     #include <bits/stdc++.h>
+    #define YY_DECL int yylex()
+    YY_DECL
     using namespace std;
-    // extern int line;
-    extern FILE* yyin;
-extern int yylex();
+    extern int line;
+    int line_join = 0;
     int column;
     int indent[100];
     int top=0;
-    int line_join=0;
-    // FSTRING_START MIDDLE END - ignore
-    // NAME - done
-    // TYPE_COMMENT - done
-    // STRING - done 
-    // INDENT DEDENT - done
 %}
 
 DIGIT               [0-9]
@@ -44,8 +38,8 @@ LETTER              [_a-zA-Z]
 WHITESPACE          " "|"\f"
 NEWLINE             "\n"
 KEYWORD             "False"|"await"|"else"|"import"|"pass"|"None"|"break"|"except"| "in"|"raise"|"True"|"class"|"finally"|"is"|"return"|"and"|"continue"|"for"|"lambda"|"try" |"as"|"def"|"from"|"nonlocal"|"while"|"assert"|"del"|"global"|"not"|"with"|"async"|"elif"|"if"|"or"|"yield"
-DELIMITERS          "("|")"|"["|"]"|"{"|"}"|","|":"|"."|";"|"@"|"="|"->"|"+="|"-="|"*="|"/="|"//="|"%="|"@="|"&="|"|="|"^="|">>="|"<<="|"**="
-OPERATORS           "+"|"-"|"*"|"**"|"/"|"//"|"%"|"@"|"<<"|">>"|"&"|"|"|"^"|"~"|":="|"<"|">"|"<="|">="|"=="|"!="
+DELIMITERS          "("|")"|"["|"]"|","|":"|"."|";"|"="|"->"|"+="|"-="|"*="|"/="|"//="|"%="|"&="|"|="|"^="|">>="|"<<="|"**="
+OPERATORS           "+"|"-"|"*"|"**"|"/"|"//"|"%"|"<<"|">>"|"&"|"|"|"^"|"~"|"<"|">"|"<="|">="|"=="|"!="
 NAME                {LETTER}({LETTER}|{DIGIT})*
 
 STRING_PREFIX       "r"|"u"|"R"|"U"|"f"|"F"|("fr"|"Fr"|"fR"|"FR"|"rf"|"rF"|"Rf"|"RF")
@@ -62,93 +56,44 @@ OTHER               .
 
 %%
 
-\\[\n][\t ]* {
-    /*----Explicit Line Joining------*/
-}
-
-False                      { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return FALSE; }
-else                       { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return ELSE; }
-None                       { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return NONE; }
-break                      { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return BREAK; }
-in                         { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return IN; }
-True                       { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return TRUE; }
-class                      { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return CLASS; }
-is                         { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return IS; }
-return                     { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return RETURN; }
-and                        { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return AND; }
-continue                   { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return CONTINUE; }
-for                        { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return FOR; }
-def                        { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return DEF; }
-while                      { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return WHILE; }
-assert                     { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return ASSERT; }
-global                     { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return GLOBAL; }
-not                        { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return NOT; }
-elif                       { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return ELIF; }
-if                         { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return IF; }
-or                         { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return OR; }
-
-
-
-"+="                    {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return PLUSEQUAL;}
-"-="                    {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return MINEQUAL;}
-"*="                    {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return STAREQUAL;}
-"/="                    {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return SLASHEQUAL;}
-"%="                    {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return PERCENTEQUAL;}
-"&="                    {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return AMPEREQUAL;}
-"|="                    {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return VBAREQUAL;}
-"^="                    {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return CIRCUMFLEXEQUAL;}
-"<<="                   {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return LEFTSHIFTEQUAL;}
-">>="                   {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return RIGHTSHIFTEQUAL;}
-"**="                   {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DOUBLESTAREQUAL;}
-"//="                   {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DOUBLESLASHEQUAL;}
-"("                     {line_join=1; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '(';}
-")"                     {line_join=0; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ')';}
-"["                     {line_join=1; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '[';}
-"]"                     {line_join=0; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ']';}
-"{"                     {line_join=1; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '{';}
-"}"                     {line_join=0; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '}';}
-","                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ',';}
-":"                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ':';}
-"."                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '.';}
-";"                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ';';}
-"="                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '=';}
-"->"                    {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ARROW;}
-
-
-"+"             {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '+';}
-"-"             {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '-';}
-"*"             {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '*';}
-"/"             {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '/';}
-"%"             {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '%';}
-"|"             {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '|';}
-"&"             {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '&';}
-"~"             {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '~';}
-"^"             {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '^';}
-"<"             {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return LESSTHAN;}
-"<="            {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return LESSTHANEQUAL;}
-">"             {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return GREATERTHAN;}
-">="            {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return GREATERTHANEQUAL;}
-">>"            {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return RIGHTSHIFT;}
-"<<"            {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return LEFTSHIFT;}
-"//"            {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DOUBLESLASH;}
-"**"            {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DOUBLESTAR;}
-"=="            {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DOUBLEEQUAL;}
-"!="            {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return NOTEQUAL;}
-
-
-{INTEGER}                           { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return NUMBER }
-{FLOAT_NUMBER}                      { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return NUMBER}
-{IMAGINARY}                         { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return NUMBER}
-{BYTE_STRING}                       
-{STRING}                            { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return STRING;}
-{NAME}                              { yylval.tokenname=yytext; line=yylineno; printf("%s\n",yytext); return NAME;}
-
-
-^[\t ]* {
-    if(line_join==1){
-        REJECT;
+int yylex(){
+    int currtoken = scanner;
+    int currcolumn = yylloc.first_line;
+    int remIndent = currcolumn - indent[top];
+    if(remIndent > 0){
+        indent[top] = currcolumn;
+        top++;
+        printf("INDENT\n");
+        return INDENT;
+    }
+    else if(remIndent < 0){
+        top--;
+        printf("DEDENT\n");
+        /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
+        return DEDENT;
+        if(column!=indent[top]) {
+            printf("IndentationError: unindent does not match any outer indentation level\n");
+            //exit(1);
+        }
     }
     else{
+        
+    }
+}
+
+<<EOF>> {
+            while(indent[top] != 0) {
+                top--;
+                printf("DEDENT\n");
+                return DEDENT;
+            }
+            exit(1);
+        }
+
+^[\t ]* {
+    if(line_join == 1) {
+        REJECT;
+    }
     int spaces=0;
     if(top==0) indent[top]=0;
     column=0;
@@ -157,102 +102,165 @@ or                         { yylval.tokenname=yytext; line=yylineno; printf("%s\
         else column++;
         spaces++;
     }
-    if(column>indent[top])
-    while(column>indent[top]) {
-        indent[top+1]=indent[top]+2;
+    //printf("\ncolumn = %d, top = %d, indent[top] = %d\n", column, top, indent[top]);
+    if(column>indent[top]){
+        indent[top+1] = column;
         top++;
-        printf("-------column--------%d\n",column);
-        printf("INDENT\n"); 
-    }
+        printf("INDENT\n");
+        return INDENT;
+    } 
     else
     {
         while(column<indent[top]) {
             top--;
-            printf("--------------indent top----------%d\n",indent[top]);
-            
-            printf("DEDENT\n"); 
+            printf("DEDENT\n");
+            /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
+            return DEDENT;
         }
         if(column!=indent[top]) {
-                printf("IndentationError: unindent does not match any outer indentation level\n");
-                // exit(1);
-            }
-    }
+            printf("IndentationError: unindent does not match any outer indentation level\n");
+            //exit(1);
+        }
     }
 }
 
-^[^\n\t]+ {
-    if(line_join==1){
+^[\n\t ]+ {
+    if(line_join == 1) {
         REJECT;
     }
-    else {
-    // printf("Newline match\n");
     int spaces=0;
     if(top==0) indent[top]=0;
     column=0;
-    while(isspace(yytext[spaces]) || yytext[spaces]=='\t' || yytext[spaces]=='\n') {
+    while(isspace(yytext[spaces])) {
         if(yytext[spaces]=='\t') column+=2;
         else if(yytext[spaces]=='\n') column=0;
         else column++;
         spaces++;
     }
+    //printf("\ncolumn = %d, top = %d, indent[top] = %d\n", column, top, indent[top]);
     if(column>indent[top]){
-        while(column>indent[top]) {
-            indent[top+1]=indent[top]+2;
-            top++;
-            printf("-------column--------%d\n",column);
-            printf("INDENT\n"); 
+        indent[top+1] = column;
+        top++;
+        printf("INDENT\n");
+        return INDENT;
+    } 
+    else
+    {
+        while(column<indent[top]) {
+            top--;
+            printf("DEDENT\n");
+            /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
+            return DEDENT;
         }
-        REJECT;
-    }
-        else
-        {
-            while(column<indent[top]) {
-                top--;
-                printf("--------------indent top----------%d\n",indent[top]);
-                
-                printf("DEDENT\n"); 
-            }
-            REJECT;
-            if(column!=indent[top]) {
-                    printf("IndentationError: unindent does not match any outer indentation level\n");
-                    // exit(1);
-                }
+        if(column!=indent[top]) {
+            printf("IndentationError: unindent does not match any outer indentation level\n");
+            //exit(1);
         }
     }
 }
 
+\\[\n][\t ]* {
+    /*----Explicit Line Joining------*/
+}
+
+False                      { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return FALSE;}
+else                       { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ELSE;}
+None                       { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return NONE;}
+break                      { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return BREAK;}
+in                         { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return IN;}
+True                       { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return TRUE;}
+class                      { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return CLASS;}
+is                         { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return IS;}
+return                     { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return RETURN;}
+and                        { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return AND;}
+continue                   { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return CONTINUE;}
+for                        { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return FOR;}
+def                        { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DEF;}
+while                      { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return WHILE;}
+assert                     { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ASSERT;}
+global                     { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return GLOBAL;}
+not                        { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return NOT;}
+elif                       { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ELIF;}
+if                         { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return IF;}
+or                         { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return OR;}
+
+
+"+="                    { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return PLUSEQUAL;}
+"-="                    { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return MINEQUAL;}
+"*="                    { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return STAREQUAL;}
+"/="                    { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return SLASHEQUAL;}
+"%="                    { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return PERCENTEQUAL;}
+"&="                    { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return AMPEREQUAL;}
+"|="                    { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return VBAREQUAL;}
+"^="                    { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return CIRCUMFLEXEQUAL;}
+"<<="                   { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return LEFTSHIFTEQUAL;}
+">>="                   { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return RIGHTSHIFTEQUAL;}
+"**="                   { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DOUBLESTAREQUAL;}
+"//="                   { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DOUBLESLASHEQUAL;}
+"("                     { line_join = 1; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '(';}
+")"                     { line_join = 0; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ')';}
+"["                     { line_join = 1; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '[';}
+"]"                     { line_join = 0; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ']';}
+","                     { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ',';}
+":"                     { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ':';}
+"."                     { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '.';}
+";"                     { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ';';}
+"="                     { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '=';}
+"->"                    { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ARROW;}
+
+
+"+"             { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '+';}
+"-"             { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '-';}
+"*"             { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '*';}
+"/"             { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '/';}
+"%"             { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '%';}
+"|"             { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '|';}
+"&"             { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '&';}
+"~"             { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '~';}
+"^"             { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '^';}
+"<"             { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return LESSTHAN;}
+"<="            { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return LESSTHANEQUAL;}
+">"             { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return GREATERTHAN;}
+">="            { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return GREATERTHANEQUAL;}
+">>"            { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return RIGHTSHIFT;}
+"<<"            { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return LEFTSHIFT;}
+"//"            { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DOUBLESLASH;}
+"**"            { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DOUBLESTAR;}
+"=="            { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DOUBLEEQUAL;}
+"!="            { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return NOTEQUAL;}
+
+{INTEGER}                           { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return NUMBER;}
+{FLOAT_NUMBER}                      { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return NUMBER;}
+{IMAGINARY}                         { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return NUMBER;}
+{BYTE_STRING}                       {}
+{STRING}                            { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return STRING;}
+{NAME}                              { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return NAME;}
+
 
 {COMMENT}                   
-{NEWLINE}                   { yylval.tokenname=yytext; line=yylineno; printf("Newline\n"); return NEWLINE;}
+{NEWLINE}                   { yylval.tokenname=yytext; line=yylineno; printf("NEWLINE\n"); return NEWLINE;}
 {WHITESPACE}           
-{OTHER}  
-
-
-                    
+{OTHER}                     {printf("Invalid character %s found at line number %d\n", yytext, line); exit(1);}
 
 %%
-// int main(int argc, char *argv[]) {
-//     if (argc != 2) {
-//         printf("Usage: %s input_file\n", argv[0]);
-//         return 1;
-//     }
 
-//     FILE* inputFile = fopen(argv[1], "r");
-//     if (!inputFile) {    
-//         perror("Error opening file");
-//         return 1;
-//     }
+/*
+int main(int argc, char **argv) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
+        return 1;
+    }
 
-//     yyin = inputFile;  // Set Flex to read from the input file
+    FILE *file = fopen(argv[1], "r");
+    if (!file) {
+        perror("Error opening file");
+        return 1;
+    }
 
-//     // Call the Flex-generated scanner
-//     yylex();
+    yyin = file;
+    yylex();
 
-//     fclose(inputFile);
-//     return 0;
-// }
-
-
-
-
-
+    fclose(file);
+    return 0;
+}
+*/
