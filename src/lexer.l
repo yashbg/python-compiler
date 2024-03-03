@@ -56,31 +56,6 @@ OTHER               .
 
 %%
 
-int yylex(){
-    int currtoken = scanner;
-    int currcolumn = yylloc.first_line;
-    int remIndent = currcolumn - indent[top];
-    if(remIndent > 0){
-        indent[top] = currcolumn;
-        top++;
-        printf("INDENT\n");
-        return INDENT;
-    }
-    else if(remIndent < 0){
-        top--;
-        printf("DEDENT\n");
-        /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
-        return DEDENT;
-        if(column!=indent[top]) {
-            printf("IndentationError: unindent does not match any outer indentation level\n");
-            //exit(1);
-        }
-    }
-    else{
-        
-    }
-}
-
 <<EOF>> {
             while(indent[top] != 0) {
                 top--;
