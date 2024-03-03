@@ -56,9 +56,15 @@ OTHER               .
 
     while(column<indent[top]) {
         top--;
-        printf("DEDENT\n");
+        if(column > indent[top]) {
+            printf("Indentation Error\n");
+            exit(1);
+        }
         /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
-        return DEDENT;
+        else {
+            printf("DEDENT\n");
+            return DEDENT;
+        }
     }
 
 <<EOF>> {
@@ -75,33 +81,41 @@ OTHER               .
     if(line_join == 1) {
         REJECT;
     }
-    int spaces=0;
-    if(top==0) indent[top]=0;
-    column=0;
-    while(isspace(yytext[spaces])) {
-        if(yytext[spaces]=='\t') column+=2;
-        else if(yytext[spaces]=='\n') column=0;
-        else column++;
-        spaces++;
-    }
-    //printf("\ncolumn = %d, top = %d, indent[top] = %d\n", column, top, indent[top]);
-    if(column>indent[top]){
-        indent[top+1] = column;
-        top++;
-        printf("INDENT\n");
-        return INDENT;
-    } 
-    else
-    {
-        while(column<indent[top]) {
-            top--;
-            printf("DEDENT\n");
-            /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
-            return DEDENT;
+    else{
+        int spaces=0;
+        if(top==0) indent[top]=0;
+        column=0;
+        while(isspace(yytext[spaces])) {
+            if(yytext[spaces]=='\t') column+=2;
+            else if(yytext[spaces]=='\n') column=0;
+            else column++;
+            spaces++;
         }
-        if(column!=indent[top]) {
-            printf("IndentationError: unindent does not match any outer indentation level\n");
-            //exit(1);
+        //printf("\ncolumn = %d, top = %d, indent[top] = %d\n", column, top, indent[top]);
+        if(column>indent[top]){
+            indent[top+1] = column;
+            top++;
+            printf("INDENT\n");
+            return INDENT;
+        } 
+        else
+        {
+            while(column<indent[top]) {
+                top--;
+                /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
+                if(column > indent[top]) {
+                    printf("Indentation Error\n");
+                    exit(1);
+                }
+                else {
+                    return DEDENT;
+                    printf("DEDENT\n");
+                }
+            }
+            if(column!=indent[top]) {
+                printf("IndentationError: unindent does not match any outer indentation level\n");
+                //exit(1);
+            }
         }
     }
 }
@@ -185,7 +199,12 @@ or                         { yylval.tokenname=yytext; line=yylineno; printf("%s\
 
 
 {COMMENT}                   
-{NEWLINE}                   { if(line_join == 1) REJECT; yylval.tokenname=yytext; line=yylineno; printf("NEWLINE\n"); return NEWLINE;}
+{NEWLINE}                   { 
+                                if(line_join == 1);
+                                else{
+                                    yylval.tokenname=yytext; line=yylineno; printf("NEWLINE\n"); return NEWLINE;
+                                    }
+                                }
 {WHITESPACE}           
 {OTHER}                     {printf("Invalid character %s found at line number %d\n", yytext, line); exit(1);}
 
