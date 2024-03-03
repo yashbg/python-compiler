@@ -129,8 +129,9 @@ OTHER               .
     }
 }
 
-
-
+\\[\n][\t ]* {
+    /*----Explicit Line Joining------*/
+}
 
 False                      {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return FALSE;}
 else                       {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ELSE;}
