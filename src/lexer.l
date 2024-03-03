@@ -1,4 +1,4 @@
-%option noyywrap
+%option C++ noyywrap
 %option yylineno
 
 %{
