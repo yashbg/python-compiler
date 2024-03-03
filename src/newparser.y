@@ -7,7 +7,7 @@
   extern int yylex();
   extern int yylineno;
   extern char* yytext;
-  int line = 0;
+  int line = 1;
 %}
 
 

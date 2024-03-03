@@ -53,14 +53,13 @@ OTHER               .
 
 
 %%
-
+    indent[0]=0;
     while(column<indent[top]) {
         top--;
         if(column > indent[top]) {
-            printf("Indentation Error\n");
+            printf("Indentation Error at line number %d\n", line);
             exit(1);
         }
-        /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
         else {
             printf("DEDENT\n");
             return DEDENT;
@@ -77,6 +76,7 @@ OTHER               .
         }
 
 
+
 ^[\n\t ]+ {
     if(line_join == 1) {
         REJECT;
@@ -91,7 +91,6 @@ OTHER               .
             else column++;
             spaces++;
         }
-        //printf("\ncolumn = %d, top = %d, indent[top] = %d\n", column, top, indent[top]);
         if(column>indent[top]){
             indent[top+1] = column;
             top++;
@@ -102,19 +101,18 @@ OTHER               .
         {
             while(column<indent[top]) {
                 top--;
-                /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
                 if(column > indent[top]) {
-                    printf("Indentation Error\n");
+                    printf("Indentation Error at line number %d\n", line);
                     exit(1);
                 }
                 else {
-                    return DEDENT;
                     printf("DEDENT\n");
+                    return DEDENT;
                 }
             }
             if(column!=indent[top]) {
-                printf("IndentationError: unindent does not match any outer indentation level\n");
-                //exit(1);
+                printf("IndentationError: unindent does not match any outer indentation level at line number %d\n", line);
+                exit(1);
             }
         }
     }
