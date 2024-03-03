@@ -12,6 +12,7 @@
     int column;
     int indent[100];
     int top=0;
+    int dedentsToBeReturned = 0;
 %}
 
 DIGIT               [0-9]
@@ -54,16 +55,10 @@ OTHER               .
 
 %%
     indent[0]=0;
-    while(column<indent[top]) {
-        top--;
-        if(column > indent[top]) {
-            printf("Indentation Error at line number %d\n", line);
-            exit(1);
-        }
-        else {
-            printf("DEDENT\n");
-            return DEDENT;
-        }
+    if(dedentsToBeReturned > 0){
+        dedentsToBeReturned--;
+        printf("DEDENT\n");
+        return DEDENT;
     }
 
 <<EOF>> {
@@ -101,14 +96,7 @@ OTHER               .
         {
             while(column<indent[top]) {
                 top--;
-                if(column > indent[top]) {
-                    printf("Indentation Error at line number %d\n", line);
-                    exit(1);
-                }
-                else {
-                    printf("DEDENT\n");
-                    return DEDENT;
-                }
+                dedentsToBeReturned++;
             }
             if(column!=indent[top]) {
                 printf("IndentationError: unindent does not match any outer indentation level at line number %d\n", line);
