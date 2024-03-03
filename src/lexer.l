@@ -14,6 +14,7 @@ extern int yylex();
     int column;
     int indent[100];
     int top=0;
+    int line_join=0;
     // FSTRING_START MIDDLE END - ignore
     // NAME - done
     // TYPE_COMMENT - done
@@ -100,12 +101,12 @@ or                         { yylval.tokenname=yytext; line=yylineno; printf("%s\
 ">>="                   {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return RIGHTSHIFTEQUAL;}
 "**="                   {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DOUBLESTAREQUAL;}
 "//="                   {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return DOUBLESLASHEQUAL;}
-"("                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '(';}
-")"                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ')';}
-"["                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '[';}
-"]"                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ']';}
-"{"                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '{';}
-"}"                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '}';}
+"("                     {line_join=1; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '(';}
+")"                     {line_join=0; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ')';}
+"["                     {line_join=1; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '[';}
+"]"                     {line_join=0; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ']';}
+"{"                     {line_join=1; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '{';}
+"}"                     {line_join=0; yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '}';}
 ","                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ',';}
 ":"                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ':';}
 "."                     {yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return '.';}
@@ -144,6 +145,10 @@ or                         { yylval.tokenname=yytext; line=yylineno; printf("%s\
 
 
 ^[\t ]* {
+    if(line_join==1){
+        REJECT;
+    }
+    else{
     int spaces=0;
     if(top==0) indent[top]=0;
     column=0;
@@ -172,9 +177,14 @@ or                         { yylval.tokenname=yytext; line=yylineno; printf("%s\
                 // exit(1);
             }
     }
+    }
 }
 
 ^[^\n\t]+ {
+    if(line_join==1){
+        REJECT;
+    }
+    else {
     // printf("Newline match\n");
     int spaces=0;
     if(top==0) indent[top]=0;
@@ -208,6 +218,7 @@ or                         { yylval.tokenname=yytext; line=yylineno; printf("%s\
                     // exit(1);
                 }
         }
+    }
 }
 
 
