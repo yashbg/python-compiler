@@ -73,60 +73,66 @@ OTHER               .
         else column++;
         spaces++;
     }
-    //printf("\ncolumn = %d, top = %d, indent[top] = %d\n", column, top, indent[top]);
-    if(column>indent[top]) 
-    whlie(column>indent[top]) {
+    if(column>indent[top])
+    while(column>indent[top]) {
         indent[top+1]=indent[top]+2;
         top++;
-        printf("INDENT\n");
+        printf("-------column--------%d\n",column);
+        printf("INDENT\n"); 
         return INDENT;
     }
     else
     {
         while(column<indent[top]) {
             top--;
-            printf("DEDENT\n");
-            /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
+            printf("--------------indent top----------%d\n",indent[top]);
+            
+            printf("DEDENT\n"); 
             return DEDENT;
         }
         if(column!=indent[top]) {
-            printf("IndentationError: unindent does not match any outer indentation level\n");
-            //exit(1);
-        }
+                printf("IndentationError: unindent does not match any outer indentation level\n");
+                // exit(1);
+            }
     }
 }
 
-^[\n\t ]+ {
+^[^\n\t]+ {
+    // printf("Newline match\n");
     int spaces=0;
     if(top==0) indent[top]=0;
     column=0;
-    while(isspace(yytext[spaces])) {
+    while(isspace(yytext[spaces]) || yytext[spaces]=='\t' || yytext[spaces]=='\n') {
         if(yytext[spaces]=='\t') column+=2;
         else if(yytext[spaces]=='\n') column=0;
         else column++;
         spaces++;
     }
-    //printf("\ncolumn = %d, top = %d, indent[top] = %d\n", column, top, indent[top]);
-    if(column>indent[top]) 
-    while(column>indent[top]) {
-        indent[top+1]=indent[top]+2;
-        top++;
-        printf("INDENT\n");
-        return INDENT;
-    }
-    else
-    {
-        while(column<indent[top]) {
-            top--;
-            printf("DEDENT\n");
-            /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
-            return DEDENT;
+    if(column>indent[top]){
+        while(column>indent[top]) {
+            indent[top+1]=indent[top]+2;
+            top++;
+            printf("-------column--------%d\n",column);
+            printf("INDENT\n"); 
+            return INDENT;
         }
-        if(column!=indent[top]) {
-            printf("IndentationError: unindent does not match any outer indentation level\n");
-            //exit(1);
-        }
+        REJECT;
     }
+        else
+        {
+            while(column<indent[top]) {
+                top--;
+                printf("--------------indent top----------%d\n",indent[top]);
+                
+                printf("DEDENT\n");
+                return DEDENT; 
+            }
+            REJECT;
+            if(column!=indent[top]) {
+                    printf("IndentationError: unindent does not match any outer indentation level\n");
+                    // exit(1);
+                }
+        }
 }
 
 \\[\n][\t ]* {
