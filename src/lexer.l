@@ -211,7 +211,7 @@ or                         { yylval.tokenname=yytext; line=yylineno; printf("%s\
 
 
 {COMMENT}                   
-{NEWLINE}                   { yylval.tokenname=yytext; line=yylineno; printf("NEWLINE\n"); return NEWLINE;}
+{NEWLINE}                   { if(line_join == 1) REJECT; yylval.tokenname=yytext; line=yylineno; printf("NEWLINE\n"); return NEWLINE;}
 {WHITESPACE}           
 {OTHER}                     {printf("Invalid character %s found at line number %d\n", yytext, line); exit(1);}
 
