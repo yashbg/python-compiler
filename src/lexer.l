@@ -48,7 +48,7 @@ STRING_BODY         ({SHORT_STRING}|{LONG_STRING})
 BYTE_STRING         ({BYTE_STRING_PREFIX}{STRING_BODY})
 STRING              {STRING_PREFIX}?{STRING_BODY}
      
-COMMENT             "#"(.*\n)|(''')(.*\n)*(.*)(''')
+COMMENT             \#[^\n]*
 OTHER               .
 
 
