@@ -10,15 +10,13 @@
   int line = 0;
 %}
 
-/* 
-  %token ',' ';' ':' '(' ')' '[' ']' '=' '+' '-' '~' '*' '/' '%' '^' '&' '|' 
-*/
 
 %union {char* tokenname;}
 %token<tokenname> PLUSEQUAL MINEQUAL STAREQUAL SLASHEQUAL PERCENTEQUAL AMPEREQUAL VBAREQUAL CIRCUMFLEXEQUAL LEFTSHIFTEQUAL
 %token<tokenname> RIGHTSHIFTEQUAL DOUBLESTAREQUAL DOUBLESLASHEQUAL DOUBLESLASH DOUBLESTAR NUMBER STRING NONE TRUE FALSE
 %token<tokenname> NEWLINE ARROW DEF NAME BREAK CONTINUE RETURN GLOBAL ASSERT IF WHILE FOR ELSE ELIF INDENT DEDENT
 %token<tokenname> AND OR NOT LESSTHAN GREATERTHAN DOUBLEEQUAL GREATERTHANEQUAL LESSTHANEQUAL NOTEQUAL IN IS LEFTSHIFT RIGHTSHIFT CLASS
+%token<tokenname> ',' '.' ';' ':' '(' ')' '[' ']' '=' '+' '-' '~' '*' '/' '%' '^' '&' '|' 
 
 %%
 
@@ -89,7 +87,6 @@ colon_test_opt:
 stmt:
   simple_stmt
 | compound_stmt
-| NEWLINE
 ;
 
 semicolon_opt:
@@ -239,10 +236,12 @@ suite:
   simple_stmt | NEWLINE INDENT stmt stmt_list DEDENT
 ;
 
+/*
 NEWLINE_list:
   %empty
 | NEWLINE_list NEWLINE
 ;
+*/
 
 stmt_list:
   %empty
