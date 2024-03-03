@@ -54,6 +54,13 @@ OTHER               .
 
 %%
 
+    while(column<indent[top]) {
+        top--;
+        printf("DEDENT\n");
+        /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
+        return DEDENT;
+    }
+
 <<EOF>> {
             while(indent[top] != 0) {
                 top--;
