@@ -6,8 +6,6 @@
     #include <string>
     #include "newparser.tab.h"
     #include <bits/stdc++.h>
-    #define YY_DECL int yylex()
-    YY_DECL
     using namespace std;
     extern int line;
     int line_join = 0;
