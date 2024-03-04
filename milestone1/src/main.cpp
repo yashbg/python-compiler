@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
   }
 
   std::fstream outfile;
-  outfile.open("graph.dot", ios::out);
+  outfile.open("graph.dot", std::fstream::out);
   std::streambuf *coutbuf = std::cout.rdbuf();
   std::streambuf *outfilebuf = outfile.rdbuf();
 
@@ -72,5 +72,5 @@ int main(int argc, char *argv[]) {
     std::cout.rdbuf(outfilebuf);
   }
 
-  return system("dot -Tpdf graph.dot -o " + output_file);
+  return system(("dot -Tpdf graph.dot -o " + output_file).c_str());
 }
