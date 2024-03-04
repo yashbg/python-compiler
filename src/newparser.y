@@ -512,16 +512,63 @@ classdef:
 
 parenthesis_arglist_opt_opt:
   %empty
+  {
+    $$=NULL;
+  
+  }
 | '(' arglist_opt ')'
+{
+  node_map["()"]++;
+  string no=to_string(node_map["()"]);
+  string s="()"+no;
+  emit_dot_node(s, "()");
+  emit_dot_edge(s, $2);
+  strcpy($$, s);
+}
 ;
 
 arglist:
-  argument comma_argument_list  comma_opt
+  argument 
+  {
+    strcpy($$, $1);
+  }
+|  argument comma_argument_list  comma_opt
+{
+  if($3==NULL)
+    strcpy($$, $1);
+  else
+    {
+      node_map[","]++;
+      string no=to_string(node_map[","]);
+      string s=","+no;
+    emit_dot_node(s, ",");
+    emit_dot_edge(s, $1);
+    emit_dot_edge(s, $3);
+    strcpy($$, s);
+    }
+}
 ;
 
 comma_argument_list:
   %empty
+  {
+    $$=NULL;
+  }
 | comma_argument_list ',' argument
+{
+  if($3==NULL)
+    strcpy($$, $1);
+  else
+    {
+      node_map[","]++;
+      string no=to_string(node_map[","]);
+      string s=","+no;
+    emit_dot_node(s, ",");
+    emit_dot_edge(s, $1);
+    emit_dot_edge(s, $3);
+    strcpy($$, s);
+    }
+}
 ;
 
 /* The reason that keywords are test nodes instead of NAME is that using NAME */
@@ -536,9 +583,35 @@ comma_argument_list:
 
 argument:
   test comp_for_opt
+  {
+    if($2==NULL)
+      strcpy($$, $1);
+    else
+      {
+    emit_dot_node("argument", "Argument with Comprehension");
+    emit_dot_edge("argument", $1);
+    emit_dot_edge("argument", $2);
+    }
+  }
 | test '=' test
-| DOUBLESTAR test
+  {
+    node_map["="]++;
+    string no=to_string(node_map["="]);
+    string s=$2+no;
+    emit_dot_node(s, "=");
+    emit_dot_edge(s, $1);
+    emit_dot_edge(s, $3);
+    strcpy($$, s);
+  }
 | '*' test
+  {
+    node_map["*"]++;
+    string no=to_string(node_map["*"]);
+    string s="*"+no;
+    emit_dot_node(s, "*");
+    emit_dot_edge(s, $2);
+    strcpy($$, s);
+  }
 ;
 
 comp_for_opt:
