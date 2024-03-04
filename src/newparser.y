@@ -1,15 +1,21 @@
 %{
-  #include <stdio.h>
-  #include <stdlib.h>
-  #include <string.h>
-  extern FILE *yyin;
-  void yyerror(const char *);
-  extern int yylex();
-  extern int yylineno;
-  extern char* yytext;
-  int line = 1;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+extern FILE *yyin;
+void yyerror(const char *);
+extern int yylex();
+extern int yylineno;
+extern char* yytext;
+FILE *output_file;
+int line = 1;
+void emit_dot_node(FILE *output_file, const char* node_name, const char* label) {
+    fprintf(output_file, "%s [label=\"%s\"];\n", node_name, label);
+}
+void emit_dot_edge(FILE *output_file, const char* from, const char* to) {
+    fprintf(output_file, "%s -> %s;\n", from, to);
+}
 %}
-
 
 %union {char* tokenname;}
 %token<tokenname> PLUSEQUAL MINEQUAL STAREQUAL SLASHEQUAL PERCENTEQUAL AMPEREQUAL VBAREQUAL CIRCUMFLEXEQUAL LEFTSHIFTEQUAL
@@ -22,6 +28,10 @@
 
 file_input:
   newline_or_stmt_list NEWLINE
+  {
+    emit_dot_node( output_file, "file_input", "File Input");
+    emit_dot_edge( output_file, "file_input", $1);
+  }
 ;
 
 newline_or_stmt:
@@ -568,21 +578,34 @@ void yyerror(const char* s) {
 }
 
 int main(int argc, char** argv) {
-  if (argc < 2) {
-    fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
-    return 1;
-  }
+  if (argc != 3) {
+        printf("Usage: %s <input_file> <output_file>\n", argv[0]);
+        return 1;
+    }
 
-  FILE* input_file = fopen(argv[1], "r");
-  if(!input_file) {
-    perror("Error opening file");
-    return 1;
-  }
+    // Open input file
+    FILE * input_file = fopen(argv[1], "r");
+    if (input_file == NULL) {
+        perror("Error opening input file");
+        return 1;
+    }
 
-  yyin = input_file;
-  yyparse();
+    // Open output file
+    output_file = fopen(argv[2], "w");
+    if (output_file == NULL) {
+        perror("Error opening output file");
+        fclose(input_file); // Close the input file before exiting
+        return 1;
+    }
+  
+    fprintf(output_file, "digraph G {\n");
 
-  fclose(input_file);
+    yyin = input_file;
+    yyparse();
 
-  return 0;
+    fprintf(output_file, "}\n");
+
+    fclose(input_file);
+    fclose(output_file);
+    return 0;
 }
