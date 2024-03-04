@@ -1,11 +1,6 @@
-%option noyywrap
-%option yylineno
-
 %{
     #include <stdio.h>
-    #include <string>
     #include "parser.tab.h"
-    #include <bits/stdc++.h>
     using namespace std;
     extern int line;
     int line_join = 0;
@@ -13,6 +8,8 @@
     int indent[100];
     int top=0;
 %}
+
+%option noyywrap yylineno nodefault
 
 DIGIT               [0-9]
 HEX_DIGIT           [0-9a-fA-F]
