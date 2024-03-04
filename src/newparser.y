@@ -29,7 +29,6 @@ void emit_dot_edge(const char* from, const char* to) {
 file_input:
   newline_or_stmt_list NEWLINE
   {
-
   }
 ;
 
@@ -250,7 +249,7 @@ comma_tfpdef_equal_test_opt_list:
       s2 = $1;
       emit_dot_edge(s1, s2);
       strcpy($$, ",");
-      string temp = to_string(token_map[","]);
+      string temp = to_string(node_map[","]);
       strcat($$, temp.c_str());
     }
     else{
@@ -285,28 +284,90 @@ colon_test_opt:
 
 stmt:
   simple_stmt
+  {
+    strcpy($$, $1);
+  }
 | compound_stmt
+  {
+    strcpy($$, $1);
+  }
 ;
 
 semicolon_opt:
   %empty
+  {
+    $$[0] = '\0';
+  }
 | ';'
+  {
+    strcpy($$, $1);
+  }
 ;
 
 simple_stmt:
   small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
+  {
+    if($2[0] == '\0'){
+      strcpy($$, $1);
+    }
+    else{
+      if($2[0] != '\0'){
+        node_map[";"]++;
+        s1 = ";"+to_string(node_map[";"]);
+        s2 = $1;
+        emit_dot_edge(s1, s2);
+
+        strcpy($$, ";");
+        string temp = to_string(node_map[";"]);
+        strcat($$, temp.c_str());
+      }
+    }
+  }
 ;
 
 semicolon_small_stmt_list:
   %empty
+  {
+    $$[0] = '\0';
+  }
 | semicolon_small_stmt_list ';' small_stmt
+  {
+    if($1[0] != '\0'){
+      node_map[";"]++;
+      s1 = ";"+to_string(node_map[";"]);
+      s2 = $1;
+      emit_dot_edge(s1, s2);
+
+      s2 = $3;
+      emit_dot_edge(s1, s2);
+      
+      strcpy($$, ";");
+      string temp = to_string(node_map[";"]);
+      strcat($$, temp.c_str());
+    }
+    else{
+      strcpy($$, $3);
+    }
+  }
 ;
 
 small_stmt: 
   expr_stmt
+  {
+    strcpy($$, $1);
+  }
 | flow_stmt
+  {
+    strcpy($$, $1);
+  }
 | global_stmt
+  {
+    strcpy($$, $1);
+  }
 | assert_stmt
+  {
+    strcpy($$, $1);
+  }
 ;
 
 expr_stmt:
