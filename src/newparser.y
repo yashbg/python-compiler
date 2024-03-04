@@ -29,19 +29,30 @@ void emit_dot_edge(FILE *output_file, const char* from, const char* to) {
 file_input:
   newline_or_stmt_list NEWLINE
   {
-    emit_dot_node( output_file, "file_input", "File Input");
-    emit_dot_edge( output_file, "file_input", $1);
+
   }
 ;
 
 newline_or_stmt:
   NEWLINE
+  {
+    strcpy($$, $1);
+  }
 | stmt
+  {
+    strcpy($$, $1);
+  }
 ;
 
 newline_or_stmt_list:
   %empty
+  {
+    $$[0] = '\0';
+  }
 | newline_or_stmt_list newline_or_stmt
+  {
+    emit_dot_edge("Root", $2);
+  }
 ;
 
 /*
@@ -50,6 +61,39 @@ newline_or_stmt_list:
 
 funcdef:
   DEF NAME parameters arrow_test_opt ':' suite
+  {
+    strcpy($$, "NAME(");
+    strcat($$, $2);
+    strcat($$, ")");
+    node_map[$$]++;
+    node_map["DEF"]++;
+    
+
+    s1 = "DEF" + to_string(node_map["DEF"]);
+    s2 = $$ + to_string(node_map[$$]);
+    emit_dot_edge(s1, s2);
+
+    s1 = $$ + to_string(node_map[$$]);
+    emit_dot_edge(s1, $3);
+
+    if($4[0] != '\0'){
+      node_map["ARROW"]++;
+      s1 = "ARROW"+to_string(node_map["ARROW"]);
+      s2 = "DEF"+to_string(node_map["DEF"]);
+      emit_dot_edge(s1, s2);
+    } 
+
+    node_map[":"]++;
+    s1 = $5+to_string(node_map[":"]);
+    s2 = "ARROW"+to_string(node_map["ARROW"]);
+    emit_dot_edge(s1, s2);
+    
+    emit_dot_edge(s1, $6);
+
+    strcpy($$, $5);
+    string temp = to_string(node_map[":"]);
+    strcat($$, temp.c_str());
+  }
 ;
 
 arrow_test_opt:
@@ -508,6 +552,42 @@ comma_test_list:
 
 classdef:
   CLASS NAME parenthesis_arglist_opt_opt ':' suite
+  {
+    strcpy($$, "NAME(");
+    strcat($$, $2);
+    strcat($$, ")");
+    node_map[$$]++;
+    node_map["CLASS"]++;
+
+    s1 = "CLASS"+to_string(node_map["CLASS"]);
+    s2 = $$+to_string(node_map[$$]);
+    emit_dot_edge(s1, s2);
+
+    node_map["()"]++;
+
+    s1 = $$+to_string(node_map[$$]);
+    s2 = "()"+to_string(node_map["()"]);
+    emit_dot_edge(s1, s2);
+    
+    if($3[0] != '\0'){
+      s1 = s2;
+      s2 = $3;
+      emit_dot_edge(s1, s2);
+    }
+    
+    node_map[":"]++;
+
+    s1 = $6+to_string(node_map[":"]);
+    s2 = "CLASS"+to_string(node_map["CLASS"]);
+    emit_dot_edge(s1, s2);
+
+    s2 = $5;
+    emit_dot_edge(s1, s2);
+
+    strcpy($$, $6);
+    string temp = to_string(node_map[":"]);
+    strcat($$, temp.c_str());
+  }
 ;
 
 parenthesis_arglist_opt_opt:
