@@ -499,55 +499,211 @@ comp_for_OR_comma_test_or_star_expr_list_comma_opt:
 
 trailer:
   '(' arglist_opt ')'
+  {
+    node_map["()"]++;
+    string no=to_string(node_map["()"]);
+    string s="()"+no;
+    emit_dot_node(s, "()");
+    if($2!=NULL)
+      emit_dot_edge(s, $2);
+    strcpy($$, s);
+  }
 | '[' subscriptlist ']'
+{
+  node_map["[]"]++;
+  string no=to_string(node_map["[]"]);
+  string s="[]"+no;
+  emit_dot_node(s, "[]");
+  if($2!=NULL)
+    emit_dot_edge(s, $2);
+  strcpy($$, s);
+}
 | '.' NAME
+{
+  node_map["."]++;
+  string no=to_string(node_map["."]);
+  string s="."+no;
+  emit_dot_node(s, ".");
+  strcpy($$, s);
+}
 ;
 
 arglist_opt:
   %empty
+  {
+    $$=NULL;
+  }
 | arglist
+{
+  $$=$1;
+}
 ;
 
 subscriptlist: 
   subscript comma_subscript_list comma_opt
+  {
+    if($2==NULL && $3==NULL)
+      strcpy($$, $1);
+    else if($3==NULL)
+      {
+        node_map[","]++;
+        string no=to_string(node_map[","]);
+        string s=","+no;
+        emit_dot_node(s, ",");
+        emit_dot_edge(s, $1);
+        emit_dot_edge(s, $2);
+        strcpy($$, s);
+      }
+      else {
+        node_map[","]++;
+        string no=to_string(node_map[","]);
+        string s=","+no;
+        emit_dot_node(s, ",");
+        emit_dot_edge(s, $1);
+        if($2!=NULL)
+          emit_dot_edge(s, $2);
+        strcpy($$, s);
+      }
+  }
 ;
 
 comma_subscript_list:
   %empty
+  {
+    $$=NULL;
+  }
 | comma_subscript_list ',' subscript
+{
+  node_map[","]++;
+  string no=to_string(node_map[","]);
+  string s=","+no;
+  emit_dot_node(s, ",");
+  if($1!=NULL)
+    emit_dot_edge(s, $1);
+  emit_dot_edge(s, $3);
+  $$=s;  
+}
 ;
 
 subscript:
   test
+  {
+    $$=$1;
+  }
 | test_opt ':' test_opt
+{
+  node_map[":"]++;
+  string no=to_string(node_map[":"]);
+  string s=":"+no;
+  emit_dot_node(s, ":");
+  if($1!=NULL)
+    emit_dot_edge(s, $1);
+  if($3!=NULL)
+    emit_dot_edge(s, $3);
+  $$=s;
+}
 ;
 
 test_opt: 
   %empty
+  {
+    $$=NULL;
+  }
 | test
+{
+  $$=$1;
+}
 ;
 
 exprlist:
   expr_or_star_expr comma_expr_or_star_expr_list comma_opt
+  {
+    if($2==NULL && $3==NULL)
+      strcpy($$, $1);
+    else 
+      {
+        node_map[","]++;
+        string no=to_string(node_map[","]);
+        string s=","+no;
+        emit_dot_node(s, ",");
+        emit_dot_edge(s, $1);
+        strcpy($$, s);
+      }
+  }
 ;
 
 comma_expr_or_star_expr_list:
   %empty
+  {
+    $$=NULL;
+  }
 | comma_expr_or_star_expr_list ',' expr_or_star_expr
+{
+      node_map[","]++;
+      string no=to_string(node_map[","]);
+      string s=","+no;
+      emit_dot_node(s, ",");
+      if($1!=NULL)
+        emit_dot_edge(s, $1);
+      emit_dot_edge(s, $2);
+      $$=s;
+}
 ;
 
 expr_or_star_expr:
   expr
+  {
+    strcpy($$, $1);
+  }
 | star_expr
+{
+  strcpy($$, $1);
+}
 ;
 
 testlist:
   test comma_test_list comma_opt
+  {
+    if($2==NULL && $3==NULL)
+      strcpy($$, $1);
+    else if($3==NULL)
+      {
+        node_map[","]++;
+        string no=to_string(node_map[","]);
+        string s=","+no;
+        emit_dot_node(s, ",");
+        emit_dot_edge(s, $1);
+        strcpy($$, s);
+      }
+      else {
+        node_map[","]++;
+        string no=to_string(node_map[","]);
+        string s=","+no;
+        emit_dot_node(s, ",");
+        emit_dot_edge(s, $1);
+        if($2!=NULL)
+          emit_dot_edge(s, $2);
+        strcpy($$, s);
+      }
+  }
 ;
 
 comma_test_list:
   %empty
+  {
+    $$=NULL;
+  }
 | comma_test_list ',' test
+{
+      node_map[","]++;
+      string no=to_string(node_map[","]);
+      string s=","+no;
+    emit_dot_node(s, ",");
+    if($1!=NULL)
+      emit_dot_edge(s, $1);
+    emit_dot_edge(s, $3);
+    strcpy($$, s);
+}
 ;
 
 classdef:
