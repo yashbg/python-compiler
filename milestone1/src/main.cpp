@@ -5,6 +5,13 @@
 
 extern int yyparse();
 
+void show_help() {
+  std::cout << "Usage: main --input=<input_file> --output=<output_file> [--verbose]" << std::endl
+            << "  --input: Input file to parse." << std::endl
+            << "  --output: Output file to save the AST." << std::endl
+            << "  --verbose: Show verbose output." << std::endl;
+}
+
 void add_dot_header() {
   std::cout << "strict graph AST {" << std::endl << std::endl
             << "ratio = fill;" << std::endl
@@ -19,16 +26,17 @@ int main(int argc, char *argv[]) {
   std::string input_file, output_file;
   bool verbose = false;
   for (int i = 1; i < argc; i++) {
-    if (argv[i].substr(0, 8) == "--input=") {
-      input_file = argv[i].substr(8);
+    std::string arg = argv[i];
+    if (arg.substr(0, 8) == "--input=") {
+      input_file = arg.substr(8);
     }
-    else if (argv[i].substr(0, 9) == "--output=") {
-      output_file = argv[i].substr(9);
+    else if (arg.substr(0, 9) == "--output=") {
+      output_file = arg.substr(9);
     }
-    else if (argv[i] == "--help") {
+    else if (arg == "--help") {
       show_help();
     }
-    else if (argv[i] == "--verbose") {
+    else if (arg == "--verbose") {
       verbose = true;
     }
   }
