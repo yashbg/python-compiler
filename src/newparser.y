@@ -9,10 +9,10 @@ extern int yylineno;
 extern char* yytext;
 FILE *output_file;
 int line = 1;
-void emit_dot_node(FILE *output_file, const char* node_name, const char* label) {
+void emit_dot_node(const char* node_name, const char* label) {
     fprintf(output_file, "%s [label=\"%s\"];\n", node_name, label);
 }
-void emit_dot_edge(FILE *output_file, const char* from, const char* to) {
+void emit_dot_edge(const char* from, const char* to) {
     fprintf(output_file, "%s -> %s;\n", from, to);
 }
 %}
@@ -98,11 +98,32 @@ funcdef:
 
 arrow_test_opt:
   %empty
+  {
+    $$[0] = '\0';
+  }
 | ARROW test
+  {
+    s1 = "ARROW"+to_string(node_map["ARROW"]);
+    s2 = $2;
+    emit_dot_edge(s1, s2);
+  }
 ;
 
 parameters:
   '(' typedargslist_opt ')'
+  {
+    node_map["()"]++;
+    
+    if($2[0] != '\0'){
+      s1 = "()"+to_string(node_map["()"]);      
+      s2 = $2;      
+      emit_dot_edge(s1, s2);
+    }
+    
+    strcpy($$, "()");
+    string temp = to_string(node_map["()"]);
+    strcat($$, temp.c_str());
+  }
 ;
 
 typedargslist_opt:
