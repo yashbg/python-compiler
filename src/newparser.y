@@ -128,35 +128,159 @@ parameters:
 
 typedargslist_opt:
   %empty
+  {
+    $$[0] = '\0';
+  }
 | typedargslist
+  {
+    strcpy($$, $1);
+  }
 ;
 
 typedargslist:
   tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list
+  {
+    if($2[0] != '\0') {
+      node_map["="]++;
+      s1 = "=" + to_string(node_map["="]);
+      s2 = $1;
+      emit_dot_edge(s1, s2);
+    }
+    
+    if($3[0]!='\0')
+    {
+      if($2[0] != '\0'){
+        s1 = $3;
+        s2 = "=" + to_string(node_map["="]);
+        emit_dot_edge(s1, s2);
+        strcpy($$, $3);
+      }
+      else{
+        emit_dot_edge($3, $1);
+        strcpy($$, $2);
+      }
+    }
+    else
+    {
+      if($2[0] != '\0'){
+        strcpy($$, "=");
+        string temp = to_string(node_map["="]);
+        strcat($$, temp.c_str());
+      }
+      else{
+        strcpy($$, $1);
+      }
+    }
+  }
 ;
 
 tfpdef:
   NAME colon_test_opt
+  {
+    strcpy($$, "NAME(");
+    strcat($$, $1);
+    strcat($$, ")");
+    node_map[$$]++;
+
+    if($2[0] != '\0'){
+      node_map[":"]++;
+      s1 = $2+to_string(node_map[":"]);       
+      s2 = $$+to_string(node_map[$$]);
+      emit_dot_edge(s1, s2);
+    }
+
+    strcpy($$, $2);    
+    string temp = to_string(node_map[":"]);
+    strcat($$, temp.c_str());
+  }
 ;
 
 comma_opt:
   %empty
+  {
+    $$[0] = '\0';
+  }
 | ','
+  {
+    strcpy($$, $1);
+  }
 ;
 
 equal_test_opt:
   %empty
+  {
+    $$[0] = '\0';
+  }
 | '=' test
+  {
+    s1 = "="+to_string(node_map["="]);
+    s2 = $2;
+    emit_dot_edge(s1, s2);
+  }
 ;
 
 comma_tfpdef_equal_test_opt_list:
   %empty
+  {
+    $$[0] = '\0';
+  }
 | comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt
+  {
+    if($4[0] != '\0'){
+      node_map["="]++;
+      s1 = "="+to_string(node_map["="]);
+      s2 = $3;
+      emit_dot_edge(s1, s2);
+    }
+
+    node_map[","]++;
+
+    if($1[0]!='\0')
+    {
+      if($4[0] != '\0'){
+        s1 = $1;
+        s2 = "="+to_string(node_map["="]);
+        emit_dot_edge(s1, s2);
+      }
+      else{
+        emit_dot_edge($1, $3);
+
+      }
+      s1 = ","+to_string(node_map[","]);
+      s2 = $1;
+      emit_dot_edge(s1, s2);
+      strcpy($$, ",");
+      string temp = to_string(token_map[","]);
+      strcat($$, temp.c_str());
+    }
+    else{
+      s1 = "," + to_string(node_map[","]);
+      if($4[0] != '\0'){
+        s2 = "="+to_string(node_map["="]);
+      }
+      else{
+        s2 = $3;
+      }
+      emit_dot_edge(s1, s2);
+
+      strcpy($$, ",");
+      string temp = to_string(node_map[","]);
+      strcat($$, temp.c_str());
+    }
+  }
 ;
 
 colon_test_opt:
   %empty
+  {
+    $$[0] = '\0';
+  }
 | ':' test
+  {
+    s1 = ":"+to_string(node_map[":"]);
+    s2 = $2;
+    emit_dot_edge(s1, s2);
+  }
 ;
 
 stmt:
