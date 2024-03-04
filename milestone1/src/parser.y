@@ -424,6 +424,9 @@ expr_stmt:
 
 expr_stmt_suffix_choices:
   equal_testlist_star_expr_list
+  {
+    strcpy($$, $1);
+  }
 ;
 
 equal_testlist_star_expr_list:
