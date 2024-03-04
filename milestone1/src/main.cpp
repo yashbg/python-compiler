@@ -47,11 +47,12 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  std::fstream outfile;
-  outfile.open("graph.dot", std::fstream::out);
+  std::ifstream infile(input_file);
+  std::cin.rdbuf(infile.rdbuf());
+
+  std::ofstream outfile("graph.dot");
   std::streambuf *coutbuf = std::cout.rdbuf();
   std::streambuf *outfilebuf = outfile.rdbuf();
-
   std::cout.rdbuf(outfilebuf);
 
   if (verbose) {
