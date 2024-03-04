@@ -6,9 +6,9 @@
 extern int yyparse();
 
 void add_dot_header() {
-  std::cout << "strict graph AST {" << std::endl << std::endl;
-                "ratio = fill;" << std::endl;
-                "node [style=filled];" << std::endl << std::endl;
+  std::cout << "strict graph AST {" << std::endl << std::endl
+            << "ratio = fill;" << std::endl
+            << "node [style=filled];" << std::endl << std::endl;
 }
 
 void add_dot_footer() {

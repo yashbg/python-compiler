@@ -3,9 +3,7 @@
 
 %{
     #include <stdio.h>
-    #include <string>
-    #include "newparser.tab.h"
-    #include <bits/stdc++.h>
+    #include "parser.tab.h"
     using namespace std;
     extern int line;
     int line_join = 0;
