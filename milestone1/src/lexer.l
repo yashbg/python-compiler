@@ -390,7 +390,7 @@ small_stmt:
 ;
 
 expr_stmt:
-  testlist annassign
+  testlist_star_expr annassign
   {
     emit_dot_edge($2, $1);
     strcpy($$, $2);
@@ -647,12 +647,11 @@ global_stmt:
     string no=to_string(node_map["GLOBAL"]);
     string s="GLOBAL"+no;
     emit_dot_node(s.c_str(), "GLOBAL");
-    string s2;
-    char* str = 
-    strcpy(s2.c_str(),"NAME(");
-    strcat(s2.c_str(),$2);
-    strcat(s2.c_str(),")");
-    emit_dot_edge(s.c_str(), s2.c_str());
+    char* s2;
+    strcpy(s2,"NAME(");
+    strcat(s2,$2);
+    strcat(s2,")");
+    emit_dot_edge(s.c_str(), s2);
     if($3!=NULL){
       emit_dot_edge(s.c_str(), $3);}
     strcpy($$, s.c_str());
@@ -670,11 +669,11 @@ comma_name_list:
   string no=to_string(node_map[","]);
   string s=","+no;
   emit_dot_node(s.c_str(), ",");
-  string s2;
-  strcpy(s2.c_str(),"NAME(");
-  strcat(s2.c_str(),$3);
-  strcat(s2.c_str(),")");
-  emit_dot_edge(s.c_str(), s2.c_str());
+  char* s2;
+  strcpy(s2,"NAME(");
+  strcat(s2,$3);
+  strcat(s2,")");
+  emit_dot_edge(s.c_str(), s2);
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
     strcpy($$, s.c_str());
@@ -823,7 +822,7 @@ else_colon_suite_opt:
   string s1=":"+no1;
   emit_dot_node(s1.c_str(), ":");
   emit_dot_edge(s.c_str(), s1.c_str());
-  strcpy($$, c);
+  strcpy($$, s.c_str());
 }
 ;
 
@@ -848,7 +847,7 @@ elif_test_colon_suite_list:
   emit_dot_edge(s.c_str(), s1.c_str());
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
-   strcpy($$, c);
+   strcpy($$, s.c_str());
 }
 ;
 
@@ -881,7 +880,7 @@ NEWLINE_list:
 stmt_list:
   %empty
   {
-    $$=NULL
+    $$=NULL;
   }
 | stmt_list stmt
 {
@@ -923,7 +922,7 @@ if_or_test_else_test_opt:
   emit_dot_edge(s.c_str(), $4);
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
-    $$=s.c_str();
+    strcpy($$, s.c_str());
 }
 ;
 
