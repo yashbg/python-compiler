@@ -1,6 +1,6 @@
 all: main
 main: main.cpp parser.tab.c lex.yy.c
-	g++ -std=c++17 main.cpp parser.tab.c lex.yy.c -o main
+	g++ -g -std=c++17 main.cpp parser.tab.c lex.yy.c -o main
 lex.yy.c: lexer.l
 	flex lexer.l
 parser.tab.c: parser.y

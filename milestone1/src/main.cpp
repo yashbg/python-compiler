@@ -16,7 +16,7 @@ void show_help() {
 }
 
 void add_dot_header() {
-  outfile << "strict digraph AST {" << std::endl << std::endl;
+  outfile << "strict digraph AST {" << std::endl;
 }
 
 void add_dot_footer() {
