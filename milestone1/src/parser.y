@@ -49,8 +49,6 @@ void emit_dot_edge(const char* from, const char* to) {
     free(fromlabel);  // Free allocated memory
     free(tolabel);    // Free allocated memory
 }
-  std::cout << from << " -> " << to << ";" << std::endl;
-}
 %}
 
 %code requires {
