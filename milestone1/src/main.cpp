@@ -9,10 +9,10 @@ extern int yyparse();
 std::ofstream outfile;
 
 void show_help() {
-  std::cout << "Usage: main --input=<input_file> --output=<output_file> [--verbose]" << std::endl
-            << "  --input: Input file to parse." << std::endl
-            << "  --output: Output file to save the AST." << std::endl
-            << "  --verbose: Show verbose output." << std::endl;
+  std::cout << "Usage: ./main [-verbose] -input <input_file> -output <output_file>" << std::endl
+            << "  -input: Input file to parse." << std::endl
+            << "  -output: Output file to save the AST." << std::endl
+            << "  -verbose: Show verbose output." << std::endl;
 }
 
 void add_dot_header() {
@@ -28,16 +28,33 @@ int main(int argc, char *argv[]) {
   bool verbose = false;
   for (int i = 1; i < argc; i++) {
     std::string arg = argv[i];
-    if (arg.substr(0, 8) == "--input=") {
-      input_file = arg.substr(8);
+    if (arg == "-input") {
+      if (i + 1 >= argc) {
+        std::cerr << "Error: Input file not specified." << std::endl;
+        show_help();
+        return 1;
+      }
+
+      input_file = argv[i + 1];
+      i++;
     }
-    else if (arg.substr(0, 9) == "--output=") {
-      output_file = arg.substr(9);
+
+    else if (arg == "-output") {
+      if (i + 1 >= argc) {
+        std::cerr << "Error: Output file not specified." << std::endl;
+        show_help();
+        return 1;
+      }
+
+      output_file = argv[i + 1];
+      i++;
     }
-    else if (arg == "--help") {
+
+    else if (arg == "-help") {
       show_help();
     }
-    else if (arg == "--verbose") {
+
+    else if (arg == "-verbose") {
       verbose = true;
     }
   }
