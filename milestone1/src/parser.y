@@ -22,7 +22,7 @@ int is_digit(char c) {
 }
 
 void emit_dot_node(const char* node_name, const char* label) {
-  outfile << "\"" node_name << "\" [label=\"" << label << "\"];" << std::endl;
+  outfile << "\"" << node_name << "\" [label=\"" << label << "\"];" << std::endl;
 }
 
 void emit_dot_edge(const char* from, const char* to) {
