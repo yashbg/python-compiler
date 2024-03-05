@@ -2023,37 +2023,3 @@ void yyerror(const char* s) {
   fprintf(stderr, "Parse error: %s at line number %d\n", s, line);
   exit(1);
 }
-/*
-int main(int argc, char** argv) {
-  if (argc != 3) {
-        printf("Usage: %s <input_file> <output_file>\n", argv[0]);
-        return 1;
-    }
-
-    // Open input file
-    FILE * input_file = fopen(argv[1], "r");
-    if (input_file == NULL) {
-        perror("Error opening input file");
-        return 1;
-    }
-
-    // Open output file
-    output_file = fopen(argv[2], "w");
-    if (output_file == NULL) {
-        perror("Error opening output file");
-        fclose(input_file); // Close the input file before exiting
-        return 1;
-    }
-  
-    fprintf(output_file, "digraph G {\n");
-
-    yyin = input_file;
-    yyparse();
-
-    fprintf(output_file, "}\n");
-
-    fclose(input_file);
-    fclose(output_file);
-    return 0;
-}
-*/
