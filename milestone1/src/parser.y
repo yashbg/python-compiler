@@ -22,7 +22,7 @@ int is_digit(char c) {
 }
 
 void emit_dot_node(const char* node_name, const char* label) {
-  outfile << node_name << " [label=\"" << label << "\"];" << std::endl;
+  outfile << "\"" node_name << "\" [label=\"" << label << "\"];" << std::endl;
 }
 
 void emit_dot_edge(const char* from, const char* to) {
@@ -631,7 +631,7 @@ break_stmt:
     node_map["BREAK"]++;
     string no=to_string(node_map["BREAK"]);
     string s="BREAK"+no;
-    emit_dot_node(s.c_str(), "BREAK");
+    //emit_dot_node(s.c_str(), "BREAK");
     strcpy($$, s.c_str());  
   }
 ;
@@ -642,7 +642,7 @@ continue_stmt:
     node_map["CONTINUE"]++;
     string no=to_string(node_map["CONTINUE"]);
     string s="CONTINUE"+no;
-    emit_dot_node(s.c_str(), "CONTINUE");
+    //emit_dot_node(s.c_str(), "CONTINUE");
     strcpy($$, s.c_str());
   }
 ;
@@ -653,7 +653,7 @@ return_stmt:
     node_map["RETURN"]++;
     string no=to_string(node_map["RETURN"]);
     string s="RETURN"+no;
-    emit_dot_node(s.c_str(), "RETURN");
+    //emit_dot_node(s.c_str(), "RETURN");
     if($2!=NULL){
       emit_dot_edge(s.c_str(), $2);}
     strcpy($$, s.c_str());
@@ -677,7 +677,7 @@ global_stmt:
     node_map["GLOBAL"]++;
     string no=to_string(node_map["GLOBAL"]);
     string s="GLOBAL"+no;
-    emit_dot_node(s.c_str(), "GLOBAL");
+    //emit_dot_node(s.c_str(), "GLOBAL");
     char* s2;
     strcpy(s2,"NAME(");
     strcat(s2,$2);
@@ -699,7 +699,7 @@ comma_name_list:
   node_map[","]++;
   string no=to_string(node_map[","]);
   string s=","+no;
-  emit_dot_node(s.c_str(), ",");
+  //emit_dot_node(s.c_str(), ",");
   char* s2;
   strcpy(s2,"NAME(");
   strcat(s2,$3);
@@ -717,7 +717,7 @@ assert_stmt:
     node_map["ASSERT"]++;
     string no=to_string(node_map["ASSERT"]);
     string s="ASSERT"+no;
-    emit_dot_node(s.c_str(), "ASSERT");
+    //emit_dot_node(s.c_str(), "ASSERT");
     emit_dot_edge(s.c_str(), $2);
     if($3!=NULL){
       emit_dot_edge(s.c_str(), $3);}
@@ -735,7 +735,7 @@ comma_test_opt:
   node_map[","]++;
   string no=to_string(node_map[","]);
   string s=","+no;
-  emit_dot_node(s.c_str(), ",");
+  //emit_dot_node(s.c_str(), ",");
   emit_dot_edge(s.c_str(), $2);
   strcpy($$, s.c_str());
 }
@@ -770,7 +770,7 @@ if_stmt:
   node_map["IF"]++;
   string no=to_string(node_map["IF"]);
   string s="IF"+no;
-  emit_dot_node(s.c_str(), "IF");
+  //emit_dot_node(s.c_str(), "IF");
   if($5!=NULL){
     emit_dot_edge(s.c_str(), $5);
   }
@@ -780,7 +780,7 @@ if_stmt:
   node_map[":"]++;
   string no1=to_string(node_map[":"]);
   string s1=":"+no1;
-  emit_dot_node(s1.c_str(), ":");
+  //emit_dot_node(s1.c_str(), ":");
   emit_dot_edge(s.c_str(), s1.c_str());
   emit_dot_edge(s1.c_str(), $2);
   emit_dot_edge(s1.c_str(), $4);
@@ -795,7 +795,7 @@ while_stmt:
     node_map["WHILE"]++;
     string no=to_string(node_map["WHILE"]);
     string s="WHILE"+no;
-    emit_dot_node(s.c_str(), "WHILE");
+    //emit_dot_node(s.c_str(), "WHILE");
     emit_dot_edge(s.c_str(), $2);
     if($4!=NULL){
       emit_dot_edge(s.c_str(), $4);
@@ -803,7 +803,7 @@ while_stmt:
     node_map[":"]++;
     string no1=to_string(node_map[":"]);
     string s1=":"+no1;
-    emit_dot_node(s1.c_str(), ":");
+    //emit_dot_node(s1.c_str(), ":");
     emit_dot_edge(s.c_str(), s1.c_str());
     strcpy($$, s.c_str());
   }
@@ -814,19 +814,19 @@ for_stmt:
     node_map["FOR"]++;
     string no=to_string(node_map["FOR"]);
     string s="FOR"+no;
-    emit_dot_node(s.c_str(), "FOR");
+    //emit_dot_node(s.c_str(), "FOR");
     emit_dot_edge(s.c_str(), $2);
 
     node_map["IN"]++;
     string no1=to_string(node_map["IN"]);
     string s1="IN"+no1;
-    emit_dot_node(s1.c_str(), "IN");
+    //emit_dot_node(s1.c_str(), "IN");
     emit_dot_edge(s.c_str(), s1.c_str());
 
     node_map[":"]++;
     string no2=to_string(node_map[":"]);
     string s2=":"+no2;
-    emit_dot_node(s2.c_str(), ":");
+    //emit_dot_node(s2.c_str(), ":");
     emit_dot_edge(s1.c_str(), s2.c_str());
     emit_dot_edge(s2.c_str(), $4);
     emit_dot_edge(s2.c_str(), $6);
@@ -845,13 +845,13 @@ else_colon_suite_opt:
   node_map["ELSE"]++;
   string no=to_string(node_map["ELSE"]);
   string s="ELSE"+no;
-  emit_dot_node(s.c_str(), "ELSE");
+  //emit_dot_node(s.c_str(), "ELSE");
   if($3!=NULL){
     emit_dot_edge(s.c_str(), $3);}
   node_map[":"]++;
   string no1=to_string(node_map[":"]);
   string s1=":"+no1;
-  emit_dot_node(s1.c_str(), ":");
+  //emit_dot_node(s1.c_str(), ":");
   emit_dot_edge(s.c_str(), s1.c_str());
   strcpy($$, s.c_str());
 }
@@ -867,14 +867,14 @@ elif_test_colon_suite_list:
   node_map["ELIF"]++;
   string no=to_string(node_map["ELIF"]);
   string s="ELIF"+no;
-  emit_dot_node(s.c_str(), "ELIF");
+  //emit_dot_node(s.c_str(), "ELIF");
   emit_dot_edge(s.c_str(), $3);
   if($5!=NULL){
     emit_dot_edge(s.c_str(), $5);}
   node_map[":"]++;
   string no1=to_string(node_map[":"]);
   string s1=":"+no1;
-  emit_dot_node(s1.c_str(), ":");
+  //emit_dot_node(s1.c_str(), ":");
   emit_dot_edge(s.c_str(), s1.c_str());
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
@@ -948,7 +948,7 @@ if_or_test_else_test_opt:
   node_map["IF-ELSE"]++;
   string no=to_string(node_map["IF-ELSE"]);
   string s="IF-ELSE"+no;
-  emit_dot_node(s.c_str(), "IF-ELSE");
+  //emit_dot_node(s.c_str(), "IF-ELSE");
   emit_dot_edge(s.c_str(), $2);
   emit_dot_edge(s.c_str(), $4);
   if($1!=NULL){
@@ -987,7 +987,7 @@ or_and_test_list:
   node_map["OR"]++;
   string no=to_string(node_map["OR"]); 
   string s="OR"+no;
-  emit_dot_node(s.c_str(), "OR");
+  //emit_dot_node(s.c_str(), "OR");
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
@@ -1002,8 +1002,8 @@ and_test:
       strcpy($$, $1);}
     else
       {
-    emit_dot_edge($1, $2);
-    strcpy($$, $1);
+    emit_dot_edge($2, $1);
+    strcpy($$, $2);
     }
   }
 ;
@@ -1018,7 +1018,7 @@ and_not_test_list:
   node_map["AND"]++;  
   string no=to_string(node_map["AND"]); 
   string s="AND"+no;
-  emit_dot_node(s.c_str(), "AND");
+  //emit_dot_node(s.c_str(), "AND");
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
@@ -1032,7 +1032,7 @@ not_test:
     node_map["NOT"]++;
     string no=to_string(node_map["NOT"]);
     string s="NOT"+no;
-    emit_dot_node(s.c_str(), "NOT");
+    //emit_dot_node(s.c_str(), "NOT");
     emit_dot_edge(s.c_str(), $2);
     strcpy($$, s.c_str());
   }
@@ -1125,7 +1125,7 @@ star_expr:
     node_map["*"]++;
     string no=to_string(node_map["*"]);
     string s="*"+no;
-    emit_dot_node(s.c_str(), "*");
+    //emit_dot_node(s.c_str(), "*");
     emit_dot_edge(s.c_str(), $2);
     strcpy($$, s.c_str());
   }
@@ -1154,7 +1154,7 @@ or_xor_expr_list:
   node_map["|"]++;
   string no=to_string(node_map[$2]);
   string s=$2+no;
-  emit_dot_node(s.c_str(), "|");
+  //emit_dot_node(s.c_str(), "|");
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
@@ -1185,7 +1185,7 @@ xor_and_expr_list:
   node_map["^"]++;
   string no=to_string(node_map[$2]);
   string s=$2+no;
-  emit_dot_node(s.c_str(), "^");
+  //emit_dot_node(s.c_str(), "^");
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
@@ -1216,7 +1216,7 @@ and_shift_expr_list:
   node_map["&"]++;
   string no=to_string(node_map[$2]);
   string s=$2+no;
-  emit_dot_node(s.c_str(), "&");
+  //emit_dot_node(s.c_str(), "&");
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
@@ -1302,7 +1302,7 @@ plus_or_minus_term_list:
   node_map[$2]++;
   string no=to_string(node_map[$2]);
   string s=$2+no;
-  emit_dot_node(s.c_str(), $2);
+  //emit_dot_node(s.c_str(), $2);
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
     emit_dot_edge($1, s.c_str());}
@@ -1352,7 +1352,7 @@ star_or_slash_or_percent_or_doubleslash_factor_list:
   node_map[$2]++;
   string no=to_string(node_map[$2]);
   string s=$2+no;
-  emit_dot_node(s.c_str(), $2);
+  //emit_dot_node(s.c_str(), $2);
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
     emit_dot_edge($1, s.c_str());}
@@ -1366,7 +1366,7 @@ factor:
     node_map[$1]++;
     string no=to_string(node_map[$1]);
     string s=$1+no;
-    emit_dot_node(s.c_str(), $1);
+    //emit_dot_node(s.c_str(), $1);
     emit_dot_edge(s.c_str(), $2);
     strcpy($$, s.c_str());
   }
@@ -1414,7 +1414,7 @@ doublestar_factor_opt:
   node_map["**"]++;
   string no=to_string(node_map["**"]);
   string s="**"+no;
-  emit_dot_node(s.c_str(), "**");
+  //emit_dot_node(s.c_str(), "**");
   emit_dot_edge(s.c_str(), $2);
   strcpy($$, s.c_str());
 }
@@ -1450,7 +1450,7 @@ atom:
     node_map["()"]++;
     string no=to_string(node_map["()"]);
     string s="()"+no;
-    emit_dot_node(s.c_str(), "()");
+    //emit_dot_node(s.c_str(), "()");
     if($2!=NULL){
       emit_dot_edge(s.c_str(), $2);}
     strcpy($$, s.c_str());
@@ -1460,7 +1460,7 @@ atom:
   node_map["[]"]++;
   string no=to_string(node_map["[]"]);
   string s="[]"+no;
-  emit_dot_node(s.c_str(), "[]");
+  //emit_dot_node(s.c_str(), "[]");
   if($2!=NULL){
     emit_dot_edge(s.c_str(), $2);}
   strcpy($$, s.c_str());
@@ -1585,7 +1585,7 @@ comp_for_OR_comma_test_or_star_expr_list_comma_opt:
     node_map[","]++;
     string no=to_string(node_map[","]);
     string s=","+no;
-    emit_dot_node(s.c_str(), ",");
+    //emit_dot_node(s.c_str(), ",");
     emit_dot_edge(s.c_str(), $1);
     strcpy($$, s.c_str());
   }
@@ -1599,7 +1599,7 @@ trailer:
     node_map["()"]++;
     string no=to_string(node_map["()"]);
     string s="()"+no;
-    emit_dot_node(s.c_str(), "()");
+    //emit_dot_node(s.c_str(), "()");
     if($2!=NULL){
       emit_dot_edge(s.c_str(), $2);}
     strcpy($$, s.c_str());
@@ -1609,7 +1609,7 @@ trailer:
   node_map["[]"]++;
   string no=to_string(node_map["[]"]);
   string s="[]"+no;
-  emit_dot_node(s.c_str(), "[]");
+  //emit_dot_node(s.c_str(), "[]");
   if($2!=NULL){
     emit_dot_edge(s.c_str(), $2);}
   strcpy($$, s.c_str());
@@ -1619,7 +1619,7 @@ trailer:
   node_map["."]++;
   string no=to_string(node_map["."]);
   string s="."+no;
-  emit_dot_node(s.c_str(), ".");
+  //emit_dot_node(s.c_str(), ".");
   strcpy($$, "NAME(");
   strcat($$, $1); 
   strcat($$, ")");
@@ -1654,7 +1654,7 @@ subscriptlist:
         node_map[","]++;
         string no=to_string(node_map[","]);
         string s=","+no;
-        emit_dot_node(s.c_str(), ",");
+        //emit_dot_node(s.c_str(), ",");
         emit_dot_edge(s.c_str(), $1);
         if($2!=NULL){
           emit_dot_edge(s.c_str(), $2);}
@@ -1673,7 +1673,7 @@ comma_subscript_list:
   node_map[","]++;
   string no=to_string(node_map[","]);
   string s=","+no;
-  emit_dot_node(s.c_str(), ",");
+  //emit_dot_node(s.c_str(), ",");
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
   emit_dot_edge(s.c_str(), $3);
@@ -1691,7 +1691,7 @@ subscript:
   node_map[":"]++;
   string no=to_string(node_map[":"]);
   string s=":"+no;
-  emit_dot_node(s.c_str(), ":");
+  //emit_dot_node(s.c_str(), ":");
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
   if($3!=NULL){
@@ -1721,7 +1721,7 @@ exprlist:
         node_map[","]++;
         string no=to_string(node_map[","]);
         string s=","+no;
-        emit_dot_node(s.c_str(), ",");
+        //emit_dot_node(s.c_str(), ",");
         emit_dot_edge(s.c_str(), $1);
         strcpy($$, s.c_str());
       }
@@ -1738,7 +1738,7 @@ comma_expr_or_star_expr_list:
       node_map[","]++;
       string no=to_string(node_map[","]);
       string s=","+no;
-      emit_dot_node(s.c_str(), ",");
+      //emit_dot_node(s.c_str(), ",");
       if($1!=NULL){
         emit_dot_edge(s.c_str(), $1);}
       emit_dot_edge(s.c_str(), $2);
@@ -1767,7 +1767,7 @@ testlist:
         node_map[","]++;
         string no=to_string(node_map[","]);
         string s=","+no;
-        emit_dot_node(s.c_str(), ",");
+        //emit_dot_node(s.c_str(), ",");
         emit_dot_edge(s.c_str(), $1);
         strcpy($$, s.c_str());
       }
@@ -1775,7 +1775,7 @@ testlist:
         node_map[","]++;
         string no=to_string(node_map[","]);
         string s=","+no;
-        emit_dot_node(s.c_str(), ",");
+        //emit_dot_node(s.c_str(), ",");
         emit_dot_edge(s.c_str(), $1);
         if($2!=NULL){
           emit_dot_edge(s.c_str(), $2);}
@@ -1794,7 +1794,7 @@ comma_test_list:
       node_map[","]++;
       string no=to_string(node_map[","]);
       string s=","+no;
-    emit_dot_node(s.c_str(), ",");
+    //emit_dot_node(s.c_str(), ",");
     if($1!=NULL){
       emit_dot_edge(s.c_str(), $1);}
     emit_dot_edge(s.c_str(), $3);
@@ -1853,7 +1853,7 @@ parenthesis_arglist_opt_opt:
   node_map["()"]++;
   string no=to_string(node_map["()"]);
   string s="()"+no;
-  emit_dot_node(s.c_str(), "()");
+  //emit_dot_node(s.c_str(), "()");
   emit_dot_edge(s.c_str(), $2);
   strcpy($$, s.c_str());
 }
@@ -1869,7 +1869,7 @@ arglist:
         node_map[","]++;
         string no=to_string(node_map[","]);
         string s=","+no;
-        emit_dot_node(s.c_str(), ",");
+        //emit_dot_node(s.c_str(), ",");
         emit_dot_edge(s.c_str(), $1);
         strcpy($$, s.c_str());
       }
@@ -1893,7 +1893,7 @@ comma_argument_list:
       node_map[","]++;
       string no=to_string(node_map[","]);
       string s=","+no;
-    emit_dot_node(s.c_str(), ",");
+    //emit_dot_node(s.c_str(), ",");
     emit_dot_edge(s.c_str(), $1);
     emit_dot_edge(s.c_str(), $3);
     strcpy($$, s.c_str());
@@ -1928,7 +1928,7 @@ argument:
     node_map["="]++;
     string no=to_string(node_map["="]);
     string s=$2+no;
-    emit_dot_node(s.c_str(), "=");
+    //emit_dot_node(s.c_str(), "=");
     emit_dot_edge(s.c_str(), $1);
     emit_dot_edge(s.c_str(), $3);
     strcpy($$, s.c_str());
@@ -1938,7 +1938,7 @@ argument:
     node_map["*"]++;
     string no=to_string(node_map["*"]);
     string s="*"+no;
-    emit_dot_node(s.c_str(), "*");
+    //emit_dot_node(s.c_str(), "*");
     emit_dot_edge(s.c_str(), $2);
     strcpy($$, s.c_str());
   }
@@ -1972,12 +1972,12 @@ comp_for:
     node_map["FOR"]++;
     string no=to_string(node_map["FOR"]);
     string s="FOR"+no;
-    emit_dot_node(s.c_str(), "FOR");
+    //emit_dot_node(s.c_str(), "FOR");
     emit_dot_edge(s.c_str(), $2);
     node_map["IN"]++;
     string no1=to_string(node_map["IN"]);
     string s1="IN"+no1;
-    emit_dot_node(s1.c_str(), "IN");
+    //emit_dot_node(s1.c_str(), "IN");
     emit_dot_edge(s.c_str(), s1.c_str());
     if($5!=NULL){
       emit_dot_edge(s.c_str(), $5);}
@@ -1992,7 +1992,7 @@ comp_if:
     node_map["IF"]++;
     string no=to_string(node_map["IF"]);
     string s="IF"+no;
-    emit_dot_node(s.c_str(), "IF");
+    //emit_dot_node(s.c_str(), "IF");
     emit_dot_edge(s.c_str(), $2);
     if($3!=NULL){
       emit_dot_edge(s.c_str(), $3);}
