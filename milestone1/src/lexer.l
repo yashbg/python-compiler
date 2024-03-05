@@ -67,7 +67,11 @@ OTHER               .
         }
 
 \n([\n\t ]*{COMMENT}\n)+ {
-    yylval.tokenname = yytext;
+    string str = yytext;  
+    for(int i=0;i<str.size();i++){
+        yylval.tokenname[i] = str[i];
+    }
+    yylval.tokenname[str.size()] = '\0';
     return NEWLINE;
 }
 
