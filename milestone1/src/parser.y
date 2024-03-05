@@ -84,7 +84,7 @@ void emit_dot_edge(const char* from, const char* to) {
 %%
 
 file_input:
-  newline_or_stmt_list NEWLINE
+  newline_or_stmt_list
   {
   }
 ;

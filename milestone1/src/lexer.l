@@ -5,6 +5,7 @@
     extern int line;
     
     int dedentsToBeReturned = 0;
+    int indentToBeReturned = 0;
     int line_join = 0;
     int column;
     int indent[100];
@@ -32,7 +33,7 @@ FLOAT_NUMBER        {POINT_FLOAT}|{EXPONENT_FLOAT}
 IMAGINARY           ({FLOAT_NUMBER}|{DIGITPART})("j"|"J")
 
 LETTER              [_a-zA-Z]        
-WHITESPACE          " "|"\f"
+WHITESPACE          " "|"\f"|"\t"
 NEWLINE             "\n"
 NAME                {LETTER}({LETTER}|{DIGIT})*
 
@@ -52,7 +53,15 @@ OTHER               .
 
     indent[0]=0;
     /*printf("deds to be returned = %d\n", dedentsToBeReturned);*/
-    if(dedentsToBeReturned > 0){
+
+    if(indentToBeReturned > 0){
+        /*printf("reached here\n");*/
+        indentToBeReturned = 0;
+        printf("%s\n", "INDENT");
+        return INDENT;
+    }
+
+    while(dedentsToBeReturned > 0){
         /*printf("reached here\n");*/
         dedentsToBeReturned--;
         printf("%s\n", "DEDENT");
@@ -69,41 +78,34 @@ OTHER               .
     return NEWLINE;
 }
 
-^[\n\t ]+ {
+[\n\t ]+ {
     if(line_join == 1) {
         REJECT;
     }
     else{
-        int spaces=0;
-        if(top==0) indent[top]=0;
-        column=0;
-        while(isspace(yytext[spaces])) {
-            if(yytext[spaces]=='\t') column+=2;
-            else if(yytext[spaces]=='\n') column=0;
-            else column++;
-            spaces++;
+        int last_newline_pos =  -1, len = strlen(yytext);
+        for(int i = 0; i < len; i++){
+            if(yytext[i] == '\n') last_newline_pos = i;
         }
-        if(column>indent[top]){
-            indent[top+1] = column;
-            top++;
-            printf("%s\n", "INDENT"); return INDENT;
-        } 
-        else if(column < indent[top])
-        {
-            /*printf("Reached here\n");*/
-            /*printf("deds to be returned = %d\n", dedentsToBeReturned);*/
-            while(column<indent[top]) {
-                /*cout << indent[top] << " ";*/
-                top--;
-                dedentsToBeReturned++;
+        if(last_newline_pos != -1){
+            int currindent = len - last_newline_pos - 1;
+            if(currindent > indent[top]){
+                top++;
+                indent[top] = currindent;
+                indentToBeReturned = 1;
             }
-            /*printf("deds to be returned now = %d\n", dedentsToBeReturned);*/
-            if(column!=indent[top]) {
-                printf("IndentationError: unindent does not match any outer indentation level at line number %d\n", line);
-                exit(1);
+            else if(currindent < indent[top]){
+                while(currindent < indent[top]){
+                    top--;
+                    dedentsToBeReturned++;
+                }
+                if(currindent != indent[top]) {
+                    printf("IndentationError: unindent does not match any outer indentation level at line number %d\n", line);
+                    exit(1);
+                }
             }
-            dedentsToBeReturned--;
-            printf("%s\n", "DEDENT"); return DEDENT;
+            printf("NEWLINE\n");
+            return NEWLINE;
         }
     }
 }
@@ -451,16 +453,7 @@ or                         { string str = yytext;
 
 
 {COMMENT}                   
-{NEWLINE}                   { 
-                                if(line_join == 1);
-                                else{
-                                    string str = yytext;  
-                            for(int i=0;i<str.size();i++)
-                            yylval.tokenname[i] = str[i];
-                            yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; printf("%s\n", "NEWLINE"); return NEWLINE;
-                                    }
-                                }
+
 {WHITESPACE}           
 {OTHER}                     {printf("Invalid character %s found at line number %d\n", yytext, line); exit(1);}
 
