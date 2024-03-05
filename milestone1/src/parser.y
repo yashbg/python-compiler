@@ -20,11 +20,34 @@ void emit_dot_node(const char* node_name, const char* label) {
 }
 
 void emit_dot_edge(const char* from, const char* to) {
-  if (from == NULL || to == NULL) {
-    return;
-  }
-
-  std::cout << from << " -> " << to << ";" << std::endl;
+    if((from[0] == '\0')) return;
+    if(to[0] == '\0') return;
+    char* fromlabel = (char*)malloc(strlen(from) + 1);  // Allocate memory for fromlabel
+    char* tolabel = (char*)malloc(strlen(to) + 1); 
+    int i = 0;
+    while(from[i] != '\0'){
+      fromlabel[i] = from[i];
+      i++;
+    }
+    int j = 0;
+    while(to[j] != '\0'){
+      tolabel[j] = to[j];
+      j++;
+    }
+    i--;j--;
+    while(i>=0 && isDigit(from[i])){
+      i--;
+    }
+    while(j>=0 && isDigit(to[j])){
+      j--;
+    }
+    fromlabel[i+1] = '\0';
+    tolabel[j+1] = '\0';
+    emit_dot_node(from, fromlabel);
+    emit_dot_node(to, tolabel);
+    fprintf(output_file, "\"%s\" -> \"%s\";\n", from, to);
+    free(fromlabel);  // Free allocated memory
+    free(tolabel);    // Free allocated memory
 }
 %}
 
@@ -1994,3 +2017,37 @@ void yyerror(const char* s) {
   fprintf(stderr, "Parse error: %s at line number %d\n", s, line);
   exit(1);
 }
+/*
+int main(int argc, char** argv) {
+  if (argc != 3) {
+        printf("Usage: %s <input_file> <output_file>\n", argv[0]);
+        return 1;
+    }
+
+    // Open input file
+    FILE * input_file = fopen(argv[1], "r");
+    if (input_file == NULL) {
+        perror("Error opening input file");
+        return 1;
+    }
+
+    // Open output file
+    output_file = fopen(argv[2], "w");
+    if (output_file == NULL) {
+        perror("Error opening output file");
+        fclose(input_file); // Close the input file before exiting
+        return 1;
+    }
+  
+    fprintf(output_file, "digraph G {\n");
+
+    yyin = input_file;
+    yyparse();
+
+    fprintf(output_file, "}\n");
+
+    fclose(input_file);
+    fclose(output_file);
+    return 0;
+}
+*/
