@@ -404,7 +404,13 @@ expr_stmt_suffix_choices:
 
 equal_testlist_star_expr_list:
   %empty
+  {
+    $$ = NULL;
+  }
 | equal_testlist_star_expr_list '=' testlist_star_expr
+  {
+
+  }
 ;
 
 annassign:
@@ -435,16 +441,51 @@ annassign:
 
 testlist_star_expr:
   test_or_star_expr comma_test_or_star_expr_list comma_opt
+  {
+    if($2 != NULL){
+      s1 = "," + to_string(token_map[","]); 
+      emit_dot_edge(s1.c_str(), $1); 
+      strcpy($$, ","); 
+      string temp = to_string(node_map[","]); 
+      strcat($$, temp.c_str()); 
+    }
+    else{
+      strcpy($$, $1);
+    }
+  }
 ;
 
 test_or_star_expr:
   test
+  {
+    strcpy($$, $1);
+  }
 | star_expr
+  {
+    strcpy($$, $1);
+  }
 ;
 
 comma_test_or_star_expr_list:
   %empty
+  {
+    $$ = NULL;
+  }
 | comma_test_or_star_expr_list ',' test_or_star_expr
+  {
+    if($1 != NULL){
+      node_map[","]++;
+      s1 = "," + to_string(node_map[","]);
+      emit_dot_edge(s1.c_str(), $1);
+      emit_dot_edge(s1.c_str(), $3);
+      strcpy($$, ",");
+      string temp = to_string(node_map[","]);
+      strcat($$, temp.c_str());
+    }
+    else{
+      strcpy($$, $3);
+    }
+  }
 ;
 
 augassign: 
