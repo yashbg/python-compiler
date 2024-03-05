@@ -1,28 +1,30 @@
 %{
-#include <string>
 #include <iostream>
-#include <cstdlib>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string>
 #include <map>
 #include <cstring>
-using namespace std;
+#include <cstdlib>
+
 extern FILE *yyin;
 void yyerror(const char *);
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
-map<string, int> node_map;
-FILE *output_file;
+
+std::map<std::string, int> node_map;
 int line = 1;
-string s1, s2;
+std::string s1, s2;
+
 void emit_dot_node(const char* node_name, const char* label) {
-    fprintf(output_file, "%s [label=\"%s\"];\n", node_name, label);
+  std::cout << node_name << " [label=\"" << label << "\"];" << std::endl;
 }
+
 void emit_dot_edge(const char* from, const char* to) {
-    if((from == NULL) || (to == NULL)) return;
-    fprintf(output_file, "%s -> %s;\n", from, to);
+  if (from == NULL || to == NULL) {
+    return;
+  }
+
+  std::cout << from << " -> " << to << ";" << std::endl;
 }
 %}
 
