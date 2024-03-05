@@ -35,7 +35,7 @@ void emit_dot_edge(const char* from, const char* to) {
     using namespace std;
 }
 
-%union {char* tokenname;}
+%union {char tokenname[1024];}
 %token<tokenname> PLUSEQUAL MINEQUAL STAREQUAL SLASHEQUAL PERCENTEQUAL AMPEREQUAL VBAREQUAL CIRCUMFLEXEQUAL LEFTSHIFTEQUAL
 %token<tokenname> RIGHTSHIFTEQUAL DOUBLESTAREQUAL DOUBLESLASHEQUAL DOUBLESLASH DOUBLESTAR NUMBER STRING NONE TRUE FALSE
 %token<tokenname> NEWLINE ARROW DEF NAME BREAK CONTINUE RETURN GLOBAL ASSERT IF WHILE FOR ELSE ELIF INDENT DEDENT
@@ -72,7 +72,7 @@ newline_or_stmt:
 newline_or_stmt_list:
   %empty
   {
-    $$[0] = '\0';
+    $$[0]='\0';
   }
 | newline_or_stmt_list newline_or_stmt
   {
@@ -102,7 +102,7 @@ funcdef:
     s1 = $$ + to_string(node_map[$$]);
     emit_dot_edge(s1.c_str(), $3);
 
-    if($4[0] != '\0'){
+    if($4 != NULL){
       node_map["ARROW"]++;
       s1 = "ARROW"+to_string(node_map["ARROW"]);
       s2 = "DEF"+to_string(node_map["DEF"]);
@@ -125,7 +125,7 @@ funcdef:
 arrow_test_opt:
   %empty
   {
-    $$[0] = '\0';
+    $$[0]='\0';
   }
 | ARROW test
   {
@@ -140,7 +140,7 @@ parameters:
   {
     node_map["()"]++;
     
-    if($2[0] != '\0'){
+    if($2 != NULL){
       s1 = "()"+to_string(node_map["()"]); 
       emit_dot_edge(s1.c_str(), $2);
     }
@@ -154,7 +154,7 @@ parameters:
 typedargslist_opt:
   %empty
   {
-    $$[0] = '\0';
+    $$[0]='\0';
   }
 | typedargslist
   {
@@ -165,16 +165,16 @@ typedargslist_opt:
 typedargslist:
   tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list
   {
-    if($2[0] != '\0') {
+    if($2 != NULL) {
       node_map["="]++;
       s1 = "=" + to_string(node_map["="]);
       s2 = $1;
       emit_dot_edge(s1.c_str(), s2.c_str());
     }
     
-    if($3[0]!='\0')
+    if($3!=NULL)
     {
-      if($2[0] != '\0'){
+      if($2 != NULL){
         s1 = $3;
         s2 = "=" + to_string(node_map["="]);
         emit_dot_edge($3, s2.c_str());
@@ -187,7 +187,7 @@ typedargslist:
     }
     else
     {
-      if($2[0] != '\0'){
+      if($2 != NULL){
         strcpy($$, "=");
         string temp = to_string(node_map["="]);
         strcat($$, temp.c_str());
@@ -207,7 +207,7 @@ tfpdef:
     strcat($$, ")");
     node_map[$$]++;
 
-    if($2[0] != '\0'){
+    if($2 != NULL){
       node_map[":"]++;
       s1 = $2+to_string(node_map[":"]);       
       s2 = $$+to_string(node_map[$$]);
@@ -223,7 +223,7 @@ tfpdef:
 comma_opt:
   %empty
   {
-    $$[0] = '\0';
+    $$[0]='\0';
   }
 | ','
   {
@@ -234,7 +234,7 @@ comma_opt:
 equal_test_opt:
   %empty
   {
-    $$[0] = '\0';
+    $$[0]='\0';
   }
 | '=' test
   {
@@ -246,11 +246,11 @@ equal_test_opt:
 comma_tfpdef_equal_test_opt_list:
   %empty
   {
-    $$[0] = '\0';
+    $$[0]='\0';
   }
 | comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt
   {
-    if($4[0] != '\0'){
+    if($4 != NULL){
       node_map["="]++;
       s1 = "="+to_string(node_map["="]);
       s2 = $3;
@@ -259,9 +259,9 @@ comma_tfpdef_equal_test_opt_list:
 
     node_map[","]++;
 
-    if($1[0]!='\0')
+    if($1!=NULL)
     {
-      if($4[0] != '\0'){
+      if($4 != NULL){
         s2 = "="+to_string(node_map["="]);
         emit_dot_edge($1, s2.c_str());
       }
@@ -277,7 +277,7 @@ comma_tfpdef_equal_test_opt_list:
     }
     else{
       s1 = "," + to_string(node_map[","]);
-      if($4[0] != '\0'){
+      if($4 != NULL){
         s2 = "="+to_string(node_map["="]);
       }
       else{
@@ -295,7 +295,7 @@ comma_tfpdef_equal_test_opt_list:
 colon_test_opt:
   %empty
   {
-    $$[0] = '\0';
+    $$[0]='\0';
   }
 | ':' test
   {
@@ -318,7 +318,7 @@ stmt:
 semicolon_opt:
   %empty
   {
-    $$[0] = '\0';
+    $$[0]='\0';
   }
 | ';'
   {
@@ -329,11 +329,11 @@ semicolon_opt:
 simple_stmt:
   small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
   {
-    if($2[0] == '\0'){
+    if($2== NULL){
       strcpy($$, $1);
     }
     else{
-      if($2[0] != '\0'){
+      if($2 != NULL){
         node_map[";"]++;
         s1 = ";"+to_string(node_map[";"]);
         emit_dot_edge(s1.c_str(), $1);
@@ -349,11 +349,11 @@ simple_stmt:
 semicolon_small_stmt_list:
   %empty
   {
-    $$[0] = '\0';
+    $$[0]='\0';
   }
 | semicolon_small_stmt_list ';' small_stmt
   {
-    if($1[0] != '\0'){
+    if($1 != NULL){
       node_map[";"]++;
       s1 = ";"+to_string(node_map[";"]);
       emit_dot_edge(s1.c_str(), $1);
@@ -431,7 +431,7 @@ expr_stmt_suffix_choices:
 equal_testlist_star_expr_list:
   %empty
   {
-    $$ = NULL;
+    $$[0]='\0';
   }
 | equal_testlist_star_expr_list '=' testlist_star_expr
   {
@@ -507,7 +507,7 @@ test_or_star_expr:
 comma_test_or_star_expr_list:
   %empty
   {
-    $$ = NULL;
+    $$[0]='\0';
   }
 | comma_test_or_star_expr_list ',' test_or_star_expr
   {
@@ -632,7 +632,7 @@ return_stmt:
 testlist_opt:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | testlist
 {
@@ -661,7 +661,7 @@ global_stmt:
 comma_name_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | comma_name_list ',' NAME
 {
@@ -697,7 +697,7 @@ assert_stmt:
 comma_test_opt:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | ',' test
 {
@@ -807,7 +807,7 @@ for_stmt:
 else_colon_suite_opt:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | ELSE ':' suite
 {
@@ -829,7 +829,7 @@ else_colon_suite_opt:
 elif_test_colon_suite_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | elif_test_colon_suite_list ELIF test ':' suite
 {
@@ -880,7 +880,7 @@ NEWLINE_list:
 stmt_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | stmt_list stmt
 {
@@ -910,7 +910,7 @@ test:
 if_or_test_else_test_opt:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | IF or_test ELSE test
 {
@@ -949,7 +949,7 @@ or_test:
 or_and_test_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | or_and_test_list OR and_test
 {
@@ -980,7 +980,7 @@ and_test:
 and_not_test_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | and_not_test_list AND not_test
 {
@@ -1028,7 +1028,7 @@ comparison:
 comp_op_expr_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | comp_op_expr_list comp_op expr
 {
@@ -1116,7 +1116,7 @@ expr:
 or_xor_expr_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | or_xor_expr_list '|' xor_expr
 {
@@ -1147,7 +1147,7 @@ xor_expr:
 xor_and_expr_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | xor_and_expr_list '^' and_expr
 {
@@ -1178,7 +1178,7 @@ and_expr:
 and_shift_expr_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | and_shift_expr_list '&' shift_expr
 {
@@ -1221,7 +1221,7 @@ ltshift_or_rtshift:
 shift_arith_expr_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | shift_arith_expr_list ltshift_or_rtshift arith_expr
 {
@@ -1264,7 +1264,7 @@ plus_or_minus:
 plus_or_minus_term_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | plus_or_minus_term_list plus_or_minus term
 {
@@ -1314,7 +1314,7 @@ star_or_slash_or_percent_or_doubleslash:
 star_or_slash_or_percent_or_doubleslash_factor_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | star_or_slash_or_percent_or_doubleslash_factor_list star_or_slash_or_percent_or_doubleslash factor
 {
@@ -1376,7 +1376,7 @@ power:
 doublestar_factor_opt:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | DOUBLESTAR factor
 {
@@ -1399,7 +1399,7 @@ atom_expr:
 trailer_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | trailer_list trailer
 {
@@ -1456,7 +1456,7 @@ atom:
 | STRING string_list
 {
   if($2==NULL){
-    $$=$1;}
+    strcpy($$,$1);}
   else
     {
     strcpy($$, "STRING("); 
@@ -1495,20 +1495,15 @@ atom:
 string_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | string_list STRING
 {
   if($1==NULL){
-    $$=$2;}
+    strcpy($$,$2);}
   else
     {
     strcpy($$, "STRING("); 
-
-    for (int i = 0; i < strlen($1) - 1; ++i) 
-      $2[i] = $2[i + 1];
-    $2[strlen($2) - 2] = '\0';
-
     strcat($$, $2);
     strcat($$, ")");
     node_map[$$]++;
@@ -1524,11 +1519,11 @@ string_list:
 testlist_comp_opt:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | testlist_comp
 {
-  $$=$1;
+  strcpy($$,$1);
 }
 ;
 
@@ -1606,11 +1601,11 @@ trailer:
 arglist_opt:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | arglist
 {
-  $$=$1;
+  strcpy($$,$1);
 }
 ;
 
@@ -1640,7 +1635,7 @@ subscriptlist:
 comma_subscript_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | comma_subscript_list ',' subscript
 {
@@ -1651,19 +1646,14 @@ comma_subscript_list:
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
   emit_dot_edge(s.c_str(), $3);
-  char* str = new char(s.size() + 1);
-  for(int i = 0; i < s.size(); i++){
-    str[i] = s[i];
-  }  
-  str[s.size()] = '\0';
-  $$ = str;
+  strcpy($$, s.c_str());
 }
 ;
 
 subscript:
   test
   {
-    $$=$1;
+    strcpy($$,$1);
   }
 | test_opt ':' test_opt
 {
@@ -1675,23 +1665,18 @@ subscript:
     emit_dot_edge(s.c_str(), $1);}
   if($3!=NULL){
     emit_dot_edge(s.c_str(), $3);}
-  char* str = new char(s.size() + 1);
-  for(int i = 0; i < s.size(); i++){
-    str[i] = s[i];
-  }
-  str[s.size()] = '\0';
-  $$ = str;
+    strcpy($$, s.c_str());
 }
 ;
 
 test_opt: 
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | test
 {
-  $$=$1;
+  strcpy($$,$1);
 }
 ;
 
@@ -1715,7 +1700,7 @@ exprlist:
 comma_expr_or_star_expr_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | comma_expr_or_star_expr_list ',' expr_or_star_expr
 {
@@ -1726,12 +1711,7 @@ comma_expr_or_star_expr_list:
       if($1!=NULL){
         emit_dot_edge(s.c_str(), $1);}
       emit_dot_edge(s.c_str(), $2);
-      char* str = new char(s.size() + 1);
-      for(int i = 0; i < s.size(); i++){
-        str[i] = s[i];
-      }
-      str[s.size()] = '\0';
-      $$ = str;
+      strcpy($$, s.c_str());
 }
 ;
 
@@ -1776,7 +1756,7 @@ testlist:
 comma_test_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | comma_test_list ',' test
 {
@@ -1810,7 +1790,7 @@ classdef:
     s2 = "()"+to_string(node_map["()"]);
     emit_dot_edge(s1.c_str(), s2.c_str());
     
-    if($3[0] != '\0'){
+    if($3 != NULL){
       s1 = s2;
       s2 = $3;
       emit_dot_edge(s1.c_str(), s2.c_str());
@@ -1834,7 +1814,7 @@ classdef:
 parenthesis_arglist_opt_opt:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   
   }
 | '(' arglist_opt ')'
@@ -1871,7 +1851,7 @@ arglist:
 comma_argument_list:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | comma_argument_list ',' argument
 {
@@ -1936,22 +1916,22 @@ argument:
 comp_for_opt:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | comp_for
 {
-  $$=$1;
+  strcpy($$,$1);
 }
 ;
 
 comp_iter:
   comp_for
   {
-    $$=$1;
+    strcpy($$,$1);
   }
 | comp_if
 {
-  $$=$1;
+  strcpy($$,$1);
 }
 ;
 
@@ -1992,11 +1972,11 @@ comp_if:
 comp_iter_opt:
   %empty
   {
-    $$=NULL;
+    $$[0]='\0';
   }
 | comp_iter
 {
-  $$=$1;
+  strcpy($$,$1);
 }
 ;
 
