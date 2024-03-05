@@ -1,7 +1,7 @@
 %{
     #include <stdio.h>
     #include "parser.tab.h"
-    using namespace std;
+
     extern int line;
     int line_join = 0;
     int column;
@@ -32,9 +32,6 @@ IMAGINARY           ({FLOAT_NUMBER}|{DIGITPART})("j"|"J")
 LETTER              [_a-zA-Z]        
 WHITESPACE          " "|"\f"
 NEWLINE             "\n"
-KEYWORD             "False"|"await"|"else"|"import"|"pass"|"None"|"break"|"except"| "in"|"raise"|"True"|"class"|"finally"|"is"|"return"|"and"|"continue"|"for"|"lambda"|"try" |"as"|"def"|"from"|"nonlocal"|"while"|"assert"|"del"|"global"|"not"|"with"|"async"|"elif"|"if"|"or"|"yield"
-DELIMITERS          "("|")"|"["|"]"|","|":"|"."|";"|"="|"->"|"+="|"-="|"*="|"/="|"//="|"%="|"&="|"|="|"^="|">>="|"<<="|"**="
-OPERATORS           "+"|"-"|"*"|"**"|"/"|"//"|"%"|"<<"|">>"|"&"|"|"|"^"|"~"|"<"|">"|"<="|">="|"=="|"!="
 NAME                {LETTER}({LETTER}|{DIGIT})*
 
 STRING_PREFIX       "r"|"u"|"R"|"U"|"f"|"F"|("fr"|"Fr"|"fR"|"FR"|"rf"|"rF"|"Rf"|"RF")
@@ -44,7 +41,7 @@ BYTE_STRING_PREFIX  "b"|"B"|("br"|"Br"|"bR"|"BR"|"rb"|"rB"|"Rb"|"RB")
 STRING_BODY         ({SHORT_STRING}|{LONG_STRING})
 BYTE_STRING         ({BYTE_STRING_PREFIX}{STRING_BODY})
 STRING              {STRING_PREFIX}?{STRING_BODY}
-     
+
 COMMENT             \#[^\n]*
 OTHER               .
 
