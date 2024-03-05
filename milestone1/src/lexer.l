@@ -48,16 +48,12 @@ OTHER               .
 
 %%
 
-    while(column<indent[top]) {
-        top--;
-        if(column > indent[top]) {
-            printf("Indentation Error\n");
-            exit(1);
-        }
-        /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
-        else {
-            return DEDENT;
-        }
+    indent[0]=0;
+    /*printf("deds to be returned = %d\n", dedentsToBeReturned);*/
+    if(dedentsToBeReturned > 0){
+        /*printf("reached here\n");*/
+        dedentsToBeReturned--;
+        return DEDENT;
     }
 
 <<EOF>> {
@@ -68,6 +64,10 @@ OTHER               .
             exit(1);
         }
 
+\n([\n\t ]*{COMMENT}\n)+ {
+    yylval.tokenname = yytext;
+    return NEWLINE;
+}
 
 ^[\n\t ]+ {
     if(line_join == 1) {
@@ -83,29 +83,27 @@ OTHER               .
             else column++;
             spaces++;
         }
-        //printf("\ncolumn = %d, top = %d, indent[top] = %d\n", column, top, indent[top]);
         if(column>indent[top]){
             indent[top+1] = column;
             top++;
             return INDENT;
         } 
-        else
+        else if(column < indent[top])
         {
+            /*printf("Reached here\n");*/
+            /*printf("deds to be returned = %d\n", dedentsToBeReturned);*/
             while(column<indent[top]) {
+                /*cout << indent[top] << " ";*/
                 top--;
-                /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
-                if(column > indent[top]) {
-                    printf("Indentation Error\n");
-                    exit(1);
-                }
-                else {
-                    return DEDENT;
-                }
+                dedentsToBeReturned++;
             }
+            /*printf("deds to be returned now = %d\n", dedentsToBeReturned);*/
             if(column!=indent[top]) {
-                printf("IndentationError: unindent does not match any outer indentation level\n");
-                //exit(1);
+                printf("IndentationError: unindent does not match any outer indentation level at line number %d\n", line);
+                exit(1);
             }
+            dedentsToBeReturned--;
+            return DEDENT;
         }
     }
 }
