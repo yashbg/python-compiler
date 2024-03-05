@@ -4,6 +4,7 @@
 
     extern int line;
     
+    int dedentsToBeReturned = 0;
     int line_join = 0;
     int column;
     int indent[100];

@@ -6,6 +6,8 @@
 extern FILE *yyin;
 extern int yyparse();
 
+std::ofstream outfile;
+
 void show_help() {
   std::cout << "Usage: main --input=<input_file> --output=<output_file> [--verbose]" << std::endl
             << "  --input: Input file to parse." << std::endl
@@ -14,13 +16,11 @@ void show_help() {
 }
 
 void add_dot_header() {
-  std::cout << "strict graph AST {" << std::endl << std::endl
-            << "ratio = fill;" << std::endl
-            << "node [style=filled];" << std::endl << std::endl;
+  outfile << "strict graph AST {" << std::endl << std::endl;
 }
 
 void add_dot_footer() {
-  std::cout << "}" << std::endl;
+  outfile << "}" << std::endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -49,18 +49,17 @@ int main(int argc, char *argv[]) {
   }
 
   yyin = fopen(input_file.c_str(), "r");
+  if (yyin == NULL) {
+    std::cerr << "Error: Could not open input file." << std::endl;
+    return 1;
+  }
 
-  std::ofstream outfile("graph.dot");
-  std::streambuf *coutbuf = std::cout.rdbuf();
-  std::streambuf *outfilebuf = outfile.rdbuf();
-  std::cout.rdbuf(outfilebuf);
+  outfile.open("graph.dot");
 
   if (verbose) {
-    std::cout.rdbuf(coutbuf);
     std::cout << "Input file: " << input_file << std::endl;
     std::cout << "Output file: " << output_file << std::endl;
     std::cout << "Parsing input file and creating DOT file..." << std::endl;
-    std::cout.rdbuf(outfilebuf);
   }
 
   add_dot_header();
@@ -68,9 +67,7 @@ int main(int argc, char *argv[]) {
   add_dot_footer();
 
   if (verbose) {
-    std::cout.rdbuf(coutbuf);
     std::cout << "Creating AST..." << std::endl;
-    std::cout.rdbuf(outfilebuf);
   }
 
   return system(("dot -Tpdf graph.dot -o " + output_file).c_str());

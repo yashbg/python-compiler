@@ -4,10 +4,12 @@
 #include <map>
 #include <cstring>
 #include <cstdlib>
+#include <fstream>
 
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
+extern std::ofstream outfile;
 
 void yyerror(const char *);
 
@@ -15,8 +17,12 @@ std::map<std::string, int> node_map;
 int line = 1;
 std::string s1, s2;
 
+int is_digit(char c) {
+  return ((c >= '0') && (c <= '9'));
+}
+
 void emit_dot_node(const char* node_name, const char* label) {
-  std::cout << node_name << " [label=\"" << label << "\"];" << std::endl;
+  outfile << node_name << " [label=\"" << label << "\"];" << std::endl;
 }
 
 void emit_dot_edge(const char* from, const char* to) {
@@ -35,17 +41,17 @@ void emit_dot_edge(const char* from, const char* to) {
       j++;
     }
     i--;j--;
-    while(i>=0 && isDigit(from[i])){
+    while(i>=0 && is_digit(from[i])){
       i--;
     }
-    while(j>=0 && isDigit(to[j])){
+    while(j>=0 && is_digit(to[j])){
       j--;
     }
     fromlabel[i+1] = '\0';
     tolabel[j+1] = '\0';
     emit_dot_node(from, fromlabel);
     emit_dot_node(to, tolabel);
-    fprintf(output_file, "\"%s\" -> \"%s\";\n", from, to);
+    outfile << "\"" << from << "\" -> \"" << to << "\";" << std::endl;
     free(fromlabel);  // Free allocated memory
     free(tolabel);    // Free allocated memory
 }
