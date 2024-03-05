@@ -55,16 +55,9 @@ OTHER               .
     if(dedentsToBeReturned > 0){
         /*printf("reached here\n");*/
         dedentsToBeReturned--;
+        printf("%s\n", "DEDENT");
         return DEDENT;
     }
-
-<<EOF>> {
-            while(indent[top] != 0) {
-                top--;
-                return DEDENT;
-            }
-            exit(1);
-        }
 
 \n([\n\t ]*{COMMENT}\n)+ {
     string str = yytext;  
@@ -72,6 +65,7 @@ OTHER               .
         yylval.tokenname[i] = str[i];
     }
     yylval.tokenname[str.size()] = '\0';
+    printf("%s\n", "NEWLINE");
     return NEWLINE;
 }
 
@@ -92,7 +86,7 @@ OTHER               .
         if(column>indent[top]){
             indent[top+1] = column;
             top++;
-            return INDENT;
+            printf("%s\n", "INDENT"); return INDENT;
         } 
         else if(column < indent[top])
         {
@@ -109,7 +103,7 @@ OTHER               .
                 exit(1);
             }
             dedentsToBeReturned--;
-            return DEDENT;
+            printf("%s\n", "DEDENT"); return DEDENT;
         }
     }
 }
@@ -122,338 +116,338 @@ False                      { string str = yytext;
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                            line=yylineno; return FALSE;}
+                            line=yylineno; printf("%s\n", "FALSE"); return FALSE;}
 else                       { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return ELSE;}
+                             line=yylineno; printf("%s\n", "ELSE"); return ELSE;}
 None                       { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return NONE;}
+                             line=yylineno; printf("%s\n", "NONE"); return NONE;}
 break                      { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return BREAK;}
+                             line=yylineno; printf("%s\n", "BREAK"); return BREAK;}
 in                         { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return IN;}
+                             line=yylineno; printf("%s\n", "IN"); return IN;}
 True                       { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return TRUE;}
+                             line=yylineno; printf("%s\n", "TRUE"); return TRUE;}
 class                      { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return CLASS;}
+                             line=yylineno; printf("%s\n", "CLASS"); return CLASS;}
 is                         { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return IS;}
+                             line=yylineno; printf("%s\n", "IS"); return IS;}
 return                     { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return RETURN;}
+                             line=yylineno; printf("%s\n", "RETURN"); return RETURN;}
 and                        { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return AND;}
+                             line=yylineno; printf("%s\n", "AND"); return AND;}
 continue                   { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return CONTINUE;}
+                             line=yylineno; printf("%s\n", "CONTINUE"); return CONTINUE;}
 for                        { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return FOR;}
+                             line=yylineno; printf("%s\n", "FOR"); return FOR;}
 def                        { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return DEF;}
+                             line=yylineno; printf("%s\n", "DEF"); return DEF;}
 while                      { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return WHILE;}
+                             line=yylineno; printf("%s\n", "WHILE"); return WHILE;}
 assert                     { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return ASSERT;}
+                             line=yylineno; printf("%s\n", "ASSERT"); return ASSERT;}
 global                     { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return GLOBAL;}
+                             line=yylineno; printf("%s\n", "GLOBAL"); return GLOBAL;}
 not                        { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return NOT;}
+                             line=yylineno; printf("%s\n", "NOT"); return NOT;}
 elif                       { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return ELIF;}
+                             line=yylineno; printf("%s\n", "ELIF"); return ELIF;}
 if                         { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return IF;}
+                             line=yylineno; printf("%s\n", "IF"); return IF;}
 or                         { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return OR;}
+                             line=yylineno; printf("%s\n", "OR"); return OR;}
 
 
 "+="                    { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return PLUSEQUAL;}
+                             line=yylineno; printf("%s\n", "PLUSEQUAL"); return PLUSEQUAL;}
 "-="                    { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return MINEQUAL;}
+                             line=yylineno; printf("%s\n", "MINEQUAL"); return MINEQUAL;}
 "*="                    { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return STAREQUAL;}
+                             line=yylineno; printf("%s\n", "STAREQUAL"); return STAREQUAL;}
 "/="                    { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return SLASHEQUAL;}
+                             line=yylineno; printf("%s\n", "SLASHEQUAL"); return SLASHEQUAL;}
 "%="                    { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return PERCENTEQUAL;}
+                             line=yylineno; printf("%s\n", "PERCENTEQUAL"); return PERCENTEQUAL;}
 "&="                    { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return AMPEREQUAL;}
+                             line=yylineno; printf("%s\n", "AMPEREQUAL"); return AMPEREQUAL;}
 "|="                    { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return VBAREQUAL;}
+                             line=yylineno; printf("%s\n", "VBAREQUAL"); return VBAREQUAL;}
 "^="                    { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return CIRCUMFLEXEQUAL;}
+                             line=yylineno; printf("%s\n", "CIRCUMFLEXEQUAL"); return CIRCUMFLEXEQUAL;}
 "<<="                   { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return LEFTSHIFTEQUAL;}
+                             line=yylineno; printf("%s\n", "LEFTSHIFTEQUAL"); return LEFTSHIFTEQUAL;}
 ">>="                   { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return RIGHTSHIFTEQUAL;}
+                             line=yylineno; printf("%s\n", "RIGHTSHIFTEQUAL"); return RIGHTSHIFTEQUAL;}
 "**="                   { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return DOUBLESTAREQUAL;}
+                             line=yylineno; printf("%s\n", "DOUBLESTAREQUAL"); return DOUBLESTAREQUAL;}
 "//="                   { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return DOUBLESLASHEQUAL;}
+                             line=yylineno; printf("%s\n", "DOUBLESLASHEQUAL"); return DOUBLESLASHEQUAL;}
 "("                     { line_join = 1; string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '(';}
+                             line=yylineno; printf("%s\n", "'('"); return '(';}
 ")"                     { line_join = 0; string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return ')';}
+                             line=yylineno; printf("%s\n", "')'"); return ')';}
 "["                     { line_join = 1; string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '[';}
+                             line=yylineno; printf("%s\n", "'['"); return '[';}
 "]"                     { line_join = 0; string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return ']';}
+                             line=yylineno; printf("%s\n", "']'"); return ']';}
 ","                     { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return ',';}
+                             line=yylineno; printf("%s\n", "','"); return ',';}
 ":"                     { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return ':';}
+                             line=yylineno; printf("%s\n", "':'"); return ':';}
 "."                     { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '.';}
+                             line=yylineno; printf("%s\n", "'.'"); return '.';}
 ";"                     { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return ';';}
+                             line=yylineno; printf("%s\n", "';'"); return ';';}
 "="                     { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '=';}
+                             line=yylineno; printf("%s\n", "'='"); return '=';}
 "->"                    { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return ARROW;}
+                             line=yylineno; printf("%s\n", "ARROW"); return ARROW;}
 
 
 "+"             { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '+';}
+                             line=yylineno; printf("%s\n", "'+'"); return '+';}
 "-"             { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '-';}
+                             line=yylineno; printf("%s\n", "'-'"); return '-';}
 "*"             { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '*';}
+                             line=yylineno; printf("%s\n", "'*'"); return '*';}
 "/"             { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '/';}
+                             line=yylineno; printf("%s\n", "'/'"); return '/';}
 "%"             { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '%';}
+                             line=yylineno; printf("%s\n", "'%'"); return '%';}
 "|"             { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '|';}
+                             line=yylineno; printf("%s\n", "'|'"); return '|';}
 "&"             { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '&';}
+                             line=yylineno; printf("%s\n", "'&'"); return '&';}
 "~"             { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '~';}
+                             line=yylineno; printf("%s\n", "'~'"); return '~';}
 "^"             { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return '^';}
+                             line=yylineno; printf("%s\n", "'^'"); return '^';}
 "<"             { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return LESSTHAN;}
+                             line=yylineno; printf("%s\n", "LESSTHAN"); return LESSTHAN;}
 "<="            { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return LESSTHANEQUAL;}
+                             line=yylineno; printf("%s\n", "LESSTHANEQUAL"); return LESSTHANEQUAL;}
 ">"             { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return GREATERTHAN;}
+                             line=yylineno; printf("%s\n", "GREATERTHAN"); return GREATERTHAN;}
 ">="            { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return GREATERTHANEQUAL;}
+                             line=yylineno; printf("%s\n", "GREATERTHANEQUAL"); return GREATERTHANEQUAL;}
 ">>"            { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return RIGHTSHIFT;}
+                             line=yylineno; printf("%s\n", "RIGHTSHIFT"); return RIGHTSHIFT;}
 "<<"            { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return LEFTSHIFT;}
+                             line=yylineno; printf("%s\n", "LEFTSHIFT"); return LEFTSHIFT;}
 "//"            { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return DOUBLESLASH;}
+                             line=yylineno; printf("%s\n", "DOUBLESLASH"); return DOUBLESLASH;}
 "**"            { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return DOUBLESTAR;}
+                             line=yylineno; printf("%s\n", "DOUBLESTAR"); return DOUBLESTAR;}
 "=="            { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return DOUBLEEQUAL;}
+                             line=yylineno; printf("%s\n", "DOUBLEEQUAL"); return DOUBLEEQUAL;}
 "!="            { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return NOTEQUAL;}
+                             line=yylineno; printf("%s\n", "NOTEQUAL"); return NOTEQUAL;}
 
 {INTEGER}                           { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return NUMBER;}
+                             line=yylineno; printf("%s\n", "NUMBER"); return NUMBER;}
 {FLOAT_NUMBER}                      { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return NUMBER;}
+                             line=yylineno; printf("%s\n", "NUMBER"); return NUMBER;}
 {IMAGINARY}                         { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return NUMBER;}
+                             line=yylineno; printf("%s\n", "NUMBER"); return NUMBER;}
 {BYTE_STRING}                       {}
 {STRING}                            { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return STRING;}
+                             line=yylineno; printf("%s\n", "STRING"); return STRING;}
 {NAME}                              { string str = yytext;  
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return NAME;}
+                             line=yylineno; printf("%s\n", "NAME"); return NAME;}
 
 
 {COMMENT}                   
@@ -464,7 +458,7 @@ or                         { string str = yytext;
                             for(int i=0;i<str.size();i++)
                             yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
-                             line=yylineno; return NEWLINE;
+                             line=yylineno; printf("%s\n", "NEWLINE"); return NEWLINE;
                                     }
                                 }
 {WHITESPACE}           
