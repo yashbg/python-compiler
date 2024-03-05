@@ -390,7 +390,7 @@ small_stmt:
 ;
 
 expr_stmt:
-  testlist annassign
+  testlist_star_expr annassign
   {
     emit_dot_edge($2, $1);
     strcpy($$, $2);
@@ -413,7 +413,6 @@ expr_stmt:
     else{
       node_map["="]++;
       s1 = $2 + to_string(node_map["="]);
-      emit_dot_edge(s1.c_str(), $3);
       emit_dot_edge(s1.c_str(), $1);
       strcpy($$, "=");
       string temp = to_string(node_map["="]);
@@ -465,13 +464,14 @@ annassign:
     s1 = ":" + to_string(node_map[":"]);
     emit_dot_edge(s1.c_str(), $2);
     
+    string temp;
     if($3!=NULL){
       strcpy($$, "=");
-      string temp = to_string(node_map["="]);
+      temp = to_string(node_map["="]);
     }
     else{
       strcpy($$, ":");
-      string temp = to_string(node_map[":"]);
+      temp = to_string(node_map[":"]);
     }
     strcat($$, temp.c_str());
   }
@@ -481,7 +481,7 @@ testlist_star_expr:
   test_or_star_expr comma_test_or_star_expr_list comma_opt
   {
     if($2 != NULL){
-      s1 = "," + to_string(token_map[","]); 
+      s1 = "," + to_string(node_map[","]); 
       emit_dot_edge(s1.c_str(), $1); 
       strcpy($$, ","); 
       string temp = to_string(node_map[","]); 
@@ -647,7 +647,7 @@ global_stmt:
     string no=to_string(node_map["GLOBAL"]);
     string s="GLOBAL"+no;
     emit_dot_node(s.c_str(), "GLOBAL");
-    string s2;
+    char* s2;
     strcpy(s2,"NAME(");
     strcat(s2,$2);
     strcat(s2,")");
@@ -669,7 +669,7 @@ comma_name_list:
   string no=to_string(node_map[","]);
   string s=","+no;
   emit_dot_node(s.c_str(), ",");
-  string s2;
+  char* s2;
   strcpy(s2,"NAME(");
   strcat(s2,$3);
   strcat(s2,")");
@@ -822,7 +822,7 @@ else_colon_suite_opt:
   string s1=":"+no1;
   emit_dot_node(s1.c_str(), ":");
   emit_dot_edge(s.c_str(), s1.c_str());
-    $$=s.c_str();
+  strcpy($$, s.c_str());
 }
 ;
 
@@ -847,7 +847,7 @@ elif_test_colon_suite_list:
   emit_dot_edge(s.c_str(), s1.c_str());
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
-    $$=s.c_str();
+   strcpy($$, s.c_str());
 }
 ;
 
@@ -880,7 +880,7 @@ NEWLINE_list:
 stmt_list:
   %empty
   {
-    $$=NULL
+    $$=NULL;
   }
 | stmt_list stmt
 {
@@ -922,7 +922,7 @@ if_or_test_else_test_opt:
   emit_dot_edge(s.c_str(), $4);
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
-    $$=s.c_str();
+    strcpy($$, s.c_str());
 }
 ;
 
@@ -1124,7 +1124,7 @@ or_xor_expr_list:
   string no=to_string(node_map[$2]);
   string s=$2+no;
   emit_dot_node(s.c_str(), "|");
-  emit_dot_edge(s.c_str, $3);
+  emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
     strcpy($$, s.c_str());
@@ -1155,7 +1155,7 @@ xor_and_expr_list:
   string no=to_string(node_map[$2]);
   string s=$2+no;
   emit_dot_node(s.c_str(), "^");
-  emit_dot_edge(s.c_str, $3);
+  emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
     strcpy($$, s.c_str());
@@ -1186,7 +1186,7 @@ and_shift_expr_list:
   string no=to_string(node_map[$2]);
   string s=$2+no;
   emit_dot_node(s.c_str(), "&");
-  emit_dot_edge(s.c_str, $3);
+  emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
     emit_dot_edge(s.c_str(), $1);}
     strcpy($$, s.c_str());
@@ -1849,25 +1849,23 @@ parenthesis_arglist_opt_opt:
 ;
 
 arglist:
-  argument 
-  {
-    strcpy($$, $1);
-  }
-|  argument comma_argument_list  comma_opt
+ argument comma_argument_list  comma_opt
 {
-  if($3==NULL){
-    strcpy($$, $1);}
-  else
-    {
-      node_map[","]++;
-      string no=to_string(node_map[","]);
-      string s=","+no;
-    emit_dot_node(s.c_str(), ",");
-    emit_dot_edge(s.c_str(), $1);
-    emit_dot_edge(s.c_str(), $3);
-    strcpy($$, s.c_str());
-    }
-}
+    if($2==NULL && $3==NULL){
+      strcpy($$, $1);}
+    else if($3==NULL)
+      {
+        node_map[","]++;
+        string no=to_string(node_map[","]);
+        string s=","+no;
+        emit_dot_node(s.c_str(), ",");
+        emit_dot_edge(s.c_str(), $1);
+        strcpy($$, s.c_str());
+      }
+      else {
+        strcpy($$, $1);
+      }
+  }
 ;
 
 comma_argument_list:
