@@ -578,80 +578,301 @@ augassign:
 
 flow_stmt:
   break_stmt 
+  {
+    strcpy($$, $1);
+  }
 | continue_stmt
+{
+  strcpy($$, $1);
+}
 | return_stmt
+{
+  strcpy($$, $1);
+}
 ;
 
 break_stmt:
   BREAK
+  {
+    node_map["BREAK"]++;
+    string no=to_string(node_map["BREAK"]);
+    string s="BREAK"+no;
+    emit_dot_node(s.c_str(), "BREAK");
+    strcpy($$, s.c_str());  
+  }
 ;
 
 continue_stmt:
   CONTINUE
+  {
+    node_map["CONTINUE"]++;
+    string no=to_string(node_map["CONTINUE"]);
+    string s="CONTINUE"+no;
+    emit_dot_node(s.c_str(), "CONTINUE");
+    strcpy($$, s.c_str());
+  }
 ;
 
 return_stmt:
   RETURN testlist_opt
+  {
+    node_map["RETURN"]++;
+    string no=to_string(node_map["RETURN"]);
+    string s="RETURN"+no;
+    emit_dot_node(s.c_str(), "RETURN");
+    if($2!=NULL){
+      emit_dot_edge(s.c_str(), $2);}
+    strcpy($$, s.c_str());
+  }
 ;
 
 testlist_opt:
   %empty
+  {
+    $$=NULL;
+  }
 | testlist
+{
+  strcpy($$, $1);
+}
 ;
 
 global_stmt:
   GLOBAL NAME comma_name_list
+  {
+    node_map["GLOBAL"]++;
+    string no=to_string(node_map["GLOBAL"]);
+    string s="GLOBAL"+no;
+    emit_dot_node(s.c_str(), "GLOBAL");
+    string s2;
+    strcpy(s2,"NAME(");
+    strcat(s2,$2);
+    strcat(s2,")");
+    emit_dot_edge(s.c_str(), s2);
+    if($3!=NULL){
+      emit_dot_edge(s.c_str(), $3);}
+    strcpy($$, s.c_str());
+  }
 ;
 
 comma_name_list:
   %empty
+  {
+    $$=NULL;
+  }
 | comma_name_list ',' NAME
+{
+  node_map[","]++;
+  string no=to_string(node_map[","]);
+  string s=","+no;
+  emit_dot_node(s.c_str(), ",");
+  string s2;
+  strcpy(s2,"NAME(");
+  strcat(s2,$3);
+  strcat(s2,")");
+  emit_dot_edge(s.c_str(), s2);
+  if($1!=NULL){
+    emit_dot_edge(s.c_str(), $1);}
+    strcpy($$, s.c_str());
+}
 ;
 
 assert_stmt:
   ASSERT test comma_test_opt
+  {
+    node_map["ASSERT"]++;
+    string no=to_string(node_map["ASSERT"]);
+    string s="ASSERT"+no;
+    emit_dot_node(s.c_str(), "ASSERT");
+    emit_dot_edge(s.c_str(), $2);
+    if($3!=NULL){
+      emit_dot_edge(s.c_str(), $3);}
+    strcpy($$, s.c_str());
+  }
 ;
 
 comma_test_opt:
   %empty
+  {
+    $$=NULL;
+  }
 | ',' test
+{
+  node_map[","]++;
+  string no=to_string(node_map[","]);
+  string s=","+no;
+  emit_dot_node(s.c_str(), ",");
+  emit_dot_edge(s.c_str(), $2);
+  strcpy($$, s.c_str());
+}
 ;
 
 compound_stmt:
   if_stmt
+  {
+    strcpy($$, $1);
+  }
 | while_stmt
+{
+  strcpy($$, $1);
+}
 | for_stmt
+{
+  strcpy($$, $1);
+}
 | funcdef
+{
+  strcpy($$, $1);
+}
 | classdef
+{
+  strcpy($$, $1);
+}
 ;
 
 if_stmt:
   IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt
+{
+  node_map["IF"]++;
+  string no=to_string(node_map["IF"]);
+  string s="IF"+no;
+  emit_dot_node(s.c_str(), "IF");
+  if($5!=NULL){
+    emit_dot_edge(s.c_str(), $5);
+  }
+  if($6!=NULL){
+    emit_dot_edge(s.c_str(), $6);
+  }
+  node_map[":"]++;
+  string no1=to_string(node_map[":"]);
+  string s1=":"+no1;
+  emit_dot_node(s1.c_str(), ":");
+  emit_dot_edge(s.c_str(), s1.c_str());
+  emit_dot_edge(s1.c_str(), $2);
+  emit_dot_edge(s1.c_str(), $4);
+  strcpy($$, s.c_str());
+
+}
 ;
 
 while_stmt:
   WHILE test ':' suite else_colon_suite_opt
+  {
+    node_map["WHILE"]++;
+    string no=to_string(node_map["WHILE"]);
+    string s="WHILE"+no;
+    emit_dot_node(s.c_str(), "WHILE");
+    emit_dot_edge(s.c_str(), $2);
+    if($4!=NULL){
+      emit_dot_edge(s.c_str(), $4);
+    }
+    node_map[":"]++;
+    string no1=to_string(node_map[":"]);
+    string s1=":"+no1;
+    emit_dot_node(s1.c_str(), ":");
+    emit_dot_edge(s.c_str(), s1.c_str());
+    strcpy($$, s.c_str());
+  }
 ;
 for_stmt:
   FOR exprlist IN testlist ':' suite else_colon_suite_opt
+  {
+    node_map["FOR"]++;
+    string no=to_string(node_map["FOR"]);
+    string s="FOR"+no;
+    emit_dot_node(s.c_str(), "FOR");
+    emit_dot_edge(s.c_str(), $2);
+
+    node_map["IN"]++;
+    string no1=to_string(node_map["IN"]);
+    string s1="IN"+no1;
+    emit_dot_node(s1.c_str(), "IN");
+    emit_dot_edge(s.c_str(), s1.c_str());
+
+    node_map[":"]++;
+    string no2=to_string(node_map[":"]);
+    string s2=":"+no2;
+    emit_dot_node(s2.c_str(), ":");
+    emit_dot_edge(s1.c_str(), s2.c_str());
+    emit_dot_edge(s2.c_str(), $4);
+    emit_dot_edge(s2.c_str(), $6);
+
+    strcpy($$, s.c_str());
+  }
 ;
 
 else_colon_suite_opt:
   %empty
+  {
+    $$=NULL;
+  }
 | ELSE ':' suite
+{
+  node_map["ELSE"]++;
+  string no=to_string(node_map["ELSE"]);
+  string s="ELSE"+no;
+  emit_dot_node(s.c_str(), "ELSE");
+  if($3!=NULL){
+    emit_dot_edge(s.c_str(), $3);}
+  node_map[":"]++;
+  string no1=to_string(node_map[":"]);
+  string s1=":"+no1;
+  emit_dot_node(s1.c_str(), ":");
+  emit_dot_edge(s.c_str(), s1.c_str());
+    $$=s.c_str();
+}
 ;
 
 elif_test_colon_suite_list:
   %empty
+  {
+    $$=NULL;
+  }
 | elif_test_colon_suite_list ELIF test ':' suite
+{
+  node_map["ELIF"]++;
+  string no=to_string(node_map["ELIF"]);
+  string s="ELIF"+no;
+  emit_dot_node(s.c_str(), "ELIF");
+  emit_dot_edge(s.c_str(), $3);
+  if($5!=NULL){
+    emit_dot_edge(s.c_str(), $5);}
+  node_map[":"]++;
+  string no1=to_string(node_map[":"]);
+  string s1=":"+no1;
+  emit_dot_node(s1.c_str(), ":");
+  emit_dot_edge(s.c_str(), s1.c_str());
+  if($1!=NULL){
+    emit_dot_edge(s.c_str(), $1);}
+    $$=s.c_str();
+}
 ;
 
 /* NB compile.c makes sure that the default except clause is last*/
 
 suite:
-  simple_stmt | NEWLINE INDENT stmt stmt_list DEDENT
+  simple_stmt 
+{
+  strcpy($$, $1);
+}
+| NEWLINE INDENT stmt stmt_list DEDENT
+{
+  if($4==NULL){
+    strcpy($$, $3);}
+  else
+    {
+    emit_dot_edge($3, $4);
+    strcpy($$, $3);
+    }
+}
 ;
 
+/*
+NEWLINE_list:
+  %empty
+| NEWLINE_list NEWLINE
+;
+*/
 
 stmt_list:
   %empty
