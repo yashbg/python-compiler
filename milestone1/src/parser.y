@@ -390,16 +390,40 @@ small_stmt:
 ;
 
 expr_stmt:
-  testlist_star_expr expr_stmt_suffix_choices
+  testlist annassign
   {
-
+    emit_dot_edge($2, $1);
+    strcpy($$, $2);
+  }
+  | testlist_star_expr augassign testlist
+  {
+    node_map[$2]++;
+    s1 = $2 + to_string(node_map[$2]);
+    emit_dot_edge(s1.c_str(), $3);
+    emit_dot_edge(s1.c_str(), $1);
+    strcpy($$, $2);
+    string temp = to_string(node_map[$2]);
+    strcat($$, temp.c_str());
+  }
+  | testlist_star_expr expr_stmt_suffix_choices
+  {
+    if($2 == NULL){
+      strcpy($$, $1);
+    }
+    else{
+      node_map["="]++;
+      s1 = $2 + to_string(node_map["="]);
+      emit_dot_edge(s1.c_str(), $3);
+      emit_dot_edge(s1.c_str(), $1);
+      strcpy($$, "=");
+      string temp = to_string(node_map["="]);
+      strcat($$, temp.c_str());
+    }
   }
 ;
 
 expr_stmt_suffix_choices:
-  annassign 
-| augassign testlist
-| equal_testlist_star_expr_list
+  equal_testlist_star_expr_list
 ;
 
 equal_testlist_star_expr_list:
@@ -409,7 +433,18 @@ equal_testlist_star_expr_list:
   }
 | equal_testlist_star_expr_list '=' testlist_star_expr
   {
-
+    if($1 != NULL){
+      node_map["="]++;
+      s1 = "=" + to_string(node_map["="]);
+      emit_dot_edge(s1.c_str(), $1);
+      emit_dot_edge(s1.c_str(), $3);
+      strcpy($$, "=");
+      string temp = to_string(node_map["="]);
+      strcat($$, temp.c_str());
+    }
+    else{
+      strcpy($$, $3);
+    }
   }
 ;
 
@@ -490,17 +525,53 @@ comma_test_or_star_expr_list:
 
 augassign: 
   PLUSEQUAL
+  {
+    strcpy($$, $1);
+  }
 | MINEQUAL
+  {
+    strcpy($$, $1);
+  }
 | STAREQUAL
+  {
+    strcpy($$, $1);
+  }
 | SLASHEQUAL
+  {
+    strcpy($$, $1);
+  }
 | PERCENTEQUAL
+  {
+    strcpy($$, $1);
+  }
 | AMPEREQUAL
+  {
+    strcpy($$, $1);
+  }
 | VBAREQUAL
+  {
+    strcpy($$, $1);
+  }
 | CIRCUMFLEXEQUAL
+  {
+    strcpy($$, $1);
+  }
 | LEFTSHIFTEQUAL
+  {
+    strcpy($$, $1);
+  }
 | RIGHTSHIFTEQUAL
+  {
+    strcpy($$, $1);
+  }
 | DOUBLESTAREQUAL
+  {
+    strcpy($$, $1);
+  }
 | DOUBLESLASHEQUAL
+  {
+    strcpy($$, $1);
+  }
 ;
 
 /* For normal and annotated assignments, additional restrictions enforced by the interpreter*/
@@ -581,12 +652,6 @@ suite:
   simple_stmt | NEWLINE INDENT stmt stmt_list DEDENT
 ;
 
-/*
-NEWLINE_list:
-  %empty
-| NEWLINE_list NEWLINE
-;
-*/
 
 stmt_list:
   %empty
