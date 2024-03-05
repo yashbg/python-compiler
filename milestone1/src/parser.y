@@ -5,11 +5,11 @@
 #include <cstring>
 #include <cstdlib>
 
-extern FILE *yyin;
-void yyerror(const char *);
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
+
+void yyerror(const char *);
 
 std::map<std::string, int> node_map;
 int line = 1;

@@ -3,6 +3,7 @@
     #include "parser.tab.h"
 
     extern int line;
+    
     int line_join = 0;
     int column;
     int indent[100];

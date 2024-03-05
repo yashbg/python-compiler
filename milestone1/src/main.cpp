@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cstdlib>
 
+extern FILE *yyin;
 extern int yyparse();
 
 void show_help() {
@@ -47,8 +48,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  std::ifstream infile(input_file);
-  std::cin.rdbuf(infile.rdbuf());
+  yyin = fopen(input_file.c_str(), "r");
 
   std::ofstream outfile("graph.dot");
   std::streambuf *coutbuf = std::cout.rdbuf();
