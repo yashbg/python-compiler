@@ -210,7 +210,7 @@ typedargslist:
     std::cout << "tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list" << std::endl;
     if($2 != NULL) {
       node_map["="]++;
-      s1 = $2;
+      s1 = "=" + to_string(node_map["="]);
       s2 = $1;
       emit_dot_edge(s1.c_str(), s2.c_str());
     }
@@ -219,7 +219,7 @@ typedargslist:
     {
       if($2 != NULL){
         s1 = $3;
-        s2 = $2;
+        s2 = "=" + to_string(node_map["="]);
         emit_dot_edge($3, s2.c_str());
         strcpy($$, $3);
       }
@@ -233,7 +233,7 @@ typedargslist:
       if($2 != NULL){
         strcpy($$, "=");
         string temp = to_string(node_map["="]);
-        strcat($$, $2);
+        strcat($$, temp.c_str());
       }
       else{
         strcpy($$, $1);
@@ -249,18 +249,13 @@ tfpdef:
     strcpy($$, "NAME(");
     strcat($$, $1);
     strcat($$, ")");
-    node_map[$$]++;
+    node_map[$1]++;
+    s2 = $$+to_string(node_map[$$]);
 
-    if($2 != NULL){
-      node_map[":"]++;
-      s1 = $2+to_string(node_map[":"]);       
-      s2 = $$+to_string(node_map[$$]);
-      emit_dot_edge(s1.c_str(), s2.c_str());
+    if($2 != NULL){      
+      emit_dot_edge(s2.c_str(), $2);
     }
-
-    strcpy($$, $2);    
-    string temp = to_string(node_map[":"]);
-    strcat($$, temp.c_str());
+    strcpy($$, s2.c_str());
   }
 ;
 
@@ -289,7 +284,6 @@ equal_test_opt:
     node_map["="]++;
     s1 = "="+to_string(node_map["="]);
     emit_dot_edge(s1.c_str(), $2);
-    strcpy($$, s1.c_str());
   }
 ;
 
@@ -303,7 +297,10 @@ comma_tfpdef_equal_test_opt_list:
   {
     std::cout << "| comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt" << std::endl;
     if($4 != NULL){
-      emit_dot_edge($4, $3);
+      node_map["="]++;
+      s1 = "="+to_string(node_map["="]);
+      s2 = $3;
+      emit_dot_edge(s1.c_str(), $3);
     }
 
     node_map[","]++;
@@ -312,7 +309,7 @@ comma_tfpdef_equal_test_opt_list:
     {
       if($4 != NULL){
         s2 = "="+to_string(node_map["="]);
-        emit_dot_edge($1, $4);
+        emit_dot_edge($1, s2.c_str());
       }
       else{
         emit_dot_edge($1, $3);
@@ -327,7 +324,7 @@ comma_tfpdef_equal_test_opt_list:
     else{
       s1 = "," + to_string(node_map[","]);
       if($4 != NULL){
-        s2 = $4;
+        s2 = "="+to_string(node_map["="]);
       }
       else{
         s2 = $3;
@@ -385,7 +382,7 @@ simple_stmt:
   small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
   {
     std::cout << "small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE" << std::endl;
-    if($2[0] != '\0'){
+    if($2[0] == '\0'){
       strcpy($$, $1);
     }
     else{
@@ -463,8 +460,9 @@ expr_stmt:
       strcpy($$, $1);
     }
     else{
-      emit_dot_edge($2, $1);
-      strcpy($$, $2);
+      s1 = $2 + to_string(node_map["="]);
+      emit_dot_edge(s1.c_str(), $1);
+      strcpy($$, s1.c_str());
     }
   }
 ;
@@ -507,7 +505,9 @@ annassign:
     s2 = ":" + to_string(node_map[":"]);
     
     if($3[0] != '\0'){
-      emit_dot_edge(s2.c_str(), $3);
+      s1 = "="+to_string(node_map["="]);
+      emit_dot_edge(s1.c_str(), s2.c_str());
+      strcpy($$, s1.c_str());
     }
     else{
       strcpy($$, s2.c_str());
@@ -2049,11 +2049,14 @@ arglist:
     std::cout << "argument comma_argument_list  comma_opt" << std::endl;
     if($2==NULL && $3==NULL){
       strcpy($$, $1);}
-    else if($2!=NULL)
+    else if($3==NULL)
       {
+        node_map[","]++;
+        string no=to_string(node_map[","]);
+        string s=","+no;
         //emit_dot_node(s.c_str(), ",");
-        emit_dot_edge($2, $1);
-        strcpy($$, $2);
+        emit_dot_edge(s.c_str(), $1);
+        strcpy($$, s.c_str());
       }
       else {
         strcpy($$, $1);
