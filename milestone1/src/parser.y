@@ -21,6 +21,7 @@ void emit_dot_node(const char* node_name, const char* label) {
     fprintf(output_file, "%s [label=\"%s\"];\n", node_name, label);
 }
 void emit_dot_edge(const char* from, const char* to) {
+    if((from == NULL) || (to == NULL)) return;
     fprintf(output_file, "%s -> %s;\n", from, to);
 }
 %}
@@ -130,7 +131,7 @@ arrow_test_opt:
   {
     s1 = "ARROW"+to_string(node_map["ARROW"]);
     s2 = $2;
-    emit_dot_edge(s1.c_str(), s2.c_str());
+    emit_dot_edge(s1.c_str(), $2);
   }
 ;
 
@@ -140,9 +141,8 @@ parameters:
     node_map["()"]++;
     
     if($2[0] != '\0'){
-      s1 = "()"+to_string(node_map["()"]);      
-      s2 = $2;      
-      emit_dot_edge(s1.c_str(), s2.c_str());
+      s1 = "()"+to_string(node_map["()"]); 
+      emit_dot_edge(s1.c_str(), $2);
     }
     
     strcpy($$, "()");
@@ -177,7 +177,7 @@ typedargslist:
       if($2[0] != '\0'){
         s1 = $3;
         s2 = "=" + to_string(node_map["="]);
-        emit_dot_edge(s1.c_str(), s2.c_str());
+        emit_dot_edge($3, s2.c_str());
         strcpy($$, $3);
       }
       else{
@@ -239,8 +239,7 @@ equal_test_opt:
 | '=' test
   {
     s1 = "="+to_string(node_map["="]);
-    s2 = $2;
-    emit_dot_edge(s1.c_str(), s2.c_str());
+    emit_dot_edge(s1.c_str(), $2);
   }
 ;
 
@@ -255,7 +254,7 @@ comma_tfpdef_equal_test_opt_list:
       node_map["="]++;
       s1 = "="+to_string(node_map["="]);
       s2 = $3;
-      emit_dot_edge(s1.c_str(), s2.c_str());
+      emit_dot_edge(s1.c_str(), $3);
     }
 
     node_map[","]++;
@@ -263,17 +262,15 @@ comma_tfpdef_equal_test_opt_list:
     if($1[0]!='\0')
     {
       if($4[0] != '\0'){
-        s1 = $1;
         s2 = "="+to_string(node_map["="]);
-        emit_dot_edge(s1.c_str(), s2.c_str());
+        emit_dot_edge($1, s2.c_str());
       }
       else{
         emit_dot_edge($1, $3);
 
       }
       s1 = ","+to_string(node_map[","]);
-      s2 = $1;
-      emit_dot_edge(s1.c_str(), s2.c_str());
+      emit_dot_edge(s1.c_str(), $1);
       strcpy($$, ",");
       string temp = to_string(node_map[","]);
       strcat($$, temp.c_str());
@@ -303,8 +300,7 @@ colon_test_opt:
 | ':' test
   {
     s1 = ":"+to_string(node_map[":"]);
-    s2 = $2;
-    emit_dot_edge(s1.c_str(), s2.c_str());
+    emit_dot_edge(s1.c_str(), $2);
   }
 ;
 
@@ -340,8 +336,7 @@ simple_stmt:
       if($2[0] != '\0'){
         node_map[";"]++;
         s1 = ";"+to_string(node_map[";"]);
-        s2 = $1;
-        emit_dot_edge(s1.c_str(), s2.c_str());
+        emit_dot_edge(s1.c_str(), $1);
 
         strcpy($$, ";");
         string temp = to_string(node_map[";"]);
@@ -361,11 +356,9 @@ semicolon_small_stmt_list:
     if($1[0] != '\0'){
       node_map[";"]++;
       s1 = ";"+to_string(node_map[";"]);
-      s2 = $1;
-      emit_dot_edge(s1.c_str(), s2.c_str());
-
-      s2 = $3;
-      emit_dot_edge(s1.c_str(), s2.c_str());
+      emit_dot_edge(s1.c_str(), $1);
+      
+      emit_dot_edge(s1.c_str(), $3);
       
       strcpy($$, ";");
       string temp = to_string(node_map[";"]);
@@ -398,6 +391,9 @@ small_stmt:
 
 expr_stmt:
   testlist_star_expr expr_stmt_suffix_choices
+  {
+
+  }
 ;
 
 expr_stmt_suffix_choices:
@@ -413,6 +409,28 @@ equal_testlist_star_expr_list:
 
 annassign:
   ':' test equal_test_opt
+  {
+    node_map[":"]++;
+
+    if($3 != NULL){
+      node_map["="]++;
+      s1 = "="+to_string(node_map["="]);
+      s2 = ":" + to_string(node_map[":"]);
+      emit_dot_edge(s1.c_str(), s2.c_str());
+    }
+    s1 = ":" + to_string(node_map[":"]);
+    emit_dot_edge(s1.c_str(), $2);
+    
+    if($3!=NULL){
+      strcpy($$, "=");
+      string temp = to_string(node_map["="]);
+    }
+    else{
+      strcpy($$, ":");
+      string temp = to_string(node_map[":"]);
+    }
+    strcat($$, temp.c_str());
+  }
 ;
 
 testlist_star_expr:
