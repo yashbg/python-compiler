@@ -3,14 +3,15 @@
 
 %{
     #include <stdio.h>
-    #include "parser.tab.h"
+    #include <string>
+    #include "newparser.tab.h"
+    #include <bits/stdc++.h>
     using namespace std;
     extern int line;
     int line_join = 0;
     int column;
     int indent[100];
     int top=0;
-    int dedentsToBeReturned = 0;
 %}
 
 DIGIT               [0-9]
@@ -34,7 +35,7 @@ IMAGINARY           ({FLOAT_NUMBER}|{DIGITPART})("j"|"J")
 LETTER              [_a-zA-Z]        
 WHITESPACE          " "|"\f"
 NEWLINE             "\n"
-KEYWORD             "False"|"await"|"else"|"import"|"pass"|"None"|"break"|"except"| "in"|"raise"|"True"|"class"|"finally"|"is"|"return"|"and"|"continue"|"for"|"def"|"from"|"while"|"assert"|"del"|"global"|"not"|"elif"|"if"|"or"
+KEYWORD             "False"|"await"|"else"|"import"|"pass"|"None"|"break"|"except"| "in"|"raise"|"True"|"class"|"finally"|"is"|"return"|"and"|"continue"|"for"|"lambda"|"try" |"as"|"def"|"from"|"nonlocal"|"while"|"assert"|"del"|"global"|"not"|"with"|"async"|"elif"|"if"|"or"|"yield"
 DELIMITERS          "("|")"|"["|"]"|","|":"|"."|";"|"="|"->"|"+="|"-="|"*="|"/="|"//="|"%="|"&="|"|="|"^="|">>="|"<<="|"**="
 OPERATORS           "+"|"-"|"*"|"**"|"/"|"//"|"%"|"<<"|">>"|"&"|"|"|"^"|"~"|"<"|">"|"<="|">="|"=="|"!="
 NAME                {LETTER}({LETTER}|{DIGIT})*
@@ -52,13 +53,18 @@ OTHER               .
 
 
 %%
-    indent[0]=0;
-    /*printf("deds to be returned = %d\n", dedentsToBeReturned);*/
-    if(dedentsToBeReturned > 0){
-        /*printf("reached here\n");*/
-        dedentsToBeReturned--;
-        printf("DEDENT\n");
-        return DEDENT;
+
+    while(column<indent[top]) {
+        top--;
+        if(column > indent[top]) {
+            printf("Indentation Error\n");
+            exit(1);
+        }
+        /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
+        else {
+            printf("DEDENT\n");
+            return DEDENT;
+        }
     }
 
 <<EOF>> {
@@ -70,11 +76,6 @@ OTHER               .
             exit(1);
         }
 
-\n([\n\t ]*{COMMENT}\n)+ {
-    printf("NEWLINE\n");
-    yylval.tokenname = yytext;
-    return NEWLINE;
-}
 
 ^[\n\t ]+ {
     if(line_join == 1) {
@@ -90,29 +91,31 @@ OTHER               .
             else column++;
             spaces++;
         }
+        //printf("\ncolumn = %d, top = %d, indent[top] = %d\n", column, top, indent[top]);
         if(column>indent[top]){
             indent[top+1] = column;
             top++;
             printf("INDENT\n");
             return INDENT;
         } 
-        else if(column < indent[top])
+        else
         {
-            /*printf("Reached here\n");*/
-            /*printf("deds to be returned = %d\n", dedentsToBeReturned);*/
             while(column<indent[top]) {
-                /*cout << indent[top] << " ";*/
                 top--;
-                dedentsToBeReturned++;
+                /*printf("now column = %d top = %d indent[top] = %d\n", column, top, indent[top]);*/
+                if(column > indent[top]) {
+                    printf("Indentation Error\n");
+                    exit(1);
+                }
+                else {
+                    return DEDENT;
+                    printf("DEDENT\n");
+                }
             }
-            /*printf("deds to be returned now = %d\n", dedentsToBeReturned);*/
             if(column!=indent[top]) {
-                printf("IndentationError: unindent does not match any outer indentation level at line number %d\n", line);
-                exit(1);
+                printf("IndentationError: unindent does not match any outer indentation level\n");
+                //exit(1);
             }
-            printf("DEDENT\n");
-            dedentsToBeReturned--;
-            return DEDENT;
         }
     }
 }
@@ -120,7 +123,6 @@ OTHER               .
 \\[\n][\t ]* {
     /*----Explicit Line Joining------*/
 }
-
 
 False                      { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return FALSE;}
 else                       { yylval.tokenname=yytext; line=yylineno; printf("%s\n", yytext); return ELSE;}
