@@ -1484,12 +1484,12 @@ atom:
 {
   strcpy($$, "STRING("); 
   int len = strlen($1);
-  char* str = new char(len - 1);
-  for(int i = 1; i < len - 1; i++){
-    str[i - 1] = $1[i];
+  //char* str = new char(len - 1);
+  for(int i = 0; i < len - 1; i++){
+    $1[i] = $1[i + 1];
   }
-  str[len - 2] = '\0';
-  strcat($$, str);
+  $1[len - 2] = '\0';
+  strcat($$, $1);
   strcat($$, ")");
   node_map[$$]++;
   string temp = to_string(node_map[$$]);
@@ -1534,12 +1534,12 @@ string_list:
     {
     strcpy($$, "STRING("); 
     int len = strlen($2);
-    char* str = new char[len - 1];
-    for(int i = 1; i < len - 1; i++){
-        str[i - 1] = $2[i];
+    //char* str = new char(len - 1);
+    for(int i = 0; i < len - 1; i++){
+        $2[i] = $2[i+1];
     }
-    str[len - 2] = '\0';
-    strcat($$, str);
+    $2[len - 2] = '\0';
+    strcat($$, $2);
     strcat($$, ")");
     node_map[$$]++;
     string temp = to_string(node_map[$$]);
