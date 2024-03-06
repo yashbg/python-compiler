@@ -269,6 +269,7 @@ equal_test_opt:
   }
 | '=' test
   {
+    node_map["="]++;
     s1 = "="+to_string(node_map["="]);
     emit_dot_edge(s1.c_str(), $2);
   }
@@ -360,19 +361,13 @@ semicolon_opt:
 simple_stmt:
   small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
   {
-    if($2== NULL){
+    if($2[0] != '\0'){
       strcpy($$, $1);
     }
     else{
-      if($2 != NULL){
-        node_map[";"]++;
         s1 = ";"+to_string(node_map[";"]);
         emit_dot_edge(s1.c_str(), $1);
-
-        strcpy($$, ";");
-        string temp = to_string(node_map[";"]);
-        strcat($$, temp.c_str());
-      }
+        strcpy($$, s1.c_str());
     }
   }
 ;
@@ -384,16 +379,12 @@ semicolon_small_stmt_list:
   }
 | semicolon_small_stmt_list ';' small_stmt
   {
-    if($1 != NULL){
+    if($1[0] != '\0'){
       node_map[";"]++;
       s1 = ";"+to_string(node_map[";"]);
       emit_dot_edge(s1.c_str(), $1);
-      
       emit_dot_edge(s1.c_str(), $3);
-      
-      strcpy($$, ";");
-      string temp = to_string(node_map[";"]);
-      strcat($$, temp.c_str());
+      strcpy($$, s1.c_str());
     }
     else{
       strcpy($$, $3);
@@ -432,22 +423,17 @@ expr_stmt:
     s1 = $2 + to_string(node_map[$2]);
     emit_dot_edge(s1.c_str(), $3);
     emit_dot_edge(s1.c_str(), $1);
-    strcpy($$, $2);
-    string temp = to_string(node_map[$2]);
-    strcat($$, temp.c_str());
+    strcpy($$, s1.c_str());
   }
   | testlist_star_expr expr_stmt_suffix_choices
   {
-    if($2 == NULL){
+    if($2[0] == '\0'){
       strcpy($$, $1);
     }
     else{
-      node_map["="]++;
       s1 = $2 + to_string(node_map["="]);
       emit_dot_edge(s1.c_str(), $1);
-      strcpy($$, "=");
-      string temp = to_string(node_map["="]);
-      strcat($$, temp.c_str());
+      strcpy($$, s1.c_str());
     }
   }
 ;
@@ -466,18 +452,13 @@ equal_testlist_star_expr_list:
   }
 | equal_testlist_star_expr_list '=' testlist_star_expr
   {
-    if($1 != NULL){
-      node_map["="]++;
-      s1 = "=" + to_string(node_map["="]);
+    node_map["="]++;
+    s1 = "=" + to_string(node_map["="]);
+    if($1[0] != '\0'){
       emit_dot_edge(s1.c_str(), $1);
-      emit_dot_edge(s1.c_str(), $3);
-      strcpy($$, "=");
-      string temp = to_string(node_map["="]);
-      strcat($$, temp.c_str());
     }
-    else{
-      strcpy($$, $3);
-    }
+    emit_dot_edge(s1.c_str(), $3);
+    strcpy($$, s1.c_str());
   }
 ;
 
@@ -485,38 +466,29 @@ annassign:
   ':' test equal_test_opt
   {
     node_map[":"]++;
-
-    if($3 != NULL){
-      node_map["="]++;
-      s1 = "="+to_string(node_map["="]);
-      s2 = ":" + to_string(node_map[":"]);
-      emit_dot_edge(s1.c_str(), s2.c_str());
-    }
     s1 = ":" + to_string(node_map[":"]);
     emit_dot_edge(s1.c_str(), $2);
+
+    s2 = ":" + to_string(node_map[":"]);
     
-    string temp;
-    if($3!=NULL){
-      strcpy($$, "=");
-      temp = to_string(node_map["="]);
+    if($3[0] != '\0'){
+      s1 = "="+to_string(node_map["="]);
+      emit_dot_edge(s1.c_str(), s2.c_str());
+      strcpy($$, s1.c_str());
     }
     else{
-      strcpy($$, ":");
-      temp = to_string(node_map[":"]);
+      strcpy($$, s2.c_str());
     }
-    strcat($$, temp.c_str());
   }
 ;
 
 testlist_star_expr:
   test_or_star_expr comma_test_or_star_expr_list comma_opt
   {
-    if($2 != NULL){
+    if($2[0] != '\0'){
       s1 = "," + to_string(node_map[","]); 
       emit_dot_edge(s1.c_str(), $1); 
-      strcpy($$, ","); 
-      string temp = to_string(node_map[","]); 
-      strcat($$, temp.c_str()); 
+      strcpy($$, s1.c_str()); 
     }
     else{
       strcpy($$, $1);
@@ -542,14 +514,12 @@ comma_test_or_star_expr_list:
   }
 | comma_test_or_star_expr_list ',' test_or_star_expr
   {
-    if($1 != NULL){
-      node_map[","]++;
-      s1 = "," + to_string(node_map[","]);
+    node_map[","]++;
+    s1 = "," + to_string(node_map[","]);
+    emit_dot_edge(s1.c_str(), $3);
+    if($1[0] != '\0'){
       emit_dot_edge(s1.c_str(), $1);
-      emit_dot_edge(s1.c_str(), $3);
-      strcpy($$, ",");
-      string temp = to_string(node_map[","]);
-      strcat($$, temp.c_str());
+      strcpy($$, s1.c_str());
     }
     else{
       strcpy($$, $3);
@@ -770,22 +740,28 @@ if_stmt:
   node_map["IF"]++;
   string no=to_string(node_map["IF"]);
   string s="IF"+no;
-  //emit_dot_node(s.c_str(), "IF");
-  if($5!=NULL){
-    emit_dot_edge(s.c_str(), $5);
-  }
-  if($6!=NULL){
-    emit_dot_edge(s.c_str(), $6);
-  }
+  emit_dot_edge(s.c_str(), $2);
   node_map[":"]++;
   string no1=to_string(node_map[":"]);
   string s1=":"+no1;
-  //emit_dot_node(s1.c_str(), ":");
-  emit_dot_edge(s.c_str(), s1.c_str());
-  emit_dot_edge(s1.c_str(), $2);
+  emit_dot_edge(s1.c_str(), s.c_str());
   emit_dot_edge(s1.c_str(), $4);
-  strcpy($$, s.c_str());
+  strcpy($$, $3);
+  string temp = to_string(node_map[":"]);
+  strcat($$, temp.c_str());
+  if(($5[0] == '\0') && ($6[0] == '\0')){
 
+  }
+  else if($5[0] == '\0'){
+    emit_dot_edge($$, $6);
+  }
+  else if($6[0] == '\0'){
+    emit_dot_edge($$, $5);
+  }
+  else{
+    emit_dot_edge($$, $5);
+    emit_dot_edge($5, $6);
+  }
 }
 ;
 
@@ -845,15 +821,12 @@ else_colon_suite_opt:
   node_map["ELSE"]++;
   string no=to_string(node_map["ELSE"]);
   string s="ELSE"+no;
-  //emit_dot_node(s.c_str(), "ELSE");
-  if($3!=NULL){
-    emit_dot_edge(s.c_str(), $3);}
   node_map[":"]++;
   string no1=to_string(node_map[":"]);
   string s1=":"+no1;
-  //emit_dot_node(s1.c_str(), ":");
-  emit_dot_edge(s.c_str(), s1.c_str());
-  strcpy($$, s.c_str());
+  emit_dot_edge(s1.c_str(), s.c_str());
+  emit_dot_edge(s1.c_str(), $3);
+  strcpy($$, s1.c_str());
 }
 ;
 
@@ -867,18 +840,16 @@ elif_test_colon_suite_list:
   node_map["ELIF"]++;
   string no=to_string(node_map["ELIF"]);
   string s="ELIF"+no;
-  //emit_dot_node(s.c_str(), "ELIF");
   emit_dot_edge(s.c_str(), $3);
-  if($5!=NULL){
-    emit_dot_edge(s.c_str(), $5);}
   node_map[":"]++;
   string no1=to_string(node_map[":"]);
   string s1=":"+no1;
-  //emit_dot_node(s1.c_str(), ":");
-  emit_dot_edge(s.c_str(), s1.c_str());
-  if($1!=NULL){
-    emit_dot_edge(s.c_str(), $1);}
-   strcpy($$, s.c_str());
+  emit_dot_edge(s1.c_str(), s.c_str());
+  emit_dot_edge(s1.c_str(), $5);
+  strcpy($$, s1.c_str());
+  if($1[0] != '\0'){
+    emit_dot_edge($$, s1.c_str());
+  }
 }
 ;
 
@@ -892,12 +863,13 @@ suite:
 | NEWLINE INDENT stmt stmt_list DEDENT
 {
   if($4==NULL){
-    strcpy($$, $3);}
+    strcpy($$, $3);
+  }
   else
-    {
+  {
     emit_dot_edge($3, $4);
     strcpy($$, $3);
-    }
+  }
 }
 ;
 
@@ -915,25 +887,31 @@ stmt_list:
   }
 | stmt_list stmt
 {
-  if($1==NULL){
-    strcpy($$, $2);}
+  if($1[0] == '\0'){
+    strcpy($$, $2);
+  }
   else
-    {
-    emit_dot_edge($1, $2);
-    strcpy($$, $1);
-    }
+  {
+    node_map["stmts"]++;
+    string no=to_string(node_map["stmts"]);
+    string s="stmts"+no;
+    emit_dot_edge(s.c_str(), $1);
+    emit_dot_edge(s.c_str(), $2);
+    strcpy($$, s.c_str());
+  }
 }
 ;
 
 test: 
   or_test if_or_test_else_test_opt
   {
-    if($2==NULL){
-      strcpy($$, $1);}
+    if($2[0] == '\0'){
+      strcpy($$, $1);
+    }
     else
       {
-    emit_dot_edge($1, $2);
-    strcpy($$, $1);
+        strcpy($$, $1);
+        strcat($$, $2);
     }
   }
 ;
@@ -945,15 +923,10 @@ if_or_test_else_test_opt:
   }
 | IF or_test ELSE test
 {
-  node_map["IF-ELSE"]++;
-  string no=to_string(node_map["IF-ELSE"]);
-  string s="IF-ELSE"+no;
-  //emit_dot_node(s.c_str(), "IF-ELSE");
-  emit_dot_edge(s.c_str(), $2);
-  emit_dot_edge(s.c_str(), $4);
-  if($1!=NULL){
-    emit_dot_edge(s.c_str(), $1);}
-    strcpy($$, s.c_str());
+  strcpy($$, $1);
+  strcat($$, $2);
+  strcat($$, $3);
+  strcat($$, $4);
 }
 ;
 
@@ -967,12 +940,15 @@ test_nocond:
 or_test:
   and_test or_and_test_list
   {
-    if($2==NULL){
-      strcpy($$, $1);}
+    if($2[0] == '\0'){
+      strcpy($$, $1);
+    }
     else
       {
-    emit_dot_edge($1, $2);
-    strcpy($$, $1);
+        string no=to_string(node_map["OR"]);
+        string s="OR"+no;
+        emit_dot_edge(s.c_str(), $1);
+        strcpy($$, s.c_str());
     }
   }
 ;
@@ -987,23 +963,25 @@ or_and_test_list:
   node_map["OR"]++;
   string no=to_string(node_map["OR"]); 
   string s="OR"+no;
-  //emit_dot_node(s.c_str(), "OR");
   emit_dot_edge(s.c_str(), $3);
-  if($1!=NULL){
-    emit_dot_edge(s.c_str(), $1);}
-    strcpy($$, s.c_str());
+  if($1[0] != '\0'){
+    emit_dot_edge(s.c_str(), $1);
+  }
+  strcpy($$, s.c_str());
 }
 ;
 
 and_test:
   not_test and_not_test_list
   {
-    if($2==NULL){
+    if($2[0] == '\0'){
       strcpy($$, $1);}
     else
       {
-    emit_dot_edge($2, $1);
-    strcpy($$, $2);
+        string no=to_string(node_map["AND"]);
+        string s="AND"+no;
+        emit_dot_edge(s.c_str(), $1);
+        strcpy($$, s.c_str());
     }
   }
 ;
@@ -1018,10 +996,10 @@ and_not_test_list:
   node_map["AND"]++;  
   string no=to_string(node_map["AND"]); 
   string s="AND"+no;
-  //emit_dot_node(s.c_str(), "AND");
   emit_dot_edge(s.c_str(), $3);
-  if($1!=NULL){
-    emit_dot_edge(s.c_str(), $1);}
+  if($1[0] != '\0'){
+    emit_dot_edge(s.c_str(), $1);
+  }
     strcpy($$, s.c_str());
 }
 ;
@@ -1032,7 +1010,6 @@ not_test:
     node_map["NOT"]++;
     string no=to_string(node_map["NOT"]);
     string s="NOT"+no;
-    //emit_dot_node(s.c_str(), "NOT");
     emit_dot_edge(s.c_str(), $2);
     strcpy($$, s.c_str());
   }
@@ -1045,12 +1022,19 @@ not_test:
 comparison:
   expr comp_op_expr_list
   {
-    if($2==NULL){
-      strcpy($$, $1);}
+    if($2[0] == '\0'){
+      strcpy($$, $1);
+    }
     else
-      {
-    emit_dot_edge($1, $2);
-    strcpy($$, $1);
+    {
+      strcpy($$, "COMP_OP(");
+      strcat($$, $2);
+      strcat($$, ")");
+      node_map[$$]++;
+      string no=to_string(node_map[$$]);
+      string s=$$+no;
+      emit_dot_edge(s.c_str(), $1);
+      strcat($$, no.c_str());
     }
   
   }
@@ -1067,9 +1051,10 @@ comp_op_expr_list:
   string no=to_string(node_map[$2]);
   string s=$2+no;
   emit_dot_edge(s.c_str(), $3);
-  if($1!=NULL){
-    emit_dot_edge(s.c_str(), $1);}
-    strcpy($$, s.c_str());
+  if($1[0] != '\0'){
+    emit_dot_edge(s.c_str(), $1);
+  }
+  strcpy($$, s.c_str());
 }
 ;
 
@@ -1125,7 +1110,6 @@ star_expr:
     node_map["*"]++;
     string no=to_string(node_map["*"]);
     string s="*"+no;
-    //emit_dot_node(s.c_str(), "*");
     emit_dot_edge(s.c_str(), $2);
     strcpy($$, s.c_str());
   }
@@ -1134,15 +1118,18 @@ star_expr:
 expr:
   xor_expr or_xor_expr_list
   {
-    if($2==NULL)
+    if($2[0] == '\0')
       strcpy($$, $1);
     else
       {
-    emit_dot_edge($1, $2);
-    strcpy($$, $1);
+        string no=to_string(node_map["|"]);
+        string s="|"+no;
+        emit_dot_edge(s.c_str(), $1);
+        strcpy($$, s.c_str());
     }
   }
 ;
+
 
 or_xor_expr_list:
   %empty
@@ -1152,25 +1139,28 @@ or_xor_expr_list:
 | or_xor_expr_list '|' xor_expr
 {
   node_map["|"]++;
-  string no=to_string(node_map["|"]);
+  string no=to_string(node_map[$2]);
   string s=$2+no;
-  //emit_dot_node(s.c_str(), "|");
   emit_dot_edge(s.c_str(), $3);
-  if($1!=NULL){
-    emit_dot_edge(s.c_str(), $1);}
-    strcpy($$, s.c_str());
+  if($1[0] != '\0'){
+    emit_dot_edge(s.c_str(), $1);
+  }
+  strcpy($$, s.c_str());
 }
 ;
 
 xor_expr:
   and_expr xor_and_expr_list
   {
-    if($2==NULL){
-      strcpy($$, $1);}
+    if($2[0] == '\0'){
+      strcpy($$, $1);
+    }
     else
       {
-    emit_dot_edge($1, $2);
-    strcpy($$, $1);
+        string no=to_string(node_map["^"]);
+        string s="^"+no;
+        emit_dot_edge(s.c_str(), $1);
+        strcpy($$, s.c_str());
     }
   }
 ;
@@ -1185,23 +1175,26 @@ xor_and_expr_list:
   node_map["^"]++;
   string no=to_string(node_map[$2]);
   string s=$2+no;
-  //emit_dot_node(s.c_str(), "^");
   emit_dot_edge(s.c_str(), $3);
-  if($1!=NULL){
-    emit_dot_edge(s.c_str(), $1);}
-    strcpy($$, s.c_str());
+  if($1[0] != '\0'){
+    emit_dot_edge(s.c_str(), $1);
+  }
+  strcpy($$, s.c_str());
 }
 ;
 
 and_expr:
   shift_expr and_shift_expr_list
   {
-    if($2==NULL){
-      strcpy($$, $1);}
+    if($2[0] == '\0'){
+      strcpy($$, $1);
+    }
     else
       {
-    emit_dot_edge($1, $2);
-    strcpy($$, $1);
+        string no=to_string(node_map["&"]);
+        string s="&"+no;
+        emit_dot_edge(s.c_str(), $1);
+        strcpy($$, s.c_str());
     }
   }
 ;
@@ -1216,24 +1209,23 @@ and_shift_expr_list:
   node_map["&"]++;
   string no=to_string(node_map[$2]);
   string s=$2+no;
-  //emit_dot_node(s.c_str(), "&");
   emit_dot_edge(s.c_str(), $3);
-  if($1!=NULL){
-    emit_dot_edge(s.c_str(), $1);}
+  if($1[0] != '\0'){
+    emit_dot_edge(s.c_str(), $1);
+  }
     strcpy($$, s.c_str());
-
 }
 ;
 
 shift_expr:
   arith_expr shift_arith_expr_list 
 {
-  if($2==NULL){
+  if($2[0] == '\0'){
      strcpy($$, $1);}
   else
     {
-    emit_dot_edge($1, $2);
-    strcpy($$, $1);
+        emit_dot_edge($2, $1);
+        strcpy($$, $2);
     }
 }
 ;
@@ -1259,18 +1251,18 @@ shift_arith_expr_list:
   node_map[$2]++;
   string no=to_string(node_map[$2]);
   string s=$2+no;
-  emit_dot_edge(s.c_str(), $3);
-  if($1!=NULL){
-    emit_dot_edge(s.c_str(), $1);
+  emit_dot_edge($2, $3);
+  if($1[0] != '\0'){
+    emit_dot_edge($2, $1);
   }
-    strcpy($$, s.c_str());
+  strcpy($$, s.c_str());
 }
 ;
 
 arith_expr:
   term plus_or_minus_term_list
   {
-    if($2==NULL){
+    if($2[0] == '\0'){
       strcpy($$, $1);
     }
     else
@@ -1305,8 +1297,8 @@ plus_or_minus_term_list:
   //emit_dot_node(s.c_str(), $2);
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
-    emit_dot_edge(s.c_str(),$1);}
-  strcpy($$, s.c_str());
+    emit_dot_edge($1, s.c_str());}
+    strcpy($$, s.c_str());
 }
 ;
 
@@ -1317,8 +1309,8 @@ term:
       strcpy($$, $1);}
     else
       {
-    emit_dot_edge($2, $1);
-    strcpy($$, $2);
+    emit_dot_edge($1, $2);
+    strcpy($$, $1);
     }
   }
 ;
@@ -1355,7 +1347,7 @@ star_or_slash_or_percent_or_doubleslash_factor_list:
   //emit_dot_node(s.c_str(), $2);
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
-    emit_dot_edge( s.c_str(), $1);}
+    emit_dot_edge($1, s.c_str());}
     strcpy($$, s.c_str());
 }
 ;
@@ -1423,6 +1415,9 @@ doublestar_factor_opt:
 atom_expr:
   atom trailer_list
   {
+    if($2[0] != '\0'){
+      emit_dot_edge($1, $2);
+    }
     strcpy($$, $1);
   }
 ;
@@ -1434,12 +1429,13 @@ trailer_list:
   }
 | trailer_list trailer
 {
-  if($1==NULL){
-    strcpy($$, $2);}
+  if($1[0] == '\0'){
+    strcpy($$, $2);
+  }
   else
     {
     emit_dot_edge($1, $2);
-    strcpy($$, $1);
+    strcpy($$, $2);
     }
 }
 ;
@@ -1451,8 +1447,9 @@ atom:
     string no=to_string(node_map["()"]);
     string s="()"+no;
     //emit_dot_node(s.c_str(), "()");
-    if($2!=NULL){
-      emit_dot_edge(s.c_str(), $2);}
+    if($2[0]!='\0'){
+      emit_dot_edge(s.c_str(), $2);
+    }
     strcpy($$, s.c_str());
   }
 | '[' testlist_comp_opt ']'
@@ -1467,11 +1464,10 @@ atom:
 }
 | NAME
 {
-            // 
+  node_map[$$]++;
   strcpy($$, "NAME(");
   strcat($$, $1); 
   strcat($$, ")");
-  node_map[$$]++;
   string temp = to_string(node_map[$$]);
   strcat($$, temp.c_str());
 }
@@ -1486,19 +1482,21 @@ atom:
 }
 | STRING string_list
 {
-  if($2==NULL){
-    strcpy($$,$1);}
-  else
-    {
-    strcpy($$, "STRING("); 
-    strcat($$, $1);
-    strcat($$, ")");
-    node_map[$$]++;
-    string temp = to_string(node_map[$$]);
-    strcat($$, temp.c_str());
+  strcpy($$, "STRING("); 
+  int len = strlen($1);
+  char* str = new char(len - 1);
+  for(int i = 1; i < len - 1; i++){
+    str[i - 1] = $1[i];
+  }
+  str[len - 2] = '\0';
+  strcat($$, str);
+  strcat($$, ")");
+  node_map[$$]++;
+  string temp = to_string(node_map[$$]);
+  strcat($$, temp.c_str());
+  if($2[0] != '\0'){
     emit_dot_edge($$, $2);
-    }
-
+  }
 }
 | NONE 
 {
@@ -1535,7 +1533,13 @@ string_list:
   else
     {
     strcpy($$, "STRING("); 
-    strcat($$, $2);
+    int len = strlen($2);
+    char* str = new char[len - 1];
+    for(int i = 1; i < len - 1; i++){
+        str[i - 1] = $2[i];
+    }
+    str[len - 2] = '\0';
+    strcat($$, str);
     strcat($$, ")");
     node_map[$$]++;
     string temp = to_string(node_map[$$]);
@@ -1561,7 +1565,7 @@ testlist_comp_opt:
 testlist_comp:
   test_or_star_expr comp_for_OR_comma_test_or_star_expr_list_comma_opt
   {
-    if($2==NULL){
+    if($2[0] == '\0'){
       strcpy($$, $1);}
     else
       {
@@ -1578,7 +1582,7 @@ comp_for_OR_comma_test_or_star_expr_list_comma_opt:
   }
 | comma_test_or_star_expr_list comma_opt
 {
-  if($2==NULL){
+  if($2[0] == '\0'){
     strcpy($$, $1);
   }
   else{
