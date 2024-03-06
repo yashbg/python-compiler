@@ -1152,7 +1152,7 @@ or_xor_expr_list:
 | or_xor_expr_list '|' xor_expr
 {
   node_map["|"]++;
-  string no=to_string(node_map[$2]);
+  string no=to_string(node_map["|"]);
   string s=$2+no;
   //emit_dot_node(s.c_str(), "|");
   emit_dot_edge(s.c_str(), $3);
@@ -1259,9 +1259,9 @@ shift_arith_expr_list:
   node_map[$2]++;
   string no=to_string(node_map[$2]);
   string s=$2+no;
-  emit_dot_edge($2, $3);
+  emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
-    emit_dot_edge($1, s.c_str());
+    emit_dot_edge(s.c_str(), $1);
   }
     strcpy($$, s.c_str());
 }
@@ -1305,8 +1305,8 @@ plus_or_minus_term_list:
   //emit_dot_node(s.c_str(), $2);
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
-    emit_dot_edge($1, s.c_str());}
-    strcpy($$, s.c_str());
+    emit_dot_edge(s.c_str(),$1);}
+  strcpy($$, s.c_str());
 }
 ;
 
@@ -1317,8 +1317,8 @@ term:
       strcpy($$, $1);}
     else
       {
-    emit_dot_edge($1, $2);
-    strcpy($$, $1);
+    emit_dot_edge($2, $1);
+    strcpy($$, $2);
     }
   }
 ;
@@ -1355,7 +1355,7 @@ star_or_slash_or_percent_or_doubleslash_factor_list:
   //emit_dot_node(s.c_str(), $2);
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
-    emit_dot_edge($1, s.c_str());}
+    emit_dot_edge( s.c_str(), $1);}
     strcpy($$, s.c_str());
 }
 ;
