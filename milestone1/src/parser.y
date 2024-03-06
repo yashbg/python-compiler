@@ -365,9 +365,8 @@ simple_stmt:
       strcpy($$, $1);
     }
     else{
-        s1 = ";"+to_string(node_map[";"]);
-        emit_dot_edge(s1.c_str(), $1);
-        strcpy($$, s1.c_str());
+        emit_dot_edge($2, $1);
+        strcpy($$, $2);
     }
   }
 ;
@@ -892,12 +891,8 @@ stmt_list:
   }
   else
   {
-    node_map["stmts"]++;
-    string no=to_string(node_map["stmts"]);
-    string s="stmts"+no;
-    emit_dot_edge(s.c_str(), $1);
-    emit_dot_edge(s.c_str(), $2);
-    strcpy($$, s.c_str());
+    emit_dot_edge($1, $2);
+    strcpy($$, $1);
   }
 }
 ;
@@ -1251,9 +1246,9 @@ shift_arith_expr_list:
   node_map[$2]++;
   string no=to_string(node_map[$2]);
   string s=$2+no;
-  emit_dot_edge(s.c_str(), $3);
+  emit_dot_edge($2, $3);
   if($1[0] != '\0'){
-    emit_dot_edge(s.c_str(), $1);
+    emit_dot_edge($2, $1);
   }
   strcpy($$, s.c_str());
 }
@@ -1297,7 +1292,7 @@ plus_or_minus_term_list:
   //emit_dot_node(s.c_str(), $2);
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
-    emit_dot_edge(s.c_str(),$1);}
+    emit_dot_edge($1, s.c_str());}
     strcpy($$, s.c_str());
 }
 ;
@@ -1305,12 +1300,12 @@ plus_or_minus_term_list:
 term:
   factor star_or_slash_or_percent_or_doubleslash_factor_list
   {
-    if($2[0]=='\0'){
+    if($2==NULL){
       strcpy($$, $1);}
     else
       {
-    emit_dot_edge($2, $1);
-    strcpy($$, $2);
+    emit_dot_edge($1, $2);
+    strcpy($$, $1);
     }
   }
 ;
@@ -1347,7 +1342,7 @@ star_or_slash_or_percent_or_doubleslash_factor_list:
   //emit_dot_node(s.c_str(), $2);
   emit_dot_edge(s.c_str(), $3);
   if($1!=NULL){
-    emit_dot_edge(s.c_str(),$1);}
+    emit_dot_edge($1, s.c_str());}
     strcpy($$, s.c_str());
 }
 ;
@@ -1922,9 +1917,8 @@ argument:
       strcpy($$, $1);}
     else
       {
-    emit_dot_edge("argument", "Argument with Comprehension");
-    emit_dot_edge("argument", $1);
-    emit_dot_edge("argument", $2);
+    emit_dot_edge($2, $1);
+    strcpy($$, $2);
     }
   }
 | test '=' test
