@@ -7,6 +7,8 @@ extern FILE *yyin;
 extern int yyparse();
 
 std::ofstream outfile;
+FILE *lexer_logfile;
+std::ofstream parser_logfile;
 
 void show_help() {
   std::cout << "Usage: ./main [-verbose] -input <input_file> -output <output_file>" << std::endl
@@ -72,6 +74,9 @@ int main(int argc, char *argv[]) {
   }
 
   outfile.open("graph.dot");
+
+  lexer_logfile = fopen("lexer.log", "w");
+  parser_logfile.open("parser.log");
 
   if (verbose) {
     std::cout << "Input file: " << input_file << std::endl;

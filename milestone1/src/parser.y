@@ -10,6 +10,7 @@ extern int yylex();
 extern int yylineno;
 extern char* yytext;
 extern std::ofstream outfile;
+extern std::ofstream parser_logfile;
 
 void yyerror(const char *);
 
@@ -86,19 +87,19 @@ void emit_dot_edge(const char* from, const char* to) {
 file_input:
   newline_or_stmt_list
   {
-    std::cout << "newline_or_stmt_list" << std::endl;
+    parser_logfile << "newline_or_stmt_list" << std::endl;
   }
 ;
 
 newline_or_stmt:
   NEWLINE
   {
-    std::cout << "NEWLINE" << std::endl;
+    parser_logfile << "NEWLINE" << std::endl;
     strcpy($$, $1);
   }
 | stmt
   {
-    std::cout << "| stmt" << std::endl;
+    parser_logfile << "| stmt" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -106,12 +107,12 @@ newline_or_stmt:
 newline_or_stmt_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | newline_or_stmt_list newline_or_stmt
   {
-    std::cout << "| newline_or_stmt_list newline_or_stmt" << std::endl;
+    parser_logfile << "| newline_or_stmt_list newline_or_stmt" << std::endl;
     char str[5] = "Root";
     emit_dot_edge(str, $2);
   }
@@ -124,7 +125,7 @@ newline_or_stmt_list:
 funcdef:
   DEF NAME parameters arrow_test_opt ':' suite
   {
-    std::cout << "DEF NAME parameters arrow_test_opt ':' suite" << std::endl;
+    parser_logfile << "DEF NAME parameters arrow_test_opt ':' suite" << std::endl;
     strcpy($$, "NAME(");
     strcat($$, $2);
     strcat($$, ")");
@@ -162,12 +163,12 @@ funcdef:
 arrow_test_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | ARROW test
   {
-    std::cout << "| ARROW test" << std::endl;
+    parser_logfile << "| ARROW test" << std::endl;
     s1 = "ARROW"+to_string(node_map["ARROW"]);
     s2 = $2;
     emit_dot_edge(s1.c_str(), $2);
@@ -177,7 +178,7 @@ arrow_test_opt:
 parameters:
   '(' typedargslist_opt ')'
   {
-    std::cout << "'(' typedargslist_opt ')'" << std::endl;
+    parser_logfile << "'(' typedargslist_opt ')'" << std::endl;
     node_map["()"]++;
     
     if($2 != NULL){
@@ -194,12 +195,12 @@ parameters:
 typedargslist_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | typedargslist
   {
-    std::cout << "| typedargslist" << std::endl;
+    parser_logfile << "| typedargslist" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -207,7 +208,7 @@ typedargslist_opt:
 typedargslist:
   tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list
   {
-    std::cout << "tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list" << std::endl;
+    parser_logfile << "tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list" << std::endl;
     if($2 != NULL) {
       node_map["="]++;
       s1 = "=" + to_string(node_map["="]);
@@ -245,7 +246,7 @@ typedargslist:
 tfpdef:
   NAME colon_test_opt
   {
-    std::cout << "NAME colon_test_opt" << std::endl;
+    parser_logfile << "NAME colon_test_opt" << std::endl;
     strcpy($$, "NAME(");
     strcat($$, $1);
     strcat($$, ")");
@@ -262,12 +263,12 @@ tfpdef:
 comma_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | ','
   {
-    std::cout << "| ','" << std::endl;
+    parser_logfile << "| ','" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -275,12 +276,12 @@ comma_opt:
 equal_test_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | '=' test
   {
-    std::cout << "| '=' test" << std::endl;
+    parser_logfile << "| '=' test" << std::endl;
     node_map["="]++;
     s1 = "="+to_string(node_map["="]);
     emit_dot_edge(s1.c_str(), $2);
@@ -290,12 +291,12 @@ equal_test_opt:
 comma_tfpdef_equal_test_opt_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt
   {
-    std::cout << "| comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt" << std::endl;
+    parser_logfile << "| comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt" << std::endl;
     if($4 != NULL){
       node_map["="]++;
       s1 = "="+to_string(node_map["="]);
@@ -341,12 +342,12 @@ comma_tfpdef_equal_test_opt_list:
 colon_test_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | ':' test
   {
-    std::cout << "| ':' test" << std::endl;
+    parser_logfile << "| ':' test" << std::endl;
     s1 = ":"+to_string(node_map[":"]);
     emit_dot_edge(s1.c_str(), $2);
   }
@@ -355,12 +356,12 @@ colon_test_opt:
 stmt:
   simple_stmt
   {
-    std::cout << "simple_stmt" << std::endl;
+    parser_logfile << "simple_stmt" << std::endl;
     strcpy($$, $1);
   }
 | compound_stmt
   {
-    std::cout << "| compound_stmt" << std::endl;
+    parser_logfile << "| compound_stmt" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -368,12 +369,12 @@ stmt:
 semicolon_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | ';'
   {
-    std::cout << "| ';'" << std::endl;
+    parser_logfile << "| ';'" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -381,7 +382,7 @@ semicolon_opt:
 simple_stmt:
   small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
   {
-    std::cout << "small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE" << std::endl;
+    parser_logfile << "small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE" << std::endl;
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -395,12 +396,12 @@ simple_stmt:
 semicolon_small_stmt_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | semicolon_small_stmt_list ';' small_stmt
   {
-    std::cout << "| semicolon_small_stmt_list ';' small_stmt" << std::endl;
+    parser_logfile << "| semicolon_small_stmt_list ';' small_stmt" << std::endl;
     if($1[0] != '\0'){
       node_map[";"]++;
       s1 = ";"+to_string(node_map[";"]);
@@ -417,22 +418,22 @@ semicolon_small_stmt_list:
 small_stmt: 
   expr_stmt
   {
-    std::cout << "expr_stmt" << std::endl;
+    parser_logfile << "expr_stmt" << std::endl;
     strcpy($$, $1);
   }
 | flow_stmt
   {
-    std::cout << "| flow_stmt" << std::endl;
+    parser_logfile << "| flow_stmt" << std::endl;
     strcpy($$, $1);
   }
 | global_stmt
   {
-    std::cout << "| global_stmt" << std::endl;
+    parser_logfile << "| global_stmt" << std::endl;
     strcpy($$, $1);
   }
 | assert_stmt
   {
-    std::cout << "| assert_stmt" << std::endl;
+    parser_logfile << "| assert_stmt" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -440,13 +441,13 @@ small_stmt:
 expr_stmt:
   testlist_star_expr annassign
   {
-    std::cout << "testlist_star_expr annassign" << std::endl;
+    parser_logfile << "testlist_star_expr annassign" << std::endl;
     emit_dot_edge($2, $1);
     strcpy($$, $2);
   }
   | testlist_star_expr augassign testlist
   {
-    std::cout << "| testlist_star_expr augassign testlist" << std::endl;
+    parser_logfile << "| testlist_star_expr augassign testlist" << std::endl;
     node_map[$2]++;
     s1 = $2 + to_string(node_map[$2]);
     emit_dot_edge(s1.c_str(), $3);
@@ -455,7 +456,7 @@ expr_stmt:
   }
   | testlist_star_expr expr_stmt_suffix_choices
   {
-    std::cout << "| testlist_star_expr expr_stmt_suffix_choices" << std::endl;
+    parser_logfile << "| testlist_star_expr expr_stmt_suffix_choices" << std::endl;
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -470,7 +471,7 @@ expr_stmt:
 expr_stmt_suffix_choices:
   equal_testlist_star_expr_list
   {
-    std::cout << "equal_testlist_star_expr_list" << std::endl;
+    parser_logfile << "equal_testlist_star_expr_list" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -478,12 +479,12 @@ expr_stmt_suffix_choices:
 equal_testlist_star_expr_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | equal_testlist_star_expr_list '=' testlist_star_expr
   {
-    std::cout << "| equal_testlist_star_expr_list '=' testlist_star_expr" << std::endl;
+    parser_logfile << "| equal_testlist_star_expr_list '=' testlist_star_expr" << std::endl;
     node_map["="]++;
     s1 = "=" + to_string(node_map["="]);
     if($1[0] != '\0'){
@@ -497,7 +498,7 @@ equal_testlist_star_expr_list:
 annassign:
   ':' test equal_test_opt
   {
-    std::cout << "':' test equal_test_opt" << std::endl;
+    parser_logfile << "':' test equal_test_opt" << std::endl;
     node_map[":"]++;
     s1 = ":" + to_string(node_map[":"]);
     emit_dot_edge(s1.c_str(), $2);
@@ -518,7 +519,7 @@ annassign:
 testlist_star_expr:
   test_or_star_expr comma_test_or_star_expr_list comma_opt
   {
-    std::cout << "test_or_star_expr comma_test_or_star_expr_list comma_opt" << std::endl;
+    parser_logfile << "test_or_star_expr comma_test_or_star_expr_list comma_opt" << std::endl;
     if($2[0] != '\0'){
       s1 = "," + to_string(node_map[","]); 
       emit_dot_edge(s1.c_str(), $1); 
@@ -533,12 +534,12 @@ testlist_star_expr:
 test_or_star_expr:
   test
   {
-    std::cout << "test" << std::endl;
+    parser_logfile << "test" << std::endl;
     strcpy($$, $1);
   }
 | star_expr
   {
-    std::cout << "| star_expr" << std::endl;
+    parser_logfile << "| star_expr" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -546,12 +547,12 @@ test_or_star_expr:
 comma_test_or_star_expr_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | comma_test_or_star_expr_list ',' test_or_star_expr
   {
-    std::cout << "| comma_test_or_star_expr_list ',' test_or_star_expr" << std::endl;
+    parser_logfile << "| comma_test_or_star_expr_list ',' test_or_star_expr" << std::endl;
     node_map[","]++;
     s1 = "," + to_string(node_map[","]);
     emit_dot_edge(s1.c_str(), $3);
@@ -568,62 +569,62 @@ comma_test_or_star_expr_list:
 augassign: 
   PLUSEQUAL
   {
-    std::cout << "PLUSEQUAL" << std::endl;
+    parser_logfile << "PLUSEQUAL" << std::endl;
     strcpy($$, $1);
   }
 | MINEQUAL
   {
-    std::cout << "| MINEQUAL" << std::endl;
+    parser_logfile << "| MINEQUAL" << std::endl;
     strcpy($$, $1);
   }
 | STAREQUAL
   {
-    std::cout << "| STAREQUAL" << std::endl;
+    parser_logfile << "| STAREQUAL" << std::endl;
     strcpy($$, $1);
   }
 | SLASHEQUAL
   {
-    std::cout << "| SLASHEQUAL" << std::endl;
+    parser_logfile << "| SLASHEQUAL" << std::endl;
     strcpy($$, $1);
   }
 | PERCENTEQUAL
   {
-    std::cout << "| PERCENTEQUAL" << std::endl;
+    parser_logfile << "| PERCENTEQUAL" << std::endl;
     strcpy($$, $1);
   }
 | AMPEREQUAL
   {
-    std::cout << "| AMPEREQUAL" << std::endl;
+    parser_logfile << "| AMPEREQUAL" << std::endl;
     strcpy($$, $1);
   }
 | VBAREQUAL
   {
-    std::cout << "| VBAREQUAL" << std::endl;
+    parser_logfile << "| VBAREQUAL" << std::endl;
     strcpy($$, $1);
   }
 | CIRCUMFLEXEQUAL
   {
-    std::cout << "| CIRCUMFLEXEQUAL" << std::endl;
+    parser_logfile << "| CIRCUMFLEXEQUAL" << std::endl;
     strcpy($$, $1);
   }
 | LEFTSHIFTEQUAL
   {
-    std::cout << "| LEFTSHIFTEQUAL" << std::endl;
+    parser_logfile << "| LEFTSHIFTEQUAL" << std::endl;
     strcpy($$, $1);
   }
 | RIGHTSHIFTEQUAL
   {
-    std::cout << "| RIGHTSHIFTEQUAL" << std::endl;
+    parser_logfile << "| RIGHTSHIFTEQUAL" << std::endl;
     strcpy($$, $1);
   }
 | DOUBLESTAREQUAL
   {
-    std::cout << "| DOUBLESTAREQUAL" << std::endl;
+    parser_logfile << "| DOUBLESTAREQUAL" << std::endl;
     strcpy($$, $1);
   }
 | DOUBLESLASHEQUAL
   {
-    std::cout << "| DOUBLESLASHEQUAL" << std::endl;
+    parser_logfile << "| DOUBLESLASHEQUAL" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -633,17 +634,17 @@ augassign:
 flow_stmt:
   break_stmt 
   {
-    std::cout << "break_stmt " << std::endl;
+    parser_logfile << "break_stmt " << std::endl;
     strcpy($$, $1);
   }
 | continue_stmt
   {
-    std::cout << "| continue_stmt" << std::endl;
+    parser_logfile << "| continue_stmt" << std::endl;
     strcpy($$, $1);
   }
 | return_stmt
   {
-    std::cout << "| return_stmt" << std::endl;
+    parser_logfile << "| return_stmt" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -651,7 +652,7 @@ flow_stmt:
 break_stmt:
   BREAK
   {
-    std::cout << "BREAK" << std::endl;
+    parser_logfile << "BREAK" << std::endl;
     node_map["BREAK"]++;
     string no=to_string(node_map["BREAK"]);
     string s="BREAK"+no;
@@ -663,7 +664,7 @@ break_stmt:
 continue_stmt:
   CONTINUE
   {
-    std::cout << "CONTINUE" << std::endl;
+    parser_logfile << "CONTINUE" << std::endl;
     node_map["CONTINUE"]++;
     string no=to_string(node_map["CONTINUE"]);
     string s="CONTINUE"+no;
@@ -675,7 +676,7 @@ continue_stmt:
 return_stmt:
   RETURN testlist_opt
   {
-    std::cout << "RETURN testlist_opt" << std::endl;
+    parser_logfile << "RETURN testlist_opt" << std::endl;
     node_map["RETURN"]++;
     string no=to_string(node_map["RETURN"]);
     string s="RETURN"+no;
@@ -689,12 +690,12 @@ return_stmt:
 testlist_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | testlist
   {
-    std::cout << "| testlist" << std::endl;
+    parser_logfile << "| testlist" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -702,7 +703,7 @@ testlist_opt:
 global_stmt:
   GLOBAL NAME comma_name_list
   {
-    std::cout << "GLOBAL NAME comma_name_list" << std::endl;
+    parser_logfile << "GLOBAL NAME comma_name_list" << std::endl;
     node_map["GLOBAL"]++;
     string no=to_string(node_map["GLOBAL"]);
     string s="GLOBAL"+no;
@@ -721,12 +722,12 @@ global_stmt:
 comma_name_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | comma_name_list ',' NAME
   {
-    std::cout << "| comma_name_list ',' NAME" << std::endl;
+    parser_logfile << "| comma_name_list ',' NAME" << std::endl;
     node_map[","]++;
     string no=to_string(node_map[","]);
     string s=","+no;
@@ -746,7 +747,7 @@ comma_name_list:
 assert_stmt:
   ASSERT test comma_test_opt
   {
-    std::cout << "ASSERT test comma_test_opt" << std::endl;
+    parser_logfile << "ASSERT test comma_test_opt" << std::endl;
     node_map["ASSERT"]++;
     string no=to_string(node_map["ASSERT"]);
     string s="ASSERT"+no;
@@ -761,12 +762,12 @@ assert_stmt:
 comma_test_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | ',' test
   {
-    std::cout << "| ',' test" << std::endl;
+    parser_logfile << "| ',' test" << std::endl;
     node_map[","]++;
     string no=to_string(node_map[","]);
     string s=","+no;
@@ -779,27 +780,27 @@ comma_test_opt:
 compound_stmt:
   if_stmt
   {
-    std::cout << "if_stmt" << std::endl;
+    parser_logfile << "if_stmt" << std::endl;
     strcpy($$, $1);
   }
 | while_stmt
   {
-    std::cout << "| while_stmt" << std::endl;
+    parser_logfile << "| while_stmt" << std::endl;
     strcpy($$, $1);
   }
 | for_stmt
   {
-    std::cout << "| for_stmt" << std::endl;
+    parser_logfile << "| for_stmt" << std::endl;
     strcpy($$, $1);
   }
 | funcdef
   {
-    std::cout << "| funcdef" << std::endl;
+    parser_logfile << "| funcdef" << std::endl;
     strcpy($$, $1);
   }
 | classdef
   {
-    std::cout << "| classdef" << std::endl;
+    parser_logfile << "| classdef" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -807,7 +808,7 @@ compound_stmt:
 if_stmt:
   IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt
   {
-    std::cout << "IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt" << std::endl;
+    parser_logfile << "IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt" << std::endl;
     node_map["IF"]++;
     string no=to_string(node_map["IF"]);
     string s="IF"+no;
@@ -839,7 +840,7 @@ if_stmt:
 while_stmt:
   WHILE test ':' suite else_colon_suite_opt
   {
-    std::cout << "WHILE test ':' suite else_colon_suite_opt" << std::endl;
+    parser_logfile << "WHILE test ':' suite else_colon_suite_opt" << std::endl;
     node_map["WHILE"]++;
     string no=to_string(node_map["WHILE"]);
     string s="WHILE"+no;
@@ -859,7 +860,7 @@ while_stmt:
 for_stmt:
   FOR exprlist IN testlist ':' suite else_colon_suite_opt
   {
-    std::cout << "FOR exprlist IN testlist ':' suite else_colon_suite_opt" << std::endl;
+    parser_logfile << "FOR exprlist IN testlist ':' suite else_colon_suite_opt" << std::endl;
     node_map["FOR"]++;
     string no=to_string(node_map["FOR"]);
     string s="FOR"+no;
@@ -887,12 +888,12 @@ for_stmt:
 else_colon_suite_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | ELSE ':' suite
   {
-    std::cout << "| ELSE ':' suite" << std::endl;
+    parser_logfile << "| ELSE ':' suite" << std::endl;
     node_map["ELSE"]++;
     string no=to_string(node_map["ELSE"]);
     string s="ELSE"+no;
@@ -908,12 +909,12 @@ else_colon_suite_opt:
 elif_test_colon_suite_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | elif_test_colon_suite_list ELIF test ':' suite
   {
-    std::cout << "| elif_test_colon_suite_list ELIF test ':' suite" << std::endl;
+    parser_logfile << "| elif_test_colon_suite_list ELIF test ':' suite" << std::endl;
     node_map["ELIF"]++;
     string no=to_string(node_map["ELIF"]);
     string s="ELIF"+no;
@@ -935,12 +936,12 @@ elif_test_colon_suite_list:
 suite:
   simple_stmt 
   {
-    std::cout << "simple_stmt" << std::endl;
+    parser_logfile << "simple_stmt" << std::endl;
     strcpy($$, $1);
   }
 | NEWLINE INDENT stmt stmt_list DEDENT
   {
-    std::cout << "| NEWLINE INDENT stmt stmt_list DEDENT" << std::endl;
+    parser_logfile << "| NEWLINE INDENT stmt stmt_list DEDENT" << std::endl;
     if($4==NULL){
       strcpy($$, $3);
     }
@@ -955,12 +956,12 @@ suite:
 stmt_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | stmt_list stmt
   {
-    std::cout << "| stmt_list stmt" << std::endl;
+    parser_logfile << "| stmt_list stmt" << std::endl;
     if($1[0] == '\0'){
       strcpy($$, $2);
     }
@@ -975,7 +976,7 @@ stmt_list:
 test: 
   or_test if_or_test_else_test_opt
   {
-    std::cout << "or_test if_or_test_else_test_opt" << std::endl;
+    parser_logfile << "or_test if_or_test_else_test_opt" << std::endl;
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -990,12 +991,12 @@ test:
 if_or_test_else_test_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | IF or_test ELSE test
   {
-    std::cout << "| IF or_test ELSE test" << std::endl;
+    parser_logfile << "| IF or_test ELSE test" << std::endl;
     strcpy($$, $1);
     strcat($$, $2);
     strcat($$, $3);
@@ -1006,7 +1007,7 @@ if_or_test_else_test_opt:
 test_nocond:
   or_test
   {
-    std::cout << "or_test" << std::endl;
+    parser_logfile << "or_test" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -1014,7 +1015,7 @@ test_nocond:
 or_test:
   and_test or_and_test_list
   {
-    std::cout << "and_test or_and_test_list" << std::endl;
+    parser_logfile << "and_test or_and_test_list" << std::endl;
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -1031,12 +1032,12 @@ or_test:
 or_and_test_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | or_and_test_list OR and_test
   {
-    std::cout << "| or_and_test_list OR and_test" << std::endl;
+    parser_logfile << "| or_and_test_list OR and_test" << std::endl;
     node_map["OR"]++;
     string no=to_string(node_map["OR"]); 
     string s="OR"+no;
@@ -1051,7 +1052,7 @@ or_and_test_list:
 and_test:
   not_test and_not_test_list
   {
-    std::cout << "not_test and_not_test_list" << std::endl;
+    parser_logfile << "not_test and_not_test_list" << std::endl;
     if($2[0] == '\0'){
       strcpy($$, $1);}
     else
@@ -1067,12 +1068,12 @@ and_test:
 and_not_test_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | and_not_test_list AND not_test
   {
-    std::cout << "| and_not_test_list AND not_test" << std::endl;
+    parser_logfile << "| and_not_test_list AND not_test" << std::endl;
     node_map["AND"]++;  
     string no=to_string(node_map["AND"]); 
     string s="AND"+no;
@@ -1087,7 +1088,7 @@ and_not_test_list:
 not_test:
   NOT not_test
   {
-    std::cout << "NOT not_test" << std::endl;
+    parser_logfile << "NOT not_test" << std::endl;
     node_map["NOT"]++;
     string no=to_string(node_map["NOT"]);
     string s="NOT"+no;
@@ -1096,7 +1097,7 @@ not_test:
   }
 | comparison
   {
-    std::cout << "| comparison" << std::endl;
+    parser_logfile << "| comparison" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -1104,7 +1105,7 @@ not_test:
 comparison:
   expr comp_op_expr_list
   {
-    std::cout << "expr comp_op_expr_list" << std::endl;
+    parser_logfile << "expr comp_op_expr_list" << std::endl;
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -1130,12 +1131,12 @@ comparison:
 comp_op_expr_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | comp_op_expr_list comp_op expr
   {
-    std::cout << "| comp_op_expr_list comp_op expr" << std::endl;
+    parser_logfile << "| comp_op_expr_list comp_op expr" << std::endl;
     node_map[$2]++;
     string s3 = "COMP_OP(";
     string no=to_string(node_map[$2]);
@@ -1156,52 +1157,52 @@ comp_op_expr_list:
 comp_op:
   LESSTHAN
   {
-    std::cout << "LESSTHAN" << std::endl;
+    parser_logfile << "LESSTHAN" << std::endl;
     strcpy($$, "<");
   }
 | GREATERTHAN
   {
-    std::cout << "| GREATERTHAN" << std::endl;
+    parser_logfile << "| GREATERTHAN" << std::endl;
     strcpy($$, ">");
   }
 | DOUBLEEQUAL
   {
-    std::cout << "| DOUBLEEQUAL" << std::endl;
+    parser_logfile << "| DOUBLEEQUAL" << std::endl;
     strcpy($$, "==");
   }
 | GREATERTHANEQUAL
   {
-    std::cout << "| GREATERTHANEQUAL" << std::endl;
+    parser_logfile << "| GREATERTHANEQUAL" << std::endl;
     strcpy($$, ">=");
   }
 | LESSTHANEQUAL
   {
-    std::cout << "| LESSTHANEQUAL" << std::endl;
+    parser_logfile << "| LESSTHANEQUAL" << std::endl;
     strcpy($$, "<=");
   }
 | NOTEQUAL
   {
-    std::cout << "| NOTEQUAL" << std::endl;
+    parser_logfile << "| NOTEQUAL" << std::endl;
     strcpy($$, "!=");
   }
 | IN   /*-----------------MAY NEED TO remove this and the following comp_op--------------------*/
   {
-    std::cout << "| IN" << std::endl;
+    parser_logfile << "| IN" << std::endl;
     strcpy($$, "IN");
   }
 | NOT IN
   {
-    std::cout << "| NOT IN" << std::endl;
+    parser_logfile << "| NOT IN" << std::endl;
     strcpy($$, "NOT IN");
   }
 | IS
   {
-    std::cout << "| IS" << std::endl;
+    parser_logfile << "| IS" << std::endl;
     strcpy($$, "IS");
   }
 | IS NOT
   {
-    std::cout << "| IS NOT" << std::endl;
+    parser_logfile << "| IS NOT" << std::endl;
     strcpy($$, "IS NOT");
   }
 ;
@@ -1209,7 +1210,7 @@ comp_op:
 star_expr:
   '*' expr
   {
-    std::cout << "'*' expr" << std::endl;
+    parser_logfile << "'*' expr" << std::endl;
     node_map["*"]++;
     string no=to_string(node_map["*"]);
     string s="*"+no;
@@ -1221,7 +1222,7 @@ star_expr:
 expr:
   xor_expr or_xor_expr_list
   {
-    std::cout << "xor_expr or_xor_expr_list" << std::endl;
+    parser_logfile << "xor_expr or_xor_expr_list" << std::endl;
     if($2[0] == '\0')
       strcpy($$, $1);
     else
@@ -1238,12 +1239,12 @@ expr:
 or_xor_expr_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | or_xor_expr_list '|' xor_expr
   {
-    std::cout << "| or_xor_expr_list '|' xor_expr" << std::endl;
+    parser_logfile << "| or_xor_expr_list '|' xor_expr" << std::endl;
     node_map["|"]++;
     string no=to_string(node_map[$2]);
     string s=$2+no;
@@ -1258,7 +1259,7 @@ or_xor_expr_list:
 xor_expr:
   and_expr xor_and_expr_list
   {
-    std::cout << "and_expr xor_and_expr_list" << std::endl;
+    parser_logfile << "and_expr xor_and_expr_list" << std::endl;
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -1275,12 +1276,12 @@ xor_expr:
 xor_and_expr_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | xor_and_expr_list '^' and_expr
   {
-    std::cout << "| xor_and_expr_list '^' and_expr" << std::endl;
+    parser_logfile << "| xor_and_expr_list '^' and_expr" << std::endl;
     node_map["^"]++;
     string no=to_string(node_map[$2]);
     string s=$2+no;
@@ -1295,7 +1296,7 @@ xor_and_expr_list:
 and_expr:
   shift_expr and_shift_expr_list
   {
-    std::cout << "shift_expr and_shift_expr_list" << std::endl;
+    parser_logfile << "shift_expr and_shift_expr_list" << std::endl;
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -1312,12 +1313,12 @@ and_expr:
 and_shift_expr_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | and_shift_expr_list '&' shift_expr
   {
-    std::cout << "| and_shift_expr_list '&' shift_expr" << std::endl;
+    parser_logfile << "| and_shift_expr_list '&' shift_expr" << std::endl;
     node_map["&"]++;
     string no=to_string(node_map[$2]);
     string s=$2+no;
@@ -1332,7 +1333,7 @@ and_shift_expr_list:
 shift_expr:
   arith_expr shift_arith_expr_list 
   {
-    std::cout << "arith_expr shift_arith_expr_list" << std::endl;
+    parser_logfile << "arith_expr shift_arith_expr_list" << std::endl;
     if($2[0] == '\0'){
       strcpy($$, $1);}
     else
@@ -1346,12 +1347,12 @@ shift_expr:
 ltshift_or_rtshift:
   LEFTSHIFT
   {
-    std::cout << "LEFTSHIFT" << std::endl;
+    parser_logfile << "LEFTSHIFT" << std::endl;
     strcpy($$, "<<");;
   }
 | RIGHTSHIFT
   {
-    std::cout << "| RIGHTSHIFT" << std::endl;
+    parser_logfile << "| RIGHTSHIFT" << std::endl;
     strcpy($$, ">>");
   }
 ;
@@ -1359,12 +1360,12 @@ ltshift_or_rtshift:
 shift_arith_expr_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | shift_arith_expr_list ltshift_or_rtshift arith_expr
   {
-    std::cout << "| shift_arith_expr_list ltshift_or_rtshift arith_expr" << std::endl;
+    parser_logfile << "| shift_arith_expr_list ltshift_or_rtshift arith_expr" << std::endl;
     node_map[$2]++;
     string no=to_string(node_map[$2]);
     string s=$2+no;
@@ -1379,7 +1380,7 @@ shift_arith_expr_list:
 arith_expr:
   term plus_or_minus_term_list
   {
-    std::cout << "term plus_or_minus_term_list" << std::endl;
+    parser_logfile << "term plus_or_minus_term_list" << std::endl;
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -1394,12 +1395,12 @@ arith_expr:
 plus_or_minus:
   '+'
   {
-    std::cout << "'+'" << std::endl;
+    parser_logfile << "'+'" << std::endl;
     strcpy($$, "+");
   }
 | '-'
   {
-    std::cout << "'-'" << std::endl;
+    parser_logfile << "'-'" << std::endl;
     strcpy($$, "-");
   } 
 ;
@@ -1407,12 +1408,12 @@ plus_or_minus:
 plus_or_minus_term_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | plus_or_minus_term_list plus_or_minus term
   {
-    std::cout << "| plus_or_minus_term_list plus_or_minus term" << std::endl;
+    parser_logfile << "| plus_or_minus_term_list plus_or_minus term" << std::endl;
     node_map[$2]++;
     string no=to_string(node_map[$2]);
     string s=$2+no;
@@ -1428,7 +1429,7 @@ plus_or_minus_term_list:
 term:
   factor star_or_slash_or_percent_or_doubleslash_factor_list
   {
-    std::cout << "factor star_or_slash_or_percent_or_doubleslash_factor_list" << std::endl;
+    parser_logfile << "factor star_or_slash_or_percent_or_doubleslash_factor_list" << std::endl;
     if($2==NULL){
       strcpy($$, $1);
     }
@@ -1442,22 +1443,22 @@ term:
 star_or_slash_or_percent_or_doubleslash:
   '*'
   {
-    std::cout << "'*'" << std::endl;
+    parser_logfile << "'*'" << std::endl;
     strcpy($$, "*");
   }
 | '/'
   {
-    std::cout << "| '/'" << std::endl;
+    parser_logfile << "| '/'" << std::endl;
     strcpy($$, "/");
   }
 | '%'
   {
-    std::cout << "| '%'" << std::endl;
+    parser_logfile << "| '%'" << std::endl;
     strcpy($$, "%");
   }
 | DOUBLESLASH
   {
-    std::cout << "| DOUBLESLASH" << std::endl;
+    parser_logfile << "| DOUBLESLASH" << std::endl;
     strcpy($$, "//");
   }
 ;
@@ -1465,12 +1466,12 @@ star_or_slash_or_percent_or_doubleslash:
 star_or_slash_or_percent_or_doubleslash_factor_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | star_or_slash_or_percent_or_doubleslash_factor_list star_or_slash_or_percent_or_doubleslash factor
   {
-    std::cout << "| star_or_slash_or_percent_or_doubleslash_factor_list star_or_slash_or_percent_or_doubleslash factor" << std::endl;
+    parser_logfile << "| star_or_slash_or_percent_or_doubleslash_factor_list star_or_slash_or_percent_or_doubleslash factor" << std::endl;
     node_map[$2]++;
     string no=to_string(node_map[$2]);
     string s=$2+no;
@@ -1485,7 +1486,7 @@ star_or_slash_or_percent_or_doubleslash_factor_list:
 factor:
   plus_or_minus_or_tilde factor
   {
-    std::cout << "plus_or_minus_or_tilde factor" << std::endl;
+    parser_logfile << "plus_or_minus_or_tilde factor" << std::endl;
     node_map[$1]++;
     string no=to_string(node_map[$1]);
     string s=$1+no;
@@ -1495,7 +1496,7 @@ factor:
   }
 | power
   {
-    std::cout << "| power" << std::endl;
+    parser_logfile << "| power" << std::endl;
     strcpy($$, $1);
   }
 ; 
@@ -1503,17 +1504,17 @@ factor:
 plus_or_minus_or_tilde:
   '+'
   {
-    std::cout << "'+'" << std::endl;
+    parser_logfile << "'+'" << std::endl;
     strcpy($$, "+");
   }
 | '-'
   {
-    std::cout << "| '-'" << std::endl;
+    parser_logfile << "| '-'" << std::endl;
     strcpy($$, "-");
   }
 | '~'
   {
-    std::cout << "| '~'" << std::endl;
+    parser_logfile << "| '~'" << std::endl;
     strcpy($$, "~");
   }
 ;
@@ -1521,7 +1522,7 @@ plus_or_minus_or_tilde:
 power:
   atom_expr doublestar_factor_opt
   {
-    std::cout << "atom_expr doublestar_factor_opt" << std::endl;
+    parser_logfile << "atom_expr doublestar_factor_opt" << std::endl;
     if($2==NULL){
       strcpy($$, $1);}
     else
@@ -1535,12 +1536,12 @@ power:
 doublestar_factor_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | DOUBLESTAR factor
   {
-    std::cout << "| DOUBLESTAR factor" << std::endl;
+    parser_logfile << "| DOUBLESTAR factor" << std::endl;
     node_map["**"]++;
     string no=to_string(node_map["**"]);
     string s="**"+no;
@@ -1553,7 +1554,7 @@ doublestar_factor_opt:
 atom_expr:
   atom trailer_list
   {
-    std::cout << "atom trailer_list" << std::endl;
+    parser_logfile << "atom trailer_list" << std::endl;
     if($2[0] != '\0'){
       emit_dot_edge($1, $2);
     }
@@ -1564,12 +1565,12 @@ atom_expr:
 trailer_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | trailer_list trailer
   {
-    std::cout << "| trailer_list trailer" << std::endl;
+    parser_logfile << "| trailer_list trailer" << std::endl;
     if($1[0] == '\0'){
       strcpy($$, $2);
     }
@@ -1584,7 +1585,7 @@ trailer_list:
 atom:
   '(' testlist_comp_opt ')'
   {
-    std::cout << "'(' testlist_comp_opt ')'" << std::endl;
+    parser_logfile << "'(' testlist_comp_opt ')'" << std::endl;
     node_map["()"]++;
     string no=to_string(node_map["()"]);
     string s="()"+no;
@@ -1596,7 +1597,7 @@ atom:
   }
 | '[' testlist_comp_opt ']'
   {
-    std::cout << "'[' testlist_comp_opt ']'" << std::endl;
+    parser_logfile << "'[' testlist_comp_opt ']'" << std::endl;
     node_map["[]"]++;
     string no=to_string(node_map["[]"]);
     string s="[]"+no;
@@ -1607,7 +1608,7 @@ atom:
   }
 | NAME
   {
-    std::cout << "NAME" << std::endl;
+    parser_logfile << "NAME" << std::endl;
     node_map[$$]++;
     strcpy($$, "NAME(");
     strcat($$, $1); 
@@ -1617,7 +1618,7 @@ atom:
   }
 | NUMBER
   {
-    std::cout << "NUMBER" << std::endl;
+    parser_logfile << "NUMBER" << std::endl;
     strcpy($$, "NUMBER(");
     strcat($$, $1);
     strcat($$, ")");
@@ -1627,7 +1628,7 @@ atom:
   }
 | STRING string_list
   {
-    std::cout << "STRING string_list" << std::endl;
+    parser_logfile << "STRING string_list" << std::endl;
     strcpy($$, "STRING("); 
     int len = strlen($1);
     //char* str = new char(len - 1);
@@ -1646,7 +1647,7 @@ atom:
   }
 | NONE 
   {
-    std::cout << "NONE" << std::endl;
+    parser_logfile << "NONE" << std::endl;
     strcpy($$, "NONE");
     node_map[$$]++;
     string temp = to_string(node_map[$$]);
@@ -1654,7 +1655,7 @@ atom:
   }
 | TRUE
   {
-    std::cout << "TRUE" << std::endl;
+    parser_logfile << "TRUE" << std::endl;
     strcpy($$, "TRUE");
     node_map[$$]++;
     string temp = to_string(node_map[$$]);
@@ -1662,7 +1663,7 @@ atom:
   }
 | FALSE
   {
-    std::cout << "FALSE" << std::endl;
+    parser_logfile << "FALSE" << std::endl;
     strcpy($$, "FALSE");
     node_map[$$]++;
     string temp = to_string(node_map[$$]);
@@ -1673,12 +1674,12 @@ atom:
 string_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | string_list STRING
   {
-    std::cout << "| string_list STRING" << std::endl;
+    parser_logfile << "| string_list STRING" << std::endl;
     if($1==NULL){
       strcpy($$,$2);}
     else{
@@ -1703,12 +1704,12 @@ string_list:
 testlist_comp_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | testlist_comp
   {
-    std::cout << "| testlist_comp" << std::endl;
+    parser_logfile << "| testlist_comp" << std::endl;
     strcpy($$,$1);
   }
 ;
@@ -1716,7 +1717,7 @@ testlist_comp_opt:
 testlist_comp:
   test_or_star_expr comp_for_OR_comma_test_or_star_expr_list_comma_opt
   {
-    std::cout << "test_or_star_expr comp_for_OR_comma_test_or_star_expr_list_comma_opt" << std::endl;
+    parser_logfile << "test_or_star_expr comp_for_OR_comma_test_or_star_expr_list_comma_opt" << std::endl;
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -1730,12 +1731,12 @@ testlist_comp:
 comp_for_OR_comma_test_or_star_expr_list_comma_opt:
   comp_for
   {
-    std::cout << "comp_for" << std::endl;
+    parser_logfile << "comp_for" << std::endl;
     strcpy($$, $1);
   }
 | comma_test_or_star_expr_list comma_opt
   {
-    std::cout << "| comma_test_or_star_expr_list comma_opt" << std::endl;
+    parser_logfile << "| comma_test_or_star_expr_list comma_opt" << std::endl;
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -1753,7 +1754,7 @@ comp_for_OR_comma_test_or_star_expr_list_comma_opt:
 trailer:
   '(' arglist_opt ')'
   {
-    std::cout << "'(' arglist_opt ')'" << std::endl;
+    parser_logfile << "'(' arglist_opt ')'" << std::endl;
     node_map["()"]++;
     string no=to_string(node_map["()"]);
     string s="()"+no;
@@ -1764,7 +1765,7 @@ trailer:
   }
 | '[' subscriptlist ']'
   {
-    std::cout << "'[' subscriptlist ']'" << std::endl;
+    parser_logfile << "'[' subscriptlist ']'" << std::endl;
     node_map["[]"]++;
     string no=to_string(node_map["[]"]);
     string s="[]"+no;
@@ -1775,7 +1776,7 @@ trailer:
   }
 | '.' NAME
   {
-    std::cout << "'. NAME'" << std::endl;
+    parser_logfile << "'. NAME'" << std::endl;
     node_map["."]++;
     string no=to_string(node_map["."]);
     string s="."+no;
@@ -1792,12 +1793,12 @@ trailer:
 arglist_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | arglist
   {
-    std::cout << "| arglist" << std::endl;
+    parser_logfile << "| arglist" << std::endl;
     strcpy($$,$1);
   }
 ;
@@ -1805,7 +1806,7 @@ arglist_opt:
 subscriptlist: 
   subscript comma_subscript_list comma_opt
   {
-    std::cout << "subscript comma_subscript_list comma_opt" << std::endl;
+    parser_logfile << "subscript comma_subscript_list comma_opt" << std::endl;
     if($2==NULL && $3==NULL){
       strcpy($$, $1);
     }
@@ -1830,12 +1831,12 @@ subscriptlist:
 comma_subscript_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | comma_subscript_list ',' subscript
   {
-    std::cout << "| comma_subscript_list ',' subscript" << std::endl;
+    parser_logfile << "| comma_subscript_list ',' subscript" << std::endl;
     node_map[","]++;
     string no=to_string(node_map[","]);
     string s=","+no;
@@ -1850,12 +1851,12 @@ comma_subscript_list:
 subscript:
   test
   {
-    std::cout << "test" << std::endl;
+    parser_logfile << "test" << std::endl;
     strcpy($$,$1);
   }
 | test_opt ':' test_opt
   {
-    std::cout << "| test_opt ':' test_opt" << std::endl;
+    parser_logfile << "| test_opt ':' test_opt" << std::endl;
     node_map[":"]++;
     string no=to_string(node_map[":"]);
     string s=":"+no;
@@ -1873,12 +1874,12 @@ subscript:
 test_opt: 
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | test
   {
-    std::cout << "| test" << std::endl;
+    parser_logfile << "| test" << std::endl;
     strcpy($$,$1);
   }
 ;
@@ -1886,7 +1887,7 @@ test_opt:
 exprlist:
   expr_or_star_expr comma_expr_or_star_expr_list comma_opt
   {
-    std::cout << "expr_or_star_expr comma_expr_or_star_expr_list comma_opt" << std::endl;
+    parser_logfile << "expr_or_star_expr comma_expr_or_star_expr_list comma_opt" << std::endl;
     if($2==NULL && $3==NULL){
       strcpy($$, $1);
     }
@@ -1904,12 +1905,12 @@ exprlist:
 comma_expr_or_star_expr_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | comma_expr_or_star_expr_list ',' expr_or_star_expr
   {
-    std::cout << "| comma_expr_or_star_expr_list ',' expr_or_star_expr" << std::endl;
+    parser_logfile << "| comma_expr_or_star_expr_list ',' expr_or_star_expr" << std::endl;
     node_map[","]++;
     string no=to_string(node_map[","]);
     string s=","+no;
@@ -1925,12 +1926,12 @@ comma_expr_or_star_expr_list:
 expr_or_star_expr:
   expr
   {
-    std::cout << "expr" << std::endl;
+    parser_logfile << "expr" << std::endl;
     strcpy($$, $1);
   }
 | star_expr
   {
-    std::cout << "star_expr" << std::endl;
+    parser_logfile << "star_expr" << std::endl;
     strcpy($$, $1);
   }
 ;
@@ -1938,7 +1939,7 @@ expr_or_star_expr:
 testlist:
   test comma_test_list comma_opt
   {
-    std::cout << "test comma_test_list comma_opt" << std::endl;
+    parser_logfile << "test comma_test_list comma_opt" << std::endl;
     if($2==NULL && $3==NULL){
       strcpy($$, $1);
     }
@@ -1966,12 +1967,12 @@ testlist:
 comma_test_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | comma_test_list ',' test
   {
-    std::cout << "| comma_test_list ',' test" << std::endl;
+    parser_logfile << "| comma_test_list ',' test" << std::endl;
     node_map[","]++;
     string no=to_string(node_map[","]);
     string s=","+no;
@@ -1987,7 +1988,7 @@ comma_test_list:
 classdef:
   CLASS NAME parenthesis_arglist_opt_opt ':' suite
   {
-    std::cout << "CLASS NAME parenthesis_arglist_opt_opt ':' suite" << std::endl;
+    parser_logfile << "CLASS NAME parenthesis_arglist_opt_opt ':' suite" << std::endl;
     strcpy($$, "NAME(");
     strcat($$, $2);
     strcat($$, ")");
@@ -2028,12 +2029,12 @@ classdef:
 parenthesis_arglist_opt_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | '(' arglist_opt ')'
   {
-    std::cout << "'(' arglist_opt ')'" << std::endl;
+    parser_logfile << "'(' arglist_opt ')'" << std::endl;
     node_map["()"]++;
     string no=to_string(node_map["()"]);
     string s="()"+no;
@@ -2046,7 +2047,7 @@ parenthesis_arglist_opt_opt:
 arglist:
   argument comma_argument_list  comma_opt
   {
-    std::cout << "argument comma_argument_list  comma_opt" << std::endl;
+    parser_logfile << "argument comma_argument_list  comma_opt" << std::endl;
     if($2==NULL && $3==NULL){
       strcpy($$, $1);}
     else if($3==NULL)
@@ -2067,12 +2068,12 @@ arglist:
 comma_argument_list:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | comma_argument_list ',' argument
   {
-    std::cout << "| comma_argument_list ',' argument" << std::endl;
+    parser_logfile << "| comma_argument_list ',' argument" << std::endl;
     if($3==NULL){
       strcpy($$, $1);}
     else{
@@ -2100,7 +2101,7 @@ comma_argument_list:
 argument:
   test comp_for_opt
   {
-    std::cout << "test comp_for_opt" << std::endl;
+    parser_logfile << "test comp_for_opt" << std::endl;
     if($2==NULL){
       strcpy($$, $1);}
     else{
@@ -2110,7 +2111,7 @@ argument:
   }
 | test '=' test
   {
-    std::cout << "test '=' test" << std::endl;
+    parser_logfile << "test '=' test" << std::endl;
     node_map["="]++;
     string no=to_string(node_map["="]);
     string s=$2+no;
@@ -2121,7 +2122,7 @@ argument:
   }
 | '*' test
   {
-    std::cout << "'*' test" << std::endl;
+    parser_logfile << "'*' test" << std::endl;
     node_map["*"]++;
     string no=to_string(node_map["*"]);
     string s="*"+no;
@@ -2134,12 +2135,12 @@ argument:
 comp_for_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | comp_for
   {
-    std::cout << "| comp_for" << std::endl;
+    parser_logfile << "| comp_for" << std::endl;
     strcpy($$,$1);
   }
 ;
@@ -2147,12 +2148,12 @@ comp_for_opt:
 comp_iter:
   comp_for
   {
-    std::cout << "comp_for" << std::endl;
+    parser_logfile << "comp_for" << std::endl;
     strcpy($$,$1);
   }
 | comp_if
   {
-    std::cout << "| comp_if" << std::endl;
+    parser_logfile << "| comp_if" << std::endl;
     strcpy($$,$1);
   }
 ;
@@ -2160,7 +2161,7 @@ comp_iter:
 comp_for:
   FOR exprlist IN or_test comp_iter_opt
   {
-    std::cout << "FOR exprlist IN or_test comp_iter_opt" << std::endl;
+    parser_logfile << "FOR exprlist IN or_test comp_iter_opt" << std::endl;
     node_map["FOR"]++;
     string no=to_string(node_map["FOR"]);
     string s="FOR"+no;
@@ -2182,7 +2183,7 @@ comp_for:
 comp_if:
   IF test_nocond comp_iter_opt
   {
-    std::cout << "IF test_nocond comp_iter_opt" << std::endl;
+    parser_logfile << "IF test_nocond comp_iter_opt" << std::endl;
     node_map["IF"]++;
     string no=to_string(node_map["IF"]);
     string s="IF"+no;
@@ -2198,12 +2199,12 @@ comp_if:
 comp_iter_opt:
   %empty
   {
-    std::cout << "%empty" << std::endl;
+    parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
 | comp_iter
   {
-    std::cout << "| comp_iter" << std::endl;
+    parser_logfile << "| comp_iter" << std::endl;
     strcpy($$,$1);
   }
 ;

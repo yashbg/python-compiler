@@ -3,6 +3,7 @@
   #include "parser.tab.h"
 
   extern int line;
+  extern FILE *lexer_logfile;
   
   int dedentsToBeReturned = 0;
   int indentToBeReturned = 0;
@@ -54,13 +55,13 @@ OTHER               .
 
   if(indentToBeReturned > 0){
     indentToBeReturned = 0;
-    printf("%s\n", "INDENT");
+    fprintf(lexer_logfile, "%s\n", "INDENT");
     return INDENT;
   }
 
   while(dedentsToBeReturned > 0){
     dedentsToBeReturned--;
-    printf("%s\n", "DEDENT");
+    fprintf(lexer_logfile, "%s\n", "DEDENT");
     return DEDENT;
   }
 
@@ -70,7 +71,7 @@ OTHER               .
                               yylval.tokenname[i] = str[i];
                             }
                             yylval.tokenname[str.size()] = '\0';
-                            printf("%s\n", "NEWLINE");
+                            fprintf(lexer_logfile, "%s\n", "NEWLINE");
                             return NEWLINE;
                           }
 
@@ -96,11 +97,11 @@ OTHER               .
                                     dedentsToBeReturned++;
                                   }
                                   if(currindent != indent[top]) {
-                                    printf("IndentationError: unindent does not match any outer indentation level at line number %d\n", line);
+                                    printf("Lexer: IndentationError: unindent does not match any outer indentation level at line number %d\n", line);
                                     exit(1);
                                   }
                                 }
-                                printf("NEWLINE\n");
+                                fprintf(lexer_logfile, "NEWLINE\n");
                                 return NEWLINE;
                               }
                             }
@@ -114,7 +115,7 @@ False                     {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "FALSE");
+                            fprintf(lexer_logfile, "%s\n", "FALSE");
                             return FALSE;
                           }
 
@@ -124,7 +125,7 @@ else                      {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "ELSE");
+                            fprintf(lexer_logfile, "%s\n", "ELSE");
                             return ELSE;
                           }
 
@@ -134,7 +135,7 @@ None                      {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "NONE");
+                            fprintf(lexer_logfile, "%s\n", "NONE");
                             return NONE;
                           }
 
@@ -144,7 +145,7 @@ break                     {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "BREAK");
+                            fprintf(lexer_logfile, "%s\n", "BREAK");
                             return BREAK;
                           }
 
@@ -154,7 +155,7 @@ in                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "IN");
+                            fprintf(lexer_logfile, "%s\n", "IN");
                             return IN;
                           }
 
@@ -164,7 +165,7 @@ True                      {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "TRUE");
+                            fprintf(lexer_logfile, "%s\n", "TRUE");
                             return TRUE;
                           }
 
@@ -174,7 +175,7 @@ class                     {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "CLASS");
+                            fprintf(lexer_logfile, "%s\n", "CLASS");
                             return CLASS;
                           }
 
@@ -184,7 +185,7 @@ is                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "IS");
+                            fprintf(lexer_logfile, "%s\n", "IS");
                             return IS;
                           }
 
@@ -194,7 +195,7 @@ return                    {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "RETURN");
+                            fprintf(lexer_logfile, "%s\n", "RETURN");
                             return RETURN;
                           }
 
@@ -204,7 +205,7 @@ and                       {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "AND");
+                            fprintf(lexer_logfile, "%s\n", "AND");
                             return AND;
                           }
 
@@ -214,7 +215,7 @@ continue                  {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "CONTINUE");
+                            fprintf(lexer_logfile, "%s\n", "CONTINUE");
                             return CONTINUE;
                           }
 
@@ -224,7 +225,7 @@ for                       {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "FOR");
+                            fprintf(lexer_logfile, "%s\n", "FOR");
                             return FOR;
                           }
 
@@ -234,7 +235,7 @@ def                       {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "DEF");
+                            fprintf(lexer_logfile, "%s\n", "DEF");
                             return DEF;
                           }
 
@@ -244,7 +245,7 @@ while                     {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "WHILE");
+                            fprintf(lexer_logfile, "%s\n", "WHILE");
                             return WHILE;
                           }
 
@@ -254,7 +255,7 @@ assert                    {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "ASSERT");
+                            fprintf(lexer_logfile, "%s\n", "ASSERT");
                             return ASSERT;
                           }
 
@@ -264,7 +265,7 @@ global                    {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "GLOBAL");
+                            fprintf(lexer_logfile, "%s\n", "GLOBAL");
                             return GLOBAL;
                           }
 
@@ -274,7 +275,7 @@ not                       {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "NOT");
+                            fprintf(lexer_logfile, "%s\n", "NOT");
                             return NOT;
                           }
 
@@ -284,7 +285,7 @@ elif                      {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "ELIF");
+                            fprintf(lexer_logfile, "%s\n", "ELIF");
                             return ELIF;
                           }
 
@@ -294,7 +295,7 @@ if                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "IF");
+                            fprintf(lexer_logfile, "%s\n", "IF");
                             return IF;
                           }
 
@@ -304,7 +305,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "OR");
+                            fprintf(lexer_logfile, "%s\n", "OR");
                             return OR;
                           }
 
@@ -316,7 +317,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "PLUSEQUAL");
+                            fprintf(lexer_logfile, "%s\n", "PLUSEQUAL");
                             return PLUSEQUAL;
                           }
 
@@ -326,7 +327,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "MINEQUAL");
+                            fprintf(lexer_logfile, "%s\n", "MINEQUAL");
                             return MINEQUAL;
                           }
 
@@ -336,7 +337,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "STAREQUAL");
+                            fprintf(lexer_logfile, "%s\n", "STAREQUAL");
                             return STAREQUAL;
                           }
 
@@ -346,7 +347,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "SLASHEQUAL");
+                            fprintf(lexer_logfile, "%s\n", "SLASHEQUAL");
                             return SLASHEQUAL;
                           }
 
@@ -356,7 +357,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "PERCENTEQUAL");
+                            fprintf(lexer_logfile, "%s\n", "PERCENTEQUAL");
                             return PERCENTEQUAL;
                           }
 
@@ -366,7 +367,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "AMPEREQUAL");
+                            fprintf(lexer_logfile, "%s\n", "AMPEREQUAL");
                             return AMPEREQUAL;
                           }
 
@@ -376,7 +377,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "VBAREQUAL");
+                            fprintf(lexer_logfile, "%s\n", "VBAREQUAL");
                             return VBAREQUAL;
                           }
 
@@ -386,7 +387,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "CIRCUMFLEXEQUAL");
+                            fprintf(lexer_logfile, "%s\n", "CIRCUMFLEXEQUAL");
                             return CIRCUMFLEXEQUAL;
                           }
 
@@ -396,7 +397,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "LEFTSHIFTEQUAL");
+                            fprintf(lexer_logfile, "%s\n", "LEFTSHIFTEQUAL");
                             return LEFTSHIFTEQUAL;
                           }
 
@@ -406,7 +407,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "RIGHTSHIFTEQUAL");
+                            fprintf(lexer_logfile, "%s\n", "RIGHTSHIFTEQUAL");
                             return RIGHTSHIFTEQUAL;
                           }
 
@@ -416,7 +417,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "DOUBLESTAREQUAL");
+                            fprintf(lexer_logfile, "%s\n", "DOUBLESTAREQUAL");
                             return DOUBLESTAREQUAL;
                           }
 
@@ -426,7 +427,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "DOUBLESLASHEQUAL");
+                            fprintf(lexer_logfile, "%s\n", "DOUBLESLASHEQUAL");
                             return DOUBLESLASHEQUAL;
                           }
 
@@ -436,7 +437,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                               line=yylineno;
-                              printf("%s\n", "'('");
+                              fprintf(lexer_logfile, "%s\n", "'('");
                               return '(';
                           }
 
@@ -446,7 +447,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                               line=yylineno;
-                              printf("%s\n", "')'");
+                              fprintf(lexer_logfile, "%s\n", "')'");
                               return ')';
                           }
 
@@ -456,7 +457,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                               line=yylineno;
-                              printf("%s\n", "'['");
+                              fprintf(lexer_logfile, "%s\n", "'['");
                               return '[';
                           }
 
@@ -466,7 +467,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                               line=yylineno;
-                              printf("%s\n", "']'");
+                              fprintf(lexer_logfile, "%s\n", "']'");
                               return ']';
                           }
 
@@ -476,7 +477,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                               line=yylineno;
-                              printf("%s\n", "','");
+                              fprintf(lexer_logfile, "%s\n", "','");
                               return ',';
                           }
 
@@ -486,7 +487,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                               line=yylineno;
-                              printf("%s\n", "':'");
+                              fprintf(lexer_logfile, "%s\n", "':'");
                               return ':';
                           }
 
@@ -496,7 +497,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                               line=yylineno;
-                              printf("%s\n", "'.'");
+                              fprintf(lexer_logfile, "%s\n", "'.'");
                               return '.';
                           }
 
@@ -506,7 +507,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                               line=yylineno;
-                              printf("%s\n", "';'");
+                              fprintf(lexer_logfile, "%s\n", "';'");
                               return ';';
                           }
 
@@ -516,7 +517,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                               line=yylineno;
-                              printf("%s\n", "'='");
+                              fprintf(lexer_logfile, "%s\n", "'='");
                               return '=';
                           }
 
@@ -526,7 +527,7 @@ or                        {
                             yylval.tokenname[i] = str[i];
                               yylval.tokenname[str.size()] = '\0'; 
                               line=yylineno;
-                              printf("%s\n", "ARROW");
+                              fprintf(lexer_logfile, "%s\n", "ARROW");
                               return ARROW;
                           }
 
@@ -539,7 +540,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "'+'");
+                            fprintf(lexer_logfile, "%s\n", "'+'");
                             return '+';
                           }
 
@@ -549,7 +550,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "'-'");
+                            fprintf(lexer_logfile, "%s\n", "'-'");
                             return '-';
                           }
 
@@ -559,7 +560,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "'*'");
+                            fprintf(lexer_logfile, "%s\n", "'*'");
                             return '*';
                           }
 
@@ -569,7 +570,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "'/'");
+                            fprintf(lexer_logfile, "%s\n", "'/'");
                             return '/';
                           }
 
@@ -579,7 +580,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "'%'");
+                            fprintf(lexer_logfile, "%s\n", "'%'");
                             return '%';
                           }
 
@@ -589,7 +590,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "'|'");
+                            fprintf(lexer_logfile, "%s\n", "'|'");
                             return '|';
                           }
 
@@ -599,7 +600,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "'&'");
+                            fprintf(lexer_logfile, "%s\n", "'&'");
                             return '&';
                           }
 
@@ -609,7 +610,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "'~'");
+                            fprintf(lexer_logfile, "%s\n", "'~'");
                             return '~';
                           }
 
@@ -619,7 +620,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "'^'");
+                            fprintf(lexer_logfile, "%s\n", "'^'");
                             return '^';
                           }
 
@@ -629,7 +630,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "LESSTHAN");
+                            fprintf(lexer_logfile, "%s\n", "LESSTHAN");
                             return LESSTHAN;
                           }
 
@@ -639,7 +640,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "LESSTHANEQUAL");
+                            fprintf(lexer_logfile, "%s\n", "LESSTHANEQUAL");
                             return LESSTHANEQUAL;
                           }
 
@@ -649,7 +650,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "GREATERTHAN");
+                            fprintf(lexer_logfile, "%s\n", "GREATERTHAN");
                             return GREATERTHAN;
                           }
 
@@ -659,7 +660,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "GREATERTHANEQUAL");
+                            fprintf(lexer_logfile, "%s\n", "GREATERTHANEQUAL");
                             return GREATERTHANEQUAL;
                           }
 
@@ -669,7 +670,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "RIGHTSHIFT");
+                            fprintf(lexer_logfile, "%s\n", "RIGHTSHIFT");
                             return RIGHTSHIFT;
                           }
 
@@ -679,7 +680,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "LEFTSHIFT");
+                            fprintf(lexer_logfile, "%s\n", "LEFTSHIFT");
                             return LEFTSHIFT;
                           }
 
@@ -689,7 +690,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "DOUBLESLASH"); return
+                            fprintf(lexer_logfile, "%s\n", "DOUBLESLASH"); return
                           DOUBLESLASH;}
 
 "**"                      {
@@ -698,7 +699,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "DOUBLESTAR");
+                            fprintf(lexer_logfile, "%s\n", "DOUBLESTAR");
                             return DOUBLESTAR;
                           }
 
@@ -708,7 +709,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "DOUBLEEQUAL"); return
+                            fprintf(lexer_logfile, "%s\n", "DOUBLEEQUAL"); return
                           DOUBLEEQUAL;}
 
 "!="                      {
@@ -717,7 +718,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "NOTEQUAL");
+                            fprintf(lexer_logfile, "%s\n", "NOTEQUAL");
                             return NOTEQUAL;
                           }
 
@@ -728,7 +729,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "NUMBER");
+                            fprintf(lexer_logfile, "%s\n", "NUMBER");
                             return NUMBER;
                           }
 
@@ -738,7 +739,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "NUMBER");
+                            fprintf(lexer_logfile, "%s\n", "NUMBER");
                             return NUMBER;
                           }
 
@@ -748,7 +749,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "NUMBER");
+                            fprintf(lexer_logfile, "%s\n", "NUMBER");
                             return NUMBER;
                           }
 
@@ -760,7 +761,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "STRING");
+                            fprintf(lexer_logfile, "%s\n", "STRING");
                             return STRING;
                           }
 
@@ -770,7 +771,7 @@ or                        {
                               yylval.tokenname[i] = str[i];
                             yylval.tokenname[str.size()] = '\0'; 
                             line=yylineno;
-                            printf("%s\n", "NAME");
+                            fprintf(lexer_logfile, "%s\n", "NAME");
                             return NAME;
                           }
 
@@ -781,7 +782,7 @@ or                        {
 {WHITESPACE}              /* ignore WHITESPACE */
 
 {OTHER}                   {
-                            printf("Invalid character %s found at line number %d\n", yytext, line);
+                            printf("Lexer: Invalid character %s found at line number %d\n", yytext, line);
                             exit(1);
                           }
 
