@@ -245,19 +245,22 @@ typedargslist:
 tfpdef:
   NAME colon_test_opt
   {
-    parser_logfile << "NAME colon_test_opt" << std::endl;
-    strcpy($$, ":");
-    string temp = to_string(node_map[":"]);
-    strcat($$, temp.c_str());
-
     node_map[$1]++;
     s2 = "NAME(";
     s2 += $1;
     s2 += ")";
     s2 += to_string(node_map[$1]);
+    
+    if($2[0] != '\0'){
+      parser_logfile << "NAME colon_test_opt" << std::endl;
+      strcpy($$, ":");
+      string temp = to_string(node_map[":"]);
+      strcat($$, temp.c_str());
 
-    if($2[0] != '\0'){      
       emit_dot_edge($2, s2.c_str());
+    }
+    else {
+      strcpy($$, s2.c_str());
     }
   }
 ;
