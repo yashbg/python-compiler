@@ -1589,7 +1589,7 @@ trailer_list:
     else
       {
       emit_dot_edge($1, $2);
-      strcpy($$, $2);
+      strcpy($$, $1);
       }
   }
 ;
@@ -1789,10 +1789,10 @@ trailer:
     strcpy($$, "NAME(");
     strcat($$, $2); 
     strcat($$, ")");
+    node_map[$2]++;
     string temp = to_string(node_map[$2]);
     strcat($$, temp.c_str());
-    node_map[$2]++;
-    emit_dot_edge(s.c_str(), $$);
+    emit_dot_edge(s.c_str(),$$);
     strcpy($$, s.c_str());
   }
 ;
