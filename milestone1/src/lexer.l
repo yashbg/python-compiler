@@ -76,10 +76,7 @@ OTHER               .
                           }
 
 [\n\t ]+                  {
-                            if(line_join == 1) {
-                              REJECT;
-                            }
-                            else{
+                            if (!line_join) {
                               int last_newline_pos =  -1, len = strlen(yytext);
                               for(int i = 0; i < len; i++){
                                 if(yytext[i] == '\n') last_newline_pos = i;
