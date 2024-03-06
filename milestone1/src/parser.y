@@ -130,28 +130,24 @@ funcdef:
     strcpy($$, "NAME(");
     strcat($$, $2);
     strcat($$, ")");
-    node_map[$$]++;
+    node_map[$2]++;
     node_map["DEF"]++;
     
 
     s1 = "DEF" + to_string(node_map["DEF"]);
-    s2 = $$ + to_string(node_map[$$]);
+    s2 = $$ + to_string(node_map[$2]);
     emit_dot_edge(s1.c_str(), s2.c_str());
 
-    s1 = $$ + to_string(node_map[$$]);
+    s1 = $$ + to_string(node_map[$2]);
     emit_dot_edge(s1.c_str(), $3);
-
-    if($4 != NULL){
-      node_map["ARROW"]++;
-      s1 = "ARROW"+to_string(node_map["ARROW"]);
-      s2 = "DEF"+to_string(node_map["DEF"]);
-      emit_dot_edge(s1.c_str(), s2.c_str());
-    } 
 
     node_map[":"]++;
     s1 = $5+to_string(node_map[":"]);
-    s2 = "ARROW"+to_string(node_map["ARROW"]);
-    emit_dot_edge(s1.c_str(), s2.c_str());
+    if($4 != NULL){
+      s2 = "DEF"+to_string(node_map["DEF"]);
+      emit_dot_edge($4, s2.c_str());
+      emit_dot_edge(s1.c_str(), $4);
+    } 
     
     emit_dot_edge(s1.c_str(), $6);
 
@@ -170,9 +166,10 @@ arrow_test_opt:
 | ARROW test
   {
     parser_logfile << "| ARROW test" << std::endl;
-    s1 = "ARROW"+to_string(node_map["ARROW"]);
+    s1 = "->"+to_string(node_map["->"]);
     s2 = $2;
     emit_dot_edge(s1.c_str(), $2);
+    strcpy($$,s1.c_str());
   }
 ;
 
@@ -252,7 +249,7 @@ tfpdef:
     strcat($$, $1);
     strcat($$, ")");
     node_map[$1]++;
-    s2 = $$+to_string(node_map[$$]);
+    s2 = $$+to_string(node_map[$1]);
 
     if($2 != NULL){      
       emit_dot_edge(s2.c_str(), $2);
@@ -710,9 +707,12 @@ global_stmt:
     string s="GLOBAL"+no;
     //emit_dot_node(s.c_str(), "GLOBAL");
     char* s2;
+    node_map[$2]++;
     strcpy(s2,"NAME(");
     strcat(s2,$2);
     strcat(s2,")");
+    string temp = to_string(node_map[$2]);
+    strcat(s2, temp.c_str());
     emit_dot_edge(s.c_str(), s2);
     if($3!=NULL){
       emit_dot_edge(s.c_str(), $3);}
@@ -734,9 +734,12 @@ comma_name_list:
     string s=","+no;
     //emit_dot_node(s.c_str(), ",");
     char* s2;
+    node_map[$3]++;
     strcpy(s2,"NAME(");
     strcat(s2,$3);
     strcat(s2,")");
+    string temp = to_string(node_map[$3]);
+    strcat(s2, temp.c_str());
     emit_dot_edge(s.c_str(), s2);
     if($1!=NULL){
       emit_dot_edge(s.c_str(), $1);
@@ -1783,9 +1786,11 @@ trailer:
     string s="."+no;
     //emit_dot_node(s.c_str(), ".");
     strcpy($$, "NAME(");
-    strcat($$, $1); 
+    strcat($$, $2); 
     strcat($$, ")");
-    node_map[$$]++;
+    string temp = to_string(node_map[$2]);
+    strcat($$, temp.c_str());
+    node_map[$2]++;
     emit_dot_edge(s.c_str(), $$);
     strcpy($$, s.c_str());
   }
@@ -1993,7 +1998,7 @@ classdef:
     strcpy($$, "NAME(");
     strcat($$, $2);
     strcat($$, ")");
-    node_map[$$]++;
+    node_map[$2]++;
     node_map["CLASS"]++;
 
     s1 = "CLASS"+to_string(node_map["CLASS"]);
