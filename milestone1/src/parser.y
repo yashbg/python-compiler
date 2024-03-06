@@ -1023,6 +1023,11 @@ comparison:
     else
     {
       strcpy($$, "COMP_OP(");
+      int len = strlen($2), i = len - 1;
+      while((i >= 0) && (is_digit($2[i]))){
+        $2[i] = '\0';
+        i--;
+      }
       strcat($$, $2);
       strcat($$, ")");
       node_map[$$]++;
