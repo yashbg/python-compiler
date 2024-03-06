@@ -19,7 +19,7 @@ def power(x, y):
 def modulo(x, y):
   return x % y
 
-if __name__ == "__main__":
+def main():
   while True:
     print("Select operation:")
     print("1. Add")
@@ -51,3 +51,6 @@ if __name__ == "__main__":
         print("Invalid input")
     else:
       print("Invalid input")
+
+if __name__ == "__main__":
+  main()
