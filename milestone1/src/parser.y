@@ -212,8 +212,7 @@ typedargslist:
   {
     parser_logfile << "tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list" << std::endl;
     if($2[0] != '\0') {
-      node_map["="]++;
-      s1 = "=" + to_string(node_map["="]);
+      s1 =$2;
       s2 = $1;
       emit_dot_edge(s1.c_str(), s2.c_str());
     }
@@ -222,7 +221,7 @@ typedargslist:
     {
       if($2[0] != '\0'){
         s1 = $3;
-        s2 = "=" + to_string(node_map["="]);
+        s2 =$2;
         emit_dot_edge($3, s2.c_str());
         strcpy($$, $3);
       }
@@ -234,9 +233,7 @@ typedargslist:
     else
     {
       if($2[0] != '\0'){
-        strcpy($$, "=");
-        string temp = to_string(node_map["="]);
-        strcat($$, temp.c_str());
+        strcpy($$, $2);
       }
       else{
         strcpy($$, $1);
@@ -274,7 +271,9 @@ comma_opt:
 | ','
   {
     parser_logfile << "| ','" << std::endl;
-    strcpy($$, $1);
+    node_map[","]++;
+    s1 = "," + to_string(node_map[","]);
+    strcpy($$, s1.c_str());
   }
 ;
 
@@ -290,6 +289,7 @@ equal_test_opt:
     node_map["="]++;
     s1 = "="+to_string(node_map["="]);
     emit_dot_edge(s1.c_str(), $2);
+    strcpy($$, s1.c_str());
   }
 ;
 
@@ -303,8 +303,7 @@ comma_tfpdef_equal_test_opt_list:
   {
     parser_logfile << "| comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt" << std::endl;
     if($4[0] != '\0'){
-      node_map["="]++;
-      s1 = "="+to_string(node_map["="]);
+      s1 = $4;
       s2 = $3;
       emit_dot_edge(s1.c_str(), $3);
     }
@@ -314,7 +313,7 @@ comma_tfpdef_equal_test_opt_list:
     if($1[0]!='\0')
     {
       if($4[0] != '\0'){
-        s2 = "="+to_string(node_map["="]);
+        s2 =$4;
         emit_dot_edge($1, s2.c_str());
       }
       else{
@@ -330,7 +329,7 @@ comma_tfpdef_equal_test_opt_list:
     else{
       s1 = "," + to_string(node_map[","]);
       if($4[0] != '\0'){
-        s2 = "="+to_string(node_map["="]);
+        s2 = $4;
       }
       else{
         s2 = $3;
@@ -455,8 +454,7 @@ expr_stmt:
   | testlist_star_expr augassign testlist
   {
     parser_logfile << "| testlist_star_expr augassign testlist" << std::endl;
-    node_map[$2]++;
-    s1 = $2 + to_string(node_map[$2]);
+    s1 = $2;
     emit_dot_edge(s1.c_str(), $3);
     emit_dot_edge(s1.c_str(), $1);
     strcpy($$, s1.c_str());
@@ -468,7 +466,7 @@ expr_stmt:
       strcpy($$, $1);
     }
     else{
-      s1 = $2 + to_string(node_map["="]);
+      s1 = $2;
       emit_dot_edge($2, $1);
       strcpy($$, $2);
     }
@@ -513,8 +511,7 @@ annassign:
     s2 = ":" + to_string(node_map[":"]);
     
     if($3[0] != '\0'){
-      s1 = "="+to_string(node_map["="]);
-      emit_dot_edge(s1.c_str(), s2.c_str());
+      emit_dot_edge(s1.c_str(), $3);
       strcpy($$, s1.c_str());
     }
     else{
@@ -528,9 +525,8 @@ testlist_star_expr:
   {
     parser_logfile << "test_or_star_expr comma_test_or_star_expr_list comma_opt" << std::endl;
     if($2[0] != '\0'){
-      s1 = "," + to_string(node_map[","]); 
-      emit_dot_edge(s1.c_str(), $1); 
-      strcpy($$, s1.c_str()); 
+      emit_dot_edge($2, $1); 
+      strcpy($$, $2); 
     }
     else{
       strcpy($$, $1);
@@ -1750,17 +1746,7 @@ comp_for_OR_comma_test_or_star_expr_list_comma_opt:
 | comma_test_or_star_expr_list comma_opt
   {
     parser_logfile << "| comma_test_or_star_expr_list comma_opt" << std::endl;
-    if($2[0] == '\0'){
       strcpy($$, $1);
-    }
-    else{
-      node_map[","]++;
-      string no=to_string(node_map[","]);
-      string s=","+no;
-      //emit_dot_node(s.c_str(), ",");
-      emit_dot_edge(s.c_str(), $1);
-      strcpy($$, s.c_str());
-    }
   }
 ;
 
@@ -1822,23 +1808,12 @@ subscriptlist:
   subscript comma_subscript_list comma_opt
   {
     parser_logfile << "subscript comma_subscript_list comma_opt" << std::endl;
-    if($2[0]=='\0' && $3[0]=='\0'){
+    if($2[0]=='\0'){
       strcpy($$, $1);
     }
-    else if($3[0]=='\0'){
-      emit_dot_edge($2,$1);
-      strcpy($$, $2);
-    }
     else {
-      node_map[","]++;
-      string no=to_string(node_map[","]);
-      string s=","+no;
-      //emit_dot_node(s.c_str(), ",");
-      emit_dot_edge(s.c_str(), $1);
-      if($2[0]!='\0'){
-        emit_dot_edge(s.c_str(), $2);
-      }
-      strcpy($$, s.c_str());
+      emit_dot_edge($2, $1);
+      strcpy($$, $2);
     }
   }
 ;
@@ -1903,16 +1878,12 @@ exprlist:
   expr_or_star_expr comma_expr_or_star_expr_list comma_opt
   {
     parser_logfile << "expr_or_star_expr comma_expr_or_star_expr_list comma_opt" << std::endl;
-    if($2[0]=='\0' && $3[0]=='\0'){
+    if($2[0]=='\0'){
       strcpy($$, $1);
     }
     else{
-      node_map[","]++;
-      string no=to_string(node_map[","]);
-      string s=","+no;
-      //emit_dot_node(s.c_str(), ",");
-      emit_dot_edge(s.c_str(), $1);
-      strcpy($$, s.c_str());
+      emit_dot_edge($2, $1);
+      strcpy($$, $2);
     }
   }
 ;
@@ -1959,10 +1930,6 @@ testlist:
       strcpy($$, $1);
     }
     else if($2[0]!='\0'){
-      node_map[","]++;
-      string no=to_string(node_map[","]);
-      string s=","+no;
-      //emit_dot_node(s.c_str(), ",");
       emit_dot_edge($2, $1);
       strcpy($$, $2);
     }
@@ -2053,19 +2020,12 @@ arglist:
   argument comma_argument_list  comma_opt
   {
     parser_logfile << "argument comma_argument_list  comma_opt" << std::endl;
-    if($2[0]=='\0' && $3[0]=='\0'){
+    if($2[0]=='\0'){
       strcpy($$, $1);}
-    else if($3[0]=='\0')
+    else 
       {
-        node_map[","]++;
-        string no=to_string(node_map[","]);
-        string s=","+no;
-        //emit_dot_node(s.c_str(), ",");
-        emit_dot_edge(s.c_str(), $1);
-        strcpy($$, s.c_str());
-      }
-      else {
-        strcpy($$, $1);
+        emit_dot_edge($2, $1);
+        strcpy($$, $2);
       }
   }
 ;
