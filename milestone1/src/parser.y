@@ -2223,7 +2223,7 @@ encoding_decl: NAME
 
 %%
 
-void yyerror(const char* s) {
-  std::cerr << "Parse error: " << s << " at line number " << line << std::endl;
+void yyerror(const char *s) {
+  std::cerr << "Error on line " << line << ", token(" << yytext << "): " << s << std::endl;
   exit(1);
 }

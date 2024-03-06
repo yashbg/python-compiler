@@ -4,6 +4,7 @@
 
   extern int line;
   extern FILE *lexer_logfile;
+  extern void yyerror(const char *);
   
   int dedentsToBeReturned = 0;
   int indentToBeReturned = 0;
@@ -94,8 +95,7 @@ OTHER               .
                                     dedentsToBeReturned++;
                                   }
                                   if(currindent != indent[top]) {
-                                    fprintf(stderr, "Lexer: IndentationError: unindent does not match any outer indentation level at line number %d\n", line);
-                                    exit(1);
+                                    yyerror("indentation error: unindent does not match any outer indentation level");
                                   }
                                 }
                                 fprintf(lexer_logfile, "NEWLINE\n");
@@ -778,9 +778,6 @@ or                        {
 
 {WHITESPACE}              /* ignore WHITESPACE */
 
-{OTHER}                   {
-                            fprintf(stderr, "Lexer: Invalid character %s found at line number %d\n", yytext, line);
-                            exit(1);
-                          }
+{OTHER}                   yyerror("invalid character");
 
 %%
