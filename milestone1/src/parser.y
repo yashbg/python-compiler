@@ -1043,13 +1043,16 @@ comp_op_expr_list:
 | comp_op_expr_list comp_op expr
 {
   node_map[$2]++;
+  string s3 = "COMP_OP(";
   string no=to_string(node_map[$2]);
-  string s=$2+no;
+  string s2 = $2+no;
+  string s=s3 + $2 + ")" + no;
+  
   emit_dot_edge(s.c_str(), $3);
   if($1[0] != '\0'){
     emit_dot_edge(s.c_str(), $1);
   }
-  strcpy($$, s.c_str());
+  strcpy($$, s2.c_str());
 }
 ;
 
