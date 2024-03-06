@@ -930,15 +930,15 @@ elif_test_colon_suite_list:
     node_map["ELIF"]++;
     string no=to_string(node_map["ELIF"]);
     string s="ELIF"+no;
-    emit_dot_edge(s.c_str(), $3);
     node_map[":"]++;
     string no1=to_string(node_map[":"]);
     string s1=":"+no1;
-    emit_dot_edge(s1.c_str(), s.c_str());
+    emit_dot_edge(s.c_str(), s1.c_str());
     emit_dot_edge(s1.c_str(), $5);
-    strcpy($$, s1.c_str());
+    emit_dot_edge(s1.c_str(), $3);
+    strcpy($$, s.c_str());
     if($1[0] != '\0'){
-      emit_dot_edge($$, s1.c_str());
+      emit_dot_edge(s1.c_str(),$1);
     }
   }
 ;
