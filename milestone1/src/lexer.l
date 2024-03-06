@@ -73,7 +73,31 @@ OTHER               .
                             }
                             yylval.tokenname[str.size()] = '\0';
                             fprintf(lexer_logfile, "%s\n", "NEWLINE");
-                            return NEWLINE;
+                            if (!line_join) {
+                              int last_newline_pos =  -1, len = strlen(yytext);
+                              for(int i = 0; i < len; i++){
+                                if(yytext[i] == '\n') last_newline_pos = i;
+                              }
+                              if(last_newline_pos != -1){
+                                int currindent = len - last_newline_pos - 1;
+                                if(currindent > indent[top]){
+                                  top++;
+                                  indent[top] = currindent;
+                                  indentToBeReturned = 1;
+                                }
+                                else if(currindent < indent[top]){
+                                  while(currindent < indent[top]){
+                                    top--;
+                                    dedentsToBeReturned++;
+                                  }
+                                  if(currindent != indent[top]) {
+                                    yyerror("indentation error: unindent does not match any outer indentation level");
+                                  }
+                                }
+                                fprintf(lexer_logfile, "NEWLINE\n");
+                                return NEWLINE;
+                              }
+                            }
                           }
 
 [\n\t ]+                  {
