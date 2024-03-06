@@ -1432,7 +1432,7 @@ plus_or_minus_term_list:
     //emit_dot_node(s.c_str(), $2);
     emit_dot_edge(s.c_str(), $3);
     if($1[0]!='\0'){
-      emit_dot_edge($1, s.c_str());
+      emit_dot_edge(s.c_str(), $1);
     }
     strcpy($$, s.c_str());
   }
