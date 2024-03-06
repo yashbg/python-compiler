@@ -227,7 +227,7 @@ typedargslist:
       }
       else{
         emit_dot_edge($3, $1);
-        strcpy($$, $2);
+        strcpy($$, $3);
       }
     }
     else
