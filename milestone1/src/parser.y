@@ -1609,11 +1609,11 @@ atom:
 | NAME
   {
     parser_logfile << "NAME" << std::endl;
-    node_map[$$]++;
+    node_map[$1]++;
     strcpy($$, "NAME(");
     strcat($$, $1); 
     strcat($$, ")");
-    string temp = to_string(node_map[$$]);
+    string temp = to_string(node_map[$1]);
     strcat($$, temp.c_str());
   }
 | NUMBER
@@ -2218,6 +2218,6 @@ encoding_decl: NAME
 %%
 
 void yyerror(const char* s) {
-  fprintf(stderr, "Parse error: %s at line number %d\n", s, line);
+  std::cerr << "Parse error: " << s << " at line number " << line << std::endl;
   exit(1);
 }

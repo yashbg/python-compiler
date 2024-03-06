@@ -97,7 +97,7 @@ OTHER               .
                                     dedentsToBeReturned++;
                                   }
                                   if(currindent != indent[top]) {
-                                    printf("Lexer: IndentationError: unindent does not match any outer indentation level at line number %d\n", line);
+                                    fprintf(stderr, "Lexer: IndentationError: unindent does not match any outer indentation level at line number %d\n", line);
                                     exit(1);
                                   }
                                 }
@@ -782,7 +782,7 @@ or                        {
 {WHITESPACE}              /* ignore WHITESPACE */
 
 {OTHER}                   {
-                            printf("Lexer: Invalid character %s found at line number %d\n", yytext, line);
+                            fprintf(stderr, "Lexer: Invalid character %s found at line number %d\n", yytext, line);
                             exit(1);
                           }
 
