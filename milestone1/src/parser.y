@@ -1,79 +1,79 @@
 %{
-#include <iostream>
-#include <string>
-#include <map>
-#include <cstring>
-#include <cstdlib>
-#include <fstream>
+  #include <iostream>
+  #include <string>
+  #include <map>
+  #include <cstring>
+  #include <cstdlib>
+  #include <fstream>
 
-extern int yylex();
-extern int yylineno;
-extern char* yytext;
-extern std::ofstream outfile;
-extern std::ofstream parser_logfile;
+  extern int yylex();
+  extern int yylineno;
+  extern char* yytext;
+  extern std::ofstream outfile;
+  extern std::ofstream parser_logfile;
 
-void yyerror(const char *);
+  void yyerror(const char *);
 
-std::map<std::string, int> node_map;
-int line = 1;
-std::string s1, s2;
+  std::map<std::string, int> node_map;
+  int line = 1;
+  std::string s1, s2;
 
-int is_digit(char c) {
-  return ((c >= '0') && (c <= '9'));
-}
+  int is_digit(char c) {
+    return ((c >= '0') && (c <= '9'));
+  }
 
-void emit_dot_node(const char* node_name, const char* label) {
-  outfile << "\"" << node_name << "\" [label=\"" << label << "\"];" << std::endl;
-}
+  void emit_dot_node(const char* node_name, const char* label) {
+    outfile << "\"" << node_name << "\" [label=\"" << label << "\"];" << std::endl;
+  }
 
-void emit_dot_edge(const char* from, const char* to) {
-    if((from[0] == '\0')) return;
-    if(to[0] == '\0') return;
-    char* fromlabel = (char*)malloc(strlen(from) + 1);  // Allocate memory for fromlabel
-    char* tolabel = (char*)malloc(strlen(to) + 1); 
-    int i = 0;
-    while(from[i] != '\0'){
-      fromlabel[i] = from[i];
-      i++;
-    }
-    int j = 0;
-    while(to[j] != '\0'){
-      tolabel[j] = to[j];
-      j++;
-    }
-    i--;j--;
-    while(i>=0 && is_digit(from[i])){
-      i--;
-    }
-    while(j>=0 && is_digit(to[j])){
-      j--;
-    }
-    fromlabel[i+1] = '\0';
-    tolabel[j+1] = '\0';
-    emit_dot_node(from, fromlabel);
-    emit_dot_node(to, tolabel);
-    outfile << "\"" << from << "\" -> \"" << to << "\";" << std::endl;
-    free(fromlabel);  // Free allocated memory
-    free(tolabel);    // Free allocated memory
-}
+  void emit_dot_edge(const char* from, const char* to) {
+      if((from[0] == '\0')) return;
+      if(to[0] == '\0') return;
+      char* fromlabel = (char*)malloc(strlen(from) + 1);  // Allocate memory for fromlabel
+      char* tolabel = (char*)malloc(strlen(to) + 1); 
+      int i = 0;
+      while(from[i] != '\0'){
+        fromlabel[i] = from[i];
+        i++;
+      }
+      int j = 0;
+      while(to[j] != '\0'){
+        tolabel[j] = to[j];
+        j++;
+      }
+      i--;j--;
+      while(i>=0 && is_digit(from[i])){
+        i--;
+      }
+      while(j>=0 && is_digit(to[j])){
+        j--;
+      }
+      fromlabel[i+1] = '\0';
+      tolabel[j+1] = '\0';
+      emit_dot_node(from, fromlabel);
+      emit_dot_node(to, tolabel);
+      outfile << "\"" << from << "\" -> \"" << to << "\";" << std::endl;
+      free(fromlabel);  // Free allocated memory
+      free(tolabel);    // Free allocated memory
+  }
 %}
 
 %code requires {
-    #include <string>
-    #include <iostream>
-    #include <cstdlib>
-    #include <string>
-    #include <map>
-    using namespace std;
+  #include <string>
+  #include <iostream>
+  #include <cstdlib>
+  #include <string>
+  #include <map>
+  using namespace std;
 }
 
-%union {char tokenname[1024];}
+%union { char tokenname[1024]; }
+
 %token<tokenname> PLUSEQUAL MINEQUAL STAREQUAL SLASHEQUAL PERCENTEQUAL AMPEREQUAL VBAREQUAL CIRCUMFLEXEQUAL LEFTSHIFTEQUAL
 %token<tokenname> RIGHTSHIFTEQUAL DOUBLESTAREQUAL DOUBLESLASHEQUAL DOUBLESLASH DOUBLESTAR NUMBER STRING NONE TRUE FALSE
 %token<tokenname> NEWLINE ARROW DEF NAME BREAK CONTINUE RETURN GLOBAL ASSERT IF WHILE FOR ELSE ELIF INDENT DEDENT
 %token<tokenname> AND OR NOT LESSTHAN GREATERTHAN DOUBLEEQUAL GREATERTHANEQUAL LESSTHANEQUAL NOTEQUAL IN IS LEFTSHIFT RIGHTSHIFT CLASS
 %token<tokenname> ',' '.' ';' ':' '(' ')' '[' ']' '=' '+' '-' '~' '*' '/' '%' '^' '&' '|' 
-
 
 %type<tokenname> file_input newline_or_stmt newline_or_stmt_list funcdef arrow_test_opt parameters typedargslist_opt typedargslist tfpdef comma_opt equal_test_opt comma_tfpdef_equal_test_opt_list colon_test_opt
 %type<tokenname> semicolon_opt expr_stmt simple_stmt semicolon_small_stmt_list small_stmt stmt expr_stmt_suffix_choices equal_testlist_star_expr_list annassign testlist_star_expr test_or_star_expr comma_test_or_star_expr_list augassign flow_stmt break_stmt continue_stmt return_stmt
@@ -82,6 +82,7 @@ void emit_dot_edge(const char* from, const char* to) {
 %type<tokenname> plus_or_minus_term_list term star_or_slash_or_percent_or_doubleslash star_or_slash_or_percent_or_doubleslash_factor_list factor plus_or_minus_or_tilde power doublestar_factor_opt atom_expr trailer_list atom string_list testlist_comp_opt testlist_comp comp_for_OR_comma_test_or_star_expr_list_comma_opt
 %type<tokenname> trailer arglist_opt subscript subscriptlist comma_subscript_list test_opt exprlist comma_expr_or_star_expr_list expr_or_star_expr testlist
 %type<tokenname> comma_test_list classdef parenthesis_arglist_opt_opt arglist comma_argument_list argument suite comp_for_opt comp_iter comp_for comp_if comp_iter_opt
+
 %%
 
 file_input:
