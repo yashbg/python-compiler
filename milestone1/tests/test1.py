@@ -1,5 +1,1 @@
-def main(a: int, b: int):
-  pass
-
-if __name__ == "__main__":
-  main()
+a: int = [1, 2, 3, 4]

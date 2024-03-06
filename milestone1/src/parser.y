@@ -567,7 +567,7 @@ comma_test_or_star_expr_list:
       strcpy($$, s1.c_str());
     }
     else{
-      strcpy($$, $3);
+      strcpy($$, s1.c_str());
     }
   }
 ;
@@ -1615,7 +1615,8 @@ atom:
     string s="[]"+no;
     //emit_dot_node(s.c_str(), "[]");
     if($2[0]!='\0'){
-      emit_dot_edge(s.c_str(), $2);}
+      emit_dot_edge(s.c_str(), $2);
+    }
     strcpy($$, s.c_str());
   }
 | NAME
@@ -1736,6 +1737,8 @@ testlist_comp:
     else{
       emit_dot_edge($1, $2);
       strcpy($$, $1);
+      // emit_dot_edge($2, $1);
+      // strcpy($$, $2);
     }
   }
 ;
