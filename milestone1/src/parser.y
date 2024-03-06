@@ -346,6 +346,7 @@ colon_test_opt:
 | ':' test
   {
     parser_logfile << "| ':' test" << std::endl;
+    node_map[":"]++;
     s1 = ":"+to_string(node_map[":"]);
     emit_dot_edge(s1.c_str(), $2);
   }
