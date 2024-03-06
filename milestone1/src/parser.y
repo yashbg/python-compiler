@@ -1868,14 +1868,11 @@ arglist:
 {
     if($2==NULL && $3==NULL){
       strcpy($$, $1);}
-    else if($3==NULL)
+    else if($2!=NULL)
       {
-        node_map[","]++;
-        string no=to_string(node_map[","]);
-        string s=","+no;
         //emit_dot_node(s.c_str(), ",");
-        emit_dot_edge(s.c_str(), $1);
-        strcpy($$, s.c_str());
+        emit_dot_edge($2, $1);
+        strcpy($$, $2);
       }
       else {
         strcpy($$, $1);
