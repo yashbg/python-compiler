@@ -143,7 +143,7 @@ funcdef:
 
     node_map[":"]++;
     s1 = $5+to_string(node_map[":"]);
-    if($4 != NULL){
+    if($4[0] != '\0'){
       s2 = "DEF"+to_string(node_map["DEF"]);
       emit_dot_edge($4, s2.c_str());
       emit_dot_edge(s1.c_str(), $4);
@@ -179,7 +179,7 @@ parameters:
     parser_logfile << "'(' typedargslist_opt ')'" << std::endl;
     node_map["()"]++;
     
-    if($2 != NULL){
+    if($2[0] != '\0'){
       s1 = "()"+to_string(node_map["()"]); 
       emit_dot_edge(s1.c_str(), $2);
     }
@@ -207,7 +207,7 @@ typedargslist:
   tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list
   {
     parser_logfile << "tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list" << std::endl;
-    if($2 != NULL) {
+    if($2[0] != '\0') {
       node_map["="]++;
       s1 = "=" + to_string(node_map["="]);
       s2 = $1;
@@ -216,7 +216,7 @@ typedargslist:
     
     if($3[0]!='\0')
     {
-      if($2 != NULL){
+      if($2[0] != '\0'){
         s1 = $3;
         s2 = "=" + to_string(node_map["="]);
         emit_dot_edge($3, s2.c_str());
@@ -229,7 +229,7 @@ typedargslist:
     }
     else
     {
-      if($2 != NULL){
+      if($2[0] != '\0'){
         strcpy($$, "=");
         string temp = to_string(node_map["="]);
         strcat($$, temp.c_str());
@@ -251,7 +251,7 @@ tfpdef:
     node_map[$1]++;
     s2 = $$+to_string(node_map[$1]);
 
-    if($2 != NULL){      
+    if($2[0] != '\0'){      
       emit_dot_edge(s2.c_str(), $2);
     }
     strcpy($$, s2.c_str());
@@ -295,7 +295,7 @@ comma_tfpdef_equal_test_opt_list:
 | comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt
   {
     parser_logfile << "| comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt" << std::endl;
-    if($4 != NULL){
+    if($4[0] != '\0'){
       node_map["="]++;
       s1 = "="+to_string(node_map["="]);
       s2 = $3;
@@ -306,7 +306,7 @@ comma_tfpdef_equal_test_opt_list:
 
     if($1[0]!='\0')
     {
-      if($4 != NULL){
+      if($4[0] != '\0'){
         s2 = "="+to_string(node_map["="]);
         emit_dot_edge($1, s2.c_str());
       }
@@ -322,7 +322,7 @@ comma_tfpdef_equal_test_opt_list:
     }
     else{
       s1 = "," + to_string(node_map[","]);
-      if($4 != NULL){
+      if($4[0] != '\0'){
         s2 = "="+to_string(node_map["="]);
       }
       else{
@@ -2001,7 +2001,7 @@ classdef:
     s2 = "()"+to_string(node_map["()"]);
     emit_dot_edge(s1.c_str(), s2.c_str());
     
-    if($3 != NULL){
+    if($3[0] != '\0'){
       s1 = s2;
       s2 = $3;
       emit_dot_edge(s1.c_str(), s2.c_str());
