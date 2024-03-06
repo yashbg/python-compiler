@@ -249,16 +249,19 @@ tfpdef:
   NAME colon_test_opt
   {
     parser_logfile << "NAME colon_test_opt" << std::endl;
-    strcpy($$, "NAME(");
-    strcat($$, $1);
-    strcat($$, ")");
+    strcpy($$, ":");
+    string temp = to_string(node_map[":"]);
+    strcat($$, temp.c_str());
+
     node_map[$1]++;
-    s2 = $$+to_string(node_map[$1]);
+    s2 = "NAME(";
+    s2 += $1;
+    s2 += ")";
+    s2 += to_string(node_map[$1]);
 
     if($2[0] != '\0'){      
-      emit_dot_edge(s2.c_str(), $2);
+      emit_dot_edge($2, s2.c_str());
     }
-    strcpy($$, s2.c_str());
   }
 ;
 
@@ -353,6 +356,7 @@ colon_test_opt:
     node_map[":"]++;
     s1 = ":"+to_string(node_map[":"]);
     emit_dot_edge(s1.c_str(), $2);
+    strcpy($$, s1.c_str());
   }
 ;
 

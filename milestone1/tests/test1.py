@@ -1,5 +1,5 @@
-def main():
-  i: int = 0
+def main(a: int):
+  pass
 
 if __name__ == "__main__":
   main()
