@@ -147,7 +147,11 @@ funcdef:
       s2 = "DEF"+to_string(node_map["DEF"]);
       emit_dot_edge($4, s2.c_str());
       emit_dot_edge(s1.c_str(), $4);
-    } 
+    }
+    else {
+      s2 = "DEF" + to_string(node_map["DEF"]);
+      emit_dot_edge(s1.c_str(), s2.c_str());
+    }
     
     emit_dot_edge(s1.c_str(), $6);
 
