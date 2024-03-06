@@ -198,7 +198,7 @@ typedargslist:
   {
     if($2 != NULL) {
       node_map["="]++;
-      s1 = "=" + to_string(node_map["="]);
+      s1 = $2;
       s2 = $1;
       emit_dot_edge(s1.c_str(), s2.c_str());
     }
@@ -207,7 +207,7 @@ typedargslist:
     {
       if($2 != NULL){
         s1 = $3;
-        s2 = "=" + to_string(node_map["="]);
+        s2 = $2;
         emit_dot_edge($3, s2.c_str());
         strcpy($$, $3);
       }
@@ -221,7 +221,7 @@ typedargslist:
       if($2 != NULL){
         strcpy($$, "=");
         string temp = to_string(node_map["="]);
-        strcat($$, temp.c_str());
+        strcat($$, $2);
       }
       else{
         strcpy($$, $1);
@@ -272,6 +272,7 @@ equal_test_opt:
     node_map["="]++;
     s1 = "="+to_string(node_map["="]);
     emit_dot_edge(s1.c_str(), $2);
+    strcpy($$, s1.c_str());
   }
 ;
 
@@ -283,10 +284,7 @@ comma_tfpdef_equal_test_opt_list:
 | comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt
   {
     if($4 != NULL){
-      node_map["="]++;
-      s1 = "="+to_string(node_map["="]);
-      s2 = $3;
-      emit_dot_edge(s1.c_str(), $3);
+      emit_dot_edge($4, $3);
     }
 
     node_map[","]++;
@@ -295,7 +293,7 @@ comma_tfpdef_equal_test_opt_list:
     {
       if($4 != NULL){
         s2 = "="+to_string(node_map["="]);
-        emit_dot_edge($1, s2.c_str());
+        emit_dot_edge($1, $4);
       }
       else{
         emit_dot_edge($1, $3);
@@ -310,7 +308,7 @@ comma_tfpdef_equal_test_opt_list:
     else{
       s1 = "," + to_string(node_map[","]);
       if($4 != NULL){
-        s2 = "="+to_string(node_map["="]);
+        s2 = $4;
       }
       else{
         s2 = $3;
@@ -430,9 +428,8 @@ expr_stmt:
       strcpy($$, $1);
     }
     else{
-      s1 = $2 + to_string(node_map["="]);
-      emit_dot_edge(s1.c_str(), $1);
-      strcpy($$, s1.c_str());
+      emit_dot_edge($2, $1);
+      strcpy($$, $2);
     }
   }
 ;
@@ -471,9 +468,7 @@ annassign:
     s2 = ":" + to_string(node_map[":"]);
     
     if($3[0] != '\0'){
-      s1 = "="+to_string(node_map["="]);
-      emit_dot_edge(s1.c_str(), s2.c_str());
-      strcpy($$, s1.c_str());
+      emit_dot_edge(s2.c_str(), $3);
     }
     else{
       strcpy($$, s2.c_str());
