@@ -214,7 +214,7 @@ typedargslist:
       emit_dot_edge(s1.c_str(), s2.c_str());
     }
     
-    if($3!=NULL)
+    if($3[0]!='\0')
     {
       if($2 != NULL){
         s1 = $3;
@@ -304,7 +304,7 @@ comma_tfpdef_equal_test_opt_list:
 
     node_map[","]++;
 
-    if($1!=NULL)
+    if($1[0]!='\0')
     {
       if($4 != NULL){
         s2 = "="+to_string(node_map["="]);
@@ -460,8 +460,8 @@ expr_stmt:
     }
     else{
       s1 = $2 + to_string(node_map["="]);
-      emit_dot_edge(s1.c_str(), $1);
-      strcpy($$, s1.c_str());
+      emit_dot_edge($2, $1);
+      strcpy($$, $2);
     }
   }
 ;
@@ -679,7 +679,7 @@ return_stmt:
     string no=to_string(node_map["RETURN"]);
     string s="RETURN"+no;
     //emit_dot_node(s.c_str(), "RETURN");
-    if($2!=NULL){
+    if($2[0]!='\0'){
       emit_dot_edge(s.c_str(), $2);}
     strcpy($$, s.c_str());
   }
@@ -714,7 +714,7 @@ global_stmt:
     string temp = to_string(node_map[$2]);
     strcat(s2, temp.c_str());
     emit_dot_edge(s.c_str(), s2);
-    if($3!=NULL){
+    if($3[0]!='\0'){
       emit_dot_edge(s.c_str(), $3);}
     strcpy($$, s.c_str());
   }
@@ -741,7 +741,7 @@ comma_name_list:
     string temp = to_string(node_map[$3]);
     strcat(s2, temp.c_str());
     emit_dot_edge(s.c_str(), s2);
-    if($1!=NULL){
+    if($1[0]!='\0'){
       emit_dot_edge(s.c_str(), $1);
     }
     strcpy($$, s.c_str());
@@ -757,7 +757,7 @@ assert_stmt:
     string s="ASSERT"+no;
     //emit_dot_node(s.c_str(), "ASSERT");
     emit_dot_edge(s.c_str(), $2);
-    if($3!=NULL){
+    if($3[0]!='\0'){
       emit_dot_edge(s.c_str(), $3);}
     strcpy($$, s.c_str());
   }
@@ -850,7 +850,7 @@ while_stmt:
     string s="WHILE"+no;
     //emit_dot_node(s.c_str(), "WHILE");
     emit_dot_edge(s.c_str(), $2);
-    if($4!=NULL){
+    if($4[0]!='\0'){
       emit_dot_edge(s.c_str(), $4);
     }
     node_map[":"]++;
@@ -946,7 +946,7 @@ suite:
 | NEWLINE INDENT stmt stmt_list DEDENT
   {
     parser_logfile << "| NEWLINE INDENT stmt stmt_list DEDENT" << std::endl;
-    if($4==NULL){
+    if($4[0]=='\0'){
       strcpy($$, $3);
     }
     else
@@ -986,8 +986,8 @@ test:
     }
     else
       {
+        emit_dot_edge($1,$2);
         strcpy($$, $1);
-        strcat($$, $2);
     }
   }
 ;
@@ -1423,7 +1423,7 @@ plus_or_minus_term_list:
     string s=$2+no;
     //emit_dot_node(s.c_str(), $2);
     emit_dot_edge(s.c_str(), $3);
-    if($1!=NULL){
+    if($1[0]!='\0'){
       emit_dot_edge($1, s.c_str());
     }
     strcpy($$, s.c_str());
@@ -1434,7 +1434,7 @@ term:
   factor star_or_slash_or_percent_or_doubleslash_factor_list
   {
     parser_logfile << "factor star_or_slash_or_percent_or_doubleslash_factor_list" << std::endl;
-    if($2==NULL){
+    if($2[0]=='\0'){
       strcpy($$, $1);
     }
     else{
@@ -1481,7 +1481,7 @@ star_or_slash_or_percent_or_doubleslash_factor_list:
     string s=$2+no;
     //emit_dot_node(s.c_str(), $2);
     emit_dot_edge(s.c_str(), $3);
-    if($1!=NULL){
+    if($1[0]!='\0'){
       emit_dot_edge($1, s.c_str());}
       strcpy($$, s.c_str());
   }
@@ -1527,7 +1527,7 @@ power:
   atom_expr doublestar_factor_opt
   {
     parser_logfile << "atom_expr doublestar_factor_opt" << std::endl;
-    if($2==NULL){
+    if($2[0]=='\0'){
       strcpy($$, $1);}
     else
       {
@@ -1606,7 +1606,7 @@ atom:
     string no=to_string(node_map["[]"]);
     string s="[]"+no;
     //emit_dot_node(s.c_str(), "[]");
-    if($2!=NULL){
+    if($2[0]!='\0'){
       emit_dot_edge(s.c_str(), $2);}
     strcpy($$, s.c_str());
   }
@@ -1684,7 +1684,7 @@ string_list:
 | string_list STRING
   {
     parser_logfile << "| string_list STRING" << std::endl;
-    if($1==NULL){
+    if($1[0]=='\0'){
       strcpy($$,$2);}
     else{
       strcpy($$, "STRING("); 
@@ -1763,7 +1763,7 @@ trailer:
     string no=to_string(node_map["()"]);
     string s="()"+no;
     //emit_dot_node(s.c_str(), "()");
-    if($2!=NULL){
+    if($2[0]!='\0'){
       emit_dot_edge(s.c_str(), $2);}
     strcpy($$, s.c_str());
   }
@@ -1774,7 +1774,7 @@ trailer:
     string no=to_string(node_map["[]"]);
     string s="[]"+no;
     //emit_dot_node(s.c_str(), "[]");
-    if($2!=NULL){
+    if($2[0]!='\0'){
       emit_dot_edge(s.c_str(), $2);}
     strcpy($$, s.c_str());
   }
@@ -1813,10 +1813,10 @@ subscriptlist:
   subscript comma_subscript_list comma_opt
   {
     parser_logfile << "subscript comma_subscript_list comma_opt" << std::endl;
-    if($2==NULL && $3==NULL){
+    if($2[0]=='\0' && $3[0]=='\0'){
       strcpy($$, $1);
     }
-    else if($3==NULL){
+    else if($3[0]=='\0'){
       emit_dot_edge($2,$1);
       strcpy($$, $2);
     }
@@ -1826,7 +1826,7 @@ subscriptlist:
       string s=","+no;
       //emit_dot_node(s.c_str(), ",");
       emit_dot_edge(s.c_str(), $1);
-      if($2!=NULL){
+      if($2[0]!='\0'){
         emit_dot_edge(s.c_str(), $2);
       }
       strcpy($$, s.c_str());
@@ -1847,7 +1847,7 @@ comma_subscript_list:
     string no=to_string(node_map[","]);
     string s=","+no;
     //emit_dot_node(s.c_str(), ",");
-    if($1!=NULL){
+    if($1[0]!='\0'){
       emit_dot_edge(s.c_str(), $1);}
     emit_dot_edge(s.c_str(), $3);
     strcpy($$, s.c_str());
@@ -1867,10 +1867,10 @@ subscript:
     string no=to_string(node_map[":"]);
     string s=":"+no;
     //emit_dot_node(s.c_str(), ":");
-    if($1!=NULL){
+    if($1[0]!='\0'){
       emit_dot_edge(s.c_str(), $1);
     }
-    if($3!=NULL){
+    if($3[0]!='\0'){
       emit_dot_edge(s.c_str(), $3);
     }
     strcpy($$, s.c_str());
@@ -1894,7 +1894,7 @@ exprlist:
   expr_or_star_expr comma_expr_or_star_expr_list comma_opt
   {
     parser_logfile << "expr_or_star_expr comma_expr_or_star_expr_list comma_opt" << std::endl;
-    if($2==NULL && $3==NULL){
+    if($2[0]=='\0' && $3[0]=='\0'){
       strcpy($$, $1);
     }
     else{
@@ -1921,7 +1921,7 @@ comma_expr_or_star_expr_list:
     string no=to_string(node_map[","]);
     string s=","+no;
     //emit_dot_node(s.c_str(), ",");
-    if($1!=NULL){
+    if($1[0]!='\0'){
       emit_dot_edge(s.c_str(), $1);
     }
     emit_dot_edge(s.c_str(), $2);
@@ -1946,26 +1946,16 @@ testlist:
   test comma_test_list comma_opt
   {
     parser_logfile << "test comma_test_list comma_opt" << std::endl;
-    if($2==NULL && $3==NULL){
+    if($2[0]=='\0'){
       strcpy($$, $1);
     }
-    else if($3==NULL){
+    else if($2[0]!='\0'){
       node_map[","]++;
       string no=to_string(node_map[","]);
       string s=","+no;
       //emit_dot_node(s.c_str(), ",");
-      emit_dot_edge(s.c_str(), $1);
-      strcpy($$, s.c_str());
-    }
-    else {
-      node_map[","]++;
-      string no=to_string(node_map[","]);
-      string s=","+no;
-      //emit_dot_node(s.c_str(), ",");
-      emit_dot_edge(s.c_str(), $1);
-      if($2!=NULL){
-        emit_dot_edge(s.c_str(), $2);}
-      strcpy($$, s.c_str());
+      emit_dot_edge($2, $1);
+      strcpy($$, $2);
     }
   }
 ;
@@ -1983,7 +1973,7 @@ comma_test_list:
     string no=to_string(node_map[","]);
     string s=","+no;
     //emit_dot_node(s.c_str(), ",");
-    if($1!=NULL){
+    if($1[0]!='\0'){
       emit_dot_edge(s.c_str(), $1);
     }
     emit_dot_edge(s.c_str(), $3);
@@ -2054,9 +2044,9 @@ arglist:
   argument comma_argument_list  comma_opt
   {
     parser_logfile << "argument comma_argument_list  comma_opt" << std::endl;
-    if($2==NULL && $3==NULL){
+    if($2[0]=='\0' && $3[0]=='\0'){
       strcpy($$, $1);}
-    else if($3==NULL)
+    else if($3[0]=='\0')
       {
         node_map[","]++;
         string no=to_string(node_map[","]);
@@ -2080,7 +2070,7 @@ comma_argument_list:
 | comma_argument_list ',' argument
   {
     parser_logfile << "| comma_argument_list ',' argument" << std::endl;
-    if($3==NULL){
+    if($3[0]=='\0'){
       strcpy($$, $1);}
     else{
       node_map[","]++;
@@ -2108,7 +2098,7 @@ argument:
   test comp_for_opt
   {
     parser_logfile << "test comp_for_opt" << std::endl;
-    if($2==NULL){
+    if($2[0]=='\0'){
       strcpy($$, $1);}
     else{
       emit_dot_edge($2, $1);
@@ -2178,7 +2168,7 @@ comp_for:
     string s1="IN"+no1;
     //emit_dot_node(s1.c_str(), "IN");
     emit_dot_edge(s.c_str(), s1.c_str());
-    if($5!=NULL){
+    if($5[0]!='\0'){
       emit_dot_edge(s.c_str(), $5);
     }
     emit_dot_edge(s1.c_str(), $4);
@@ -2195,7 +2185,7 @@ comp_if:
     string s="IF"+no;
     //emit_dot_node(s.c_str(), "IF");
     emit_dot_edge(s.c_str(), $2);
-    if($3!=NULL){
+    if($3[0]!='\0'){
       emit_dot_edge(s.c_str(), $3);
     }
     strcpy($$, s.c_str());
