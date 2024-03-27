@@ -544,9 +544,8 @@ or                        {
 %%
 
 void store_token() {
-  string str = yytext;
-  for (int i = 0; i < str.size(); i++) {
-    yylval.tokenname[i] = str[i];
+  for (int i = 0; i < yyleng; i++) {
+    yylval.tokenname[i] = yytext[i];
   }
-  yylval.tokenname[str.size()] = '\0';
+  yylval.tokenname[yyleng] = '\0';
 }
