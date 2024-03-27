@@ -480,8 +480,9 @@ or                        {
 
 "//"                      {
                             store_token();
-                            fprintf(lexer_logfile, "%s\n", "DOUBLESLASH"); return
-                          DOUBLESLASH;}
+                            fprintf(lexer_logfile, "%s\n", "DOUBLESLASH");
+                            return DOUBLESLASH;
+                          }
 
 "**"                      {
                             store_token();
@@ -491,8 +492,9 @@ or                        {
 
 "=="                      {
                             store_token();
-                            fprintf(lexer_logfile, "%s\n", "DOUBLEEQUAL"); return
-                          DOUBLEEQUAL;}
+                            fprintf(lexer_logfile, "%s\n", "DOUBLEEQUAL");
+                            return DOUBLEEQUAL;
+                          }
 
 "!="                      {
                             store_token();
