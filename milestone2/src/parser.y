@@ -5,6 +5,7 @@
   #include <cstring>
   #include <cstdlib>
   #include <fstream>
+  #include "symtable.h"
 
   extern int yylex();
   extern int yylineno;
@@ -18,44 +19,14 @@
   int comma_number = 1;
   std::string s1, s2;
 
-  int is_digit(char c) {
-    return ((c >= '0') && (c <= '9'));
-  }
+  bool global_scope = true;
+  global_symtable gsymtable;
+  local_symtable *cur_symtable_ptr = nullptr;
 
-  void emit_dot_node(const char* node_name, const char* label) {
-    outfile << "\"" << node_name << "\" [label=\"" << label << "\"];" << std::endl;
-  }
+  int is_digit(char c);
 
-  void emit_dot_edge(const char* from, const char* to) {
-      if((from[0] == '\0')) return;
-      if(to[0] == '\0') return;
-      char* fromlabel = (char*)malloc(strlen(from) + 1);  // Allocate memory for fromlabel
-      char* tolabel = (char*)malloc(strlen(to) + 1); 
-      int i = 0;
-      while(from[i] != '\0'){
-        fromlabel[i] = from[i];
-        i++;
-      }
-      int j = 0;
-      while(to[j] != '\0'){
-        tolabel[j] = to[j];
-        j++;
-      }
-      i--;j--;
-      while(i>=0 && is_digit(from[i])){
-        i--;
-      }
-      while(j>=0 && is_digit(to[j])){
-        j--;
-      }
-      fromlabel[i+1] = '\0';
-      tolabel[j+1] = '\0';
-      emit_dot_node(from, fromlabel);
-      emit_dot_node(to, tolabel);
-      outfile << "\"" << from << "\" -> \"" << to << "\";" << std::endl;
-      free(fromlabel);  // Free allocated memory
-      free(tolabel);    // Free allocated memory
-  }
+  void emit_dot_node(const char* node_name, const char* label);
+  void emit_dot_edge(const char* from, const char* to);
 %}
 
 %union { char tokenname[1024]; }
@@ -2191,4 +2162,43 @@ encoding_decl: NAME
 void yyerror(const char *s) {
   std::cerr << "Error on line " << yylineno << ", token(" << yytext << "): " << s << std::endl;
   exit(1);
+}
+
+int is_digit(char c) {
+  return ((c >= '0') && (c <= '9'));
+}
+
+void emit_dot_node(const char* node_name, const char* label) {
+  outfile << "\"" << node_name << "\" [label=\"" << label << "\"];" << std::endl;
+}
+
+void emit_dot_edge(const char* from, const char* to) {
+  if((from[0] == '\0')) return;
+  if(to[0] == '\0') return;
+  char* fromlabel = (char*)malloc(strlen(from) + 1);  // Allocate memory for fromlabel
+  char* tolabel = (char*)malloc(strlen(to) + 1); 
+  int i = 0;
+  while(from[i] != '\0'){
+    fromlabel[i] = from[i];
+    i++;
+  }
+  int j = 0;
+  while(to[j] != '\0'){
+    tolabel[j] = to[j];
+    j++;
+  }
+  i--;j--;
+  while(i>=0 && is_digit(from[i])){
+    i--;
+  }
+  while(j>=0 && is_digit(to[j])){
+    j--;
+  }
+  fromlabel[i+1] = '\0';
+  tolabel[j+1] = '\0';
+  emit_dot_node(from, fromlabel);
+  emit_dot_node(to, tolabel);
+  outfile << "\"" << from << "\" -> \"" << to << "\";" << std::endl;
+  free(fromlabel);  // Free allocated memory
+  free(tolabel);    // Free allocated memory
 }

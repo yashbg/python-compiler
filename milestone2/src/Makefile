@@ -1,8 +1,8 @@
 .PHONY: all
 all: main
 
-main: main.cpp parser.tab.c lex.yy.c
-	g++ -g -std=c++17 main.cpp parser.tab.c lex.yy.c -o main
+main: main.cpp symtable.cpp parser.tab.c lex.yy.c
+	g++ -g -std=c++17 main.cpp symtable.cpp parser.tab.c lex.yy.c -o main
 
 lex.yy.c: lexer.l
 	flex lexer.l
