@@ -15,7 +15,7 @@
   void yyerror(const char *);
 
   std::map<std::string, int> node_map;
-  int line = 1, comma_number = 1;
+  int comma_number = 1;
   std::string s1, s2;
 
   int is_digit(char c) {
@@ -2198,6 +2198,6 @@ encoding_decl: NAME
 %%
 
 void yyerror(const char *s) {
-  std::cerr << "Error on line " << line << ", token(" << yytext << "): " << s << std::endl;
+  std::cerr << "Error on line " << yylineno << ", token(" << yytext << "): " << s << std::endl;
   exit(1);
 }
