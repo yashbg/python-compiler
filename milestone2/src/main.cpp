@@ -76,8 +76,8 @@ int main(int argc, char *argv[]) {
 
   outfile.open("graph.dot");
 
-  lexer_logfile = fopen("lexer.log", "w");
-  parser_logfile.open("parser.log");
+  lexer_logfile = fopen((output_dir + "lexer.log").c_str(), "w");
+  parser_logfile.open(output_dir + "parser.log");
 
   if (verbose) {
     std::cout << "Input file: " << input_file << std::endl;
