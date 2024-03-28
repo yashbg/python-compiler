@@ -1,6 +1,7 @@
 %{
   #include <iostream>
   #include <string>
+  #include <vector>
   #include <map>
   #include <cstring>
   #include <cstdlib>
@@ -22,6 +23,8 @@
   bool global_scope = true;
   global_symtable gsymtable;
   local_symtable *cur_symtable_ptr = nullptr;
+
+  std::vector<std::vector<std::string>> ins; // 3AC instructions
 
   int is_digit(char c);
 
