@@ -28,6 +28,8 @@
 
   int offset = 0; // TODO
   std::string var_type;
+  std::vector<std::string> func_param_types;
+  std::string func_return_type;
 
   int is_digit(char c);
 
@@ -129,6 +131,9 @@ funcdef:
     strcpy($$, $5);
     std::string temp = std::to_string(node_map[":"]);
     strcat($$, temp.c_str());
+
+    add_func($2, func_param_types, func_return_type);
+    func_param_types.clear();
   }
 ;
 
@@ -146,6 +151,8 @@ arrow_test_opt:
     s2 = $2;
     emit_dot_edge(s1.c_str(), $2);
     strcpy($$,s1.c_str());
+
+    func_return_type = get_sem_val($2);
   }
 ;
 
@@ -331,6 +338,8 @@ colon_test_opt:
     s1 = ":"+std::to_string(node_map[":"]);
     emit_dot_edge(s1.c_str(), $2);
     strcpy($$, s1.c_str());
+
+    func_param_types.push_back(get_sem_val($2));
   }
 ;
 
@@ -426,7 +435,7 @@ expr_stmt:
     emit_dot_edge($2, $1);
     strcpy($$, $2);
 
-    insert(get_sem_val($1), {var_type, "", yylineno, get_size(var_type), offset});
+    insert_var(get_sem_val($1), {var_type, "", yylineno, get_size(var_type), offset});
   }
 | testlist_star_expr augassign testlist
   {
@@ -2218,7 +2227,15 @@ void emit_dot_edge(const char* from, const char* to) {
 
 std::string get_sem_val(char *c_str) {
   std::string str = c_str;
+  if (str.substr(0, 4) == "NONE") {
+    return "None";
+  }
+
   int start = str.find('(');
+  if (start == std::string::npos) {
+    return str;
+  }
+
   int end = str.find(')');
   return str.substr(start + 1, end - start - 1);
 }
@@ -2232,6 +2249,8 @@ int get_size(const std::string &type) {
     // TODO
     return 0;
   }
+
+  // TODO: list
 
   return 4;
 }

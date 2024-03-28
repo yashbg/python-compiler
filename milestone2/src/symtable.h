@@ -23,5 +23,7 @@ struct global_symtable {
   std::unordered_map<std::string, local_symtable *> func_symtable_ptrs; // identifier -> local_symtable *
 };
 
-symtable_entry lookup(const std::string &name);
-void insert(const std::string &name, const symtable_entry &entry);
+void insert_var(const std::string &name, const symtable_entry &entry);
+symtable_entry lookup_var(const std::string &name);
+
+void add_func(const std::string &name, const std::vector<std::string> &param_types, const std::string &return_type);

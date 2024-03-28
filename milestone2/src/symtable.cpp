@@ -9,7 +9,17 @@ extern local_symtable *cur_symtable_ptr;
 
 extern void yyerror(const char *);
 
-symtable_entry lookup(const std::string &name) {
+void insert_var(const std::string &name, const symtable_entry &entry) {
+  // TODO: handle redeclarations
+  if (global_scope) {
+    gsymtable.var_entries[name] = entry;
+    return;
+  }
+
+  cur_symtable_ptr->var_entries[name] = entry;
+}
+
+symtable_entry lookup_var(const std::string &name) {
   if (global_scope) {
     auto entry_itr = gsymtable.var_entries.find(name);
     if (entry_itr == gsymtable.var_entries.end()) {
@@ -33,12 +43,8 @@ symtable_entry lookup(const std::string &name) {
   return entry_itr->second;
 }
 
-void insert(const std::string &name, const symtable_entry &entry) {
-  // TODO: handle redeclarations
-  if (global_scope) {
-    gsymtable.var_entries[name] = entry;
-    return;
-  }
-
-  cur_symtable_ptr->var_entries[name] = entry;
+void add_func(const std::string &name, const std::vector<std::string> &param_types, const std::string &return_type) {
+  local_symtable *func_symtable_ptr = new local_symtable;
+  *func_symtable_ptr = {param_types, return_type, {}};
+  gsymtable.func_symtable_ptrs[name] = func_symtable_ptr;
 }
