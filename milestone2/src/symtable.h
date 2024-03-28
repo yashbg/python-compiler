@@ -6,10 +6,10 @@
 
 struct symtable_entry {
   std::string type;
-  std::string src_file;
-  int lineno;
+  std::string src_file; // TODO
+  int lineno; // TODO
   int size;
-  int offset;
+  int offset; // TODO
 };
 
 struct local_symtable {
@@ -23,5 +23,5 @@ struct global_symtable {
   std::unordered_map<std::string, local_symtable *> func_symtable_ptrs; // identifier -> local_symtable *
 };
 
-const symtable_entry &lookup(const std::string &name);
+symtable_entry lookup(const std::string &name);
 void insert(const std::string &name, const symtable_entry &entry);

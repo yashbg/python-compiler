@@ -26,10 +26,16 @@
 
   std::vector<std::vector<std::string>> ins; // 3AC instructions
 
+  int offset = 0; // TODO
+  std::string var_type;
+
   int is_digit(char c);
 
   void emit_dot_node(const char* node_name, const char* label);
   void emit_dot_edge(const char* from, const char* to);
+
+  std::string get_sem_val(char *c_str); // get semantic value from AST node
+  int get_size(const std::string &type);
 %}
 
 %union { char tokenname[1024]; }
@@ -419,8 +425,10 @@ expr_stmt:
     parser_logfile << "testlist_star_expr annassign" << std::endl;
     emit_dot_edge($2, $1);
     strcpy($$, $2);
+
+    insert(get_sem_val($1), {var_type, "", yylineno, get_size(var_type), offset});
   }
-  | testlist_star_expr augassign testlist
+| testlist_star_expr augassign testlist
   {
     parser_logfile << "| testlist_star_expr augassign testlist" << std::endl;
     s1 = $2;
@@ -428,7 +436,7 @@ expr_stmt:
     emit_dot_edge(s1.c_str(), $1);
     strcpy($$, s1.c_str());
   }
-  | testlist_star_expr expr_stmt_suffix_choices
+| testlist_star_expr expr_stmt_suffix_choices
   {
     parser_logfile << "| testlist_star_expr expr_stmt_suffix_choices" << std::endl;
     if($2[0] == '\0'){
@@ -486,6 +494,8 @@ annassign:
     else{
       strcpy($$, s2.c_str());
     }
+
+    var_type = get_sem_val($2);
   }
 ;
 
@@ -2204,4 +2214,24 @@ void emit_dot_edge(const char* from, const char* to) {
   outfile << "\"" << from << "\" -> \"" << to << "\";" << std::endl;
   free(fromlabel);  // Free allocated memory
   free(tolabel);    // Free allocated memory
+}
+
+std::string get_sem_val(char *c_str) {
+  std::string str = c_str;
+  int start = str.find('(');
+  int end = str.find(')');
+  return str.substr(start + 1, end - start - 1);
+}
+
+int get_size(const std::string &type) {
+  if (type == "bool") {
+    return 2;
+  }
+
+  if (type == "str") {
+    // TODO
+    return 0;
+  }
+
+  return 4;
 }

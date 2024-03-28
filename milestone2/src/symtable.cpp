@@ -9,7 +9,7 @@ extern local_symtable *cur_symtable_ptr;
 
 extern void yyerror(const char *);
 
-const symtable_entry &lookup(const std::string &name) {
+symtable_entry lookup(const std::string &name) {
   if (global_scope) {
     auto entry_itr = gsymtable.var_entries.find(name);
     if (entry_itr == gsymtable.var_entries.end()) {
