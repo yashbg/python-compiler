@@ -97,7 +97,15 @@ newline_or_stmt_list:
 */
 
 funcdef:
-  DEF NAME parameters arrow_test_opt ':' suite
+  DEF NAME parameters arrow_test_opt ':'
+  {
+    add_func($2, func_param_types, func_return_type);
+    func_param_types.clear();
+
+    global_scope = false;
+    cur_symtable_ptr = gsymtable.func_symtable_ptrs[$2];
+  }
+  suite
   {
     parser_logfile << "DEF NAME parameters arrow_test_opt ':' suite" << std::endl;
     strcpy($$, "NAME(");
@@ -125,14 +133,13 @@ funcdef:
       emit_dot_edge(s1.c_str(), s2.c_str());
     }
 
-    emit_dot_edge(s1.c_str(), $6);
+    emit_dot_edge(s1.c_str(), $7);
 
     strcpy($$, $5);
     std::string temp = std::to_string(node_map[":"]);
     strcat($$, temp.c_str());
 
-    add_func($2, func_param_types, func_return_type);
-    func_param_types.clear();
+    global_scope = true;
   }
 ;
 
