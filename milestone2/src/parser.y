@@ -46,7 +46,7 @@
 %token<tokenname> RIGHTSHIFTEQUAL DOUBLESTAREQUAL DOUBLESLASHEQUAL DOUBLESLASH DOUBLESTAR NUMBER STRING NONE TRUE FALSE
 %token<tokenname> NEWLINE ARROW DEF NAME BREAK CONTINUE RETURN GLOBAL ASSERT IF WHILE FOR ELSE ELIF INDENT DEDENT
 %token<tokenname> AND OR NOT LESSTHAN GREATERTHAN DOUBLEEQUAL GREATERTHANEQUAL LESSTHANEQUAL NOTEQUAL IN IS LEFTSHIFT RIGHTSHIFT CLASS
-%token<tokenname> ',' '.' ';' ':' '(' ')' '[' ']' '=' '+' '-' '~' '*' '/' '%' '^' '&' '|' 
+%token<tokenname> ',' '.' ';' ':' '(' ')' '[' ']' '=' '+' '-' '~' '*' '/' '%' '^' '&' '|'
 
 %type<tokenname> file_input newline_or_stmt newline_or_stmt_list funcdef arrow_test_opt parameters typedargslist_opt typedargslist tfpdef comma_opt equal_test_opt comma_tfpdef_equal_test_opt_list colon_test_opt
 %type<tokenname> semicolon_opt expr_stmt simple_stmt semicolon_small_stmt_list small_stmt stmt expr_stmt_suffix_choices equal_testlist_star_expr_list annassign testlist_star_expr test_or_star_expr comma_test_or_star_expr_list augassign flow_stmt break_stmt continue_stmt return_stmt
@@ -105,7 +105,6 @@ funcdef:
     strcat($$, ")");
     node_map[$2]++;
     node_map["DEF"]++;
-    
 
     s1 = "DEF" + std::to_string(node_map["DEF"]);
     s2 = $$ + std::to_string(node_map[$2]);
@@ -125,7 +124,7 @@ funcdef:
       s2 = "DEF" + std::to_string(node_map["DEF"]);
       emit_dot_edge(s1.c_str(), s2.c_str());
     }
-    
+
     emit_dot_edge(s1.c_str(), $6);
 
     strcpy($$, $5);
@@ -161,12 +160,12 @@ parameters:
   {
     parser_logfile << "'(' typedargslist_opt ')'" << std::endl;
     node_map["()"]++;
-    
+
     if($2[0] != '\0'){
-      s1 = "()"+std::to_string(node_map["()"]); 
+      s1 = "()"+std::to_string(node_map["()"]);
       emit_dot_edge(s1.c_str(), $2);
     }
-    
+
     strcpy($$, "()");
     std::string temp = std::to_string(node_map["()"]);
     strcat($$, temp.c_str());
@@ -195,7 +194,7 @@ typedargslist:
       s2 = $1;
       emit_dot_edge(s1.c_str(), s2.c_str());
     }
-    
+
     if($3[0]!='\0')
     {
       if($2[0] != '\0'){
@@ -229,7 +228,7 @@ tfpdef:
     s2 += $1;
     s2 += ")";
     s2 += std::to_string(node_map[$1]);
-    
+
     if($2[0] != '\0'){
       parser_logfile << "NAME colon_test_opt" << std::endl;
       strcpy($$, ":");
@@ -405,7 +404,7 @@ semicolon_small_stmt_list:
   }
 ;
 
-small_stmt: 
+small_stmt:
   expr_stmt
   {
     parser_logfile << "expr_stmt" << std::endl;
@@ -495,7 +494,7 @@ annassign:
     emit_dot_edge(s1.c_str(), $2);
 
     s2 = ":" + std::to_string(node_map[":"]);
-    
+
     if($3[0] != '\0'){
       emit_dot_edge(s1.c_str(), $3);
       strcpy($$, s1.c_str());
@@ -513,8 +512,8 @@ testlist_star_expr:
   {
     parser_logfile << "test_or_star_expr comma_test_or_star_expr_list comma_opt" << std::endl;
     if($2[0] != '\0'){
-      emit_dot_edge($2, $1); 
-      strcpy($$, $2); 
+      emit_dot_edge($2, $1);
+      strcpy($$, $2);
     }
     else{
       strcpy($$, $1);
@@ -558,7 +557,7 @@ comma_test_or_star_expr_list:
   }
 ;
 
-augassign: 
+augassign:
   PLUSEQUAL
   {
     parser_logfile << "PLUSEQUAL" << std::endl;
@@ -624,7 +623,7 @@ augassign:
 /* For normal and annotated assignments, additional restrictions enforced by the interpreter*/
 
 flow_stmt:
-  break_stmt 
+  break_stmt
   {
     parser_logfile << "break_stmt " << std::endl;
     strcpy($$, $1);
@@ -649,7 +648,7 @@ break_stmt:
     std::string no=std::to_string(node_map["BREAK"]);
     std::string s="BREAK"+no;
     //emit_dot_node(s.c_str(), "BREAK");
-    strcpy($$, s.c_str());  
+    strcpy($$, s.c_str());
   }
 ;
 
@@ -932,7 +931,7 @@ elif_test_colon_suite_list:
 /* NB compile.c makes sure that the default except clause is last*/
 
 suite:
-  simple_stmt 
+  simple_stmt
   {
     parser_logfile << "simple_stmt" << std::endl;
     strcpy($$, $1);
@@ -977,7 +976,7 @@ stmt_list:
   }
 ;
 
-test: 
+test:
   or_test if_or_test_else_test_opt
   {
     parser_logfile << "or_test if_or_test_else_test_opt" << std::endl;
@@ -1043,7 +1042,7 @@ or_and_test_list:
   {
     parser_logfile << "| or_and_test_list OR and_test" << std::endl;
     node_map["OR"]++;
-    std::string no=std::to_string(node_map["OR"]); 
+    std::string no=std::to_string(node_map["OR"]);
     std::string s="OR"+no;
     emit_dot_edge(s.c_str(), $3);
     if($1[0] != '\0'){
@@ -1078,8 +1077,8 @@ and_not_test_list:
 | and_not_test_list AND not_test
   {
     parser_logfile << "| and_not_test_list AND not_test" << std::endl;
-    node_map["AND"]++;  
-    std::string no=std::to_string(node_map["AND"]); 
+    node_map["AND"]++;
+    std::string no=std::to_string(node_map["AND"]);
     std::string s="AND"+no;
     emit_dot_edge(s.c_str(), $3);
     if($1[0] != '\0'){
@@ -1146,7 +1145,7 @@ comp_op_expr_list:
     std::string no=std::to_string(node_map[$2]);
     std::string s2 = $2+no;
     std::string s=s3 + $2 + ")" + no;
-    
+
     emit_dot_edge(s.c_str(), $3);
     if($1[0] != '\0'){
       emit_dot_edge(s.c_str(), $1);
@@ -1238,7 +1237,6 @@ expr:
     }
   }
 ;
-
 
 or_xor_expr_list:
   %empty
@@ -1335,7 +1333,7 @@ and_shift_expr_list:
 ;
 
 shift_expr:
-  arith_expr shift_arith_expr_list 
+  arith_expr shift_arith_expr_list
   {
     parser_logfile << "arith_expr shift_arith_expr_list" << std::endl;
     if($2[0] == '\0'){
@@ -1406,7 +1404,7 @@ plus_or_minus:
   {
     parser_logfile << "'-'" << std::endl;
     strcpy($$, "-");
-  } 
+  }
 ;
 
 plus_or_minus_term_list:
@@ -1503,7 +1501,7 @@ factor:
     parser_logfile << "| power" << std::endl;
     strcpy($$, $1);
   }
-; 
+;
 
 plus_or_minus_or_tilde:
   '+'
@@ -1616,7 +1614,7 @@ atom:
     parser_logfile << "NAME" << std::endl;
     node_map[$1]++;
     strcpy($$, "NAME(");
-    strcat($$, $1); 
+    strcat($$, $1);
     strcat($$, ")");
     std::string temp = std::to_string(node_map[$1]);
     strcat($$, temp.c_str());
@@ -1634,7 +1632,7 @@ atom:
 | STRING string_list
   {
     parser_logfile << "STRING string_list" << std::endl;
-    strcpy($$, "STRING("); 
+    strcpy($$, "STRING(");
     int len = strlen($1);
     //char* str = new char(len - 1);
     for(int i = 0; i < len - 1; i++){
@@ -1650,7 +1648,7 @@ atom:
       emit_dot_edge($$, $2);
     }
   }
-| NONE 
+| NONE
   {
     parser_logfile << "NONE" << std::endl;
     strcpy($$, "NONE");
@@ -1688,7 +1686,7 @@ string_list:
     if($1[0]=='\0'){
       strcpy($$,$2);}
     else{
-      strcpy($$, "STRING("); 
+      strcpy($$, "STRING(");
       int len = strlen($2);
       //char* str = new char(len - 1);
       for(int i = 0; i < len - 1; i++){
@@ -1780,7 +1778,7 @@ trailer:
     std::string s="."+no;
     //emit_dot_node(s.c_str(), ".");
     strcpy($$, "NAME(");
-    strcat($$, $2); 
+    strcat($$, $2);
     strcat($$, ")");
     node_map[$2]++;
     std::string temp = std::to_string(node_map[$2]);
@@ -1803,7 +1801,7 @@ arglist_opt:
   }
 ;
 
-subscriptlist: 
+subscriptlist:
   subscript comma_subscript_list comma_opt
   {
     parser_logfile << "subscript comma_subscript_list comma_opt" << std::endl;
@@ -1860,7 +1858,7 @@ subscript:
   }
 ;
 
-test_opt: 
+test_opt:
   %empty
   {
     parser_logfile << "%empty" << std::endl;
@@ -1975,13 +1973,13 @@ classdef:
     s1 = $$+std::to_string(node_map[$$]);
     s2 = "()"+std::to_string(node_map["()"]);
     emit_dot_edge(s1.c_str(), s2.c_str());
-    
+
     if($3[0] != '\0'){
       s1 = s2;
       s2 = $3;
       emit_dot_edge(s1.c_str(), s2.c_str());
     }
-    
+
     node_map[":"]++;
 
     s1 = $4+std::to_string(node_map[":"]);
@@ -2021,7 +2019,7 @@ arglist:
     parser_logfile << "argument comma_argument_list  comma_opt" << std::endl;
     if($2[0]=='\0'){
       strcpy($$, $1);}
-    else 
+    else
       {
         emit_dot_edge($2, $1);
         strcpy($$, $2);
@@ -2178,7 +2176,6 @@ comp_iter_opt:
 encoding_decl: NAME
 */
 
-
 %%
 
 void yyerror(const char *s) {
@@ -2198,7 +2195,7 @@ void emit_dot_edge(const char* from, const char* to) {
   if((from[0] == '\0')) return;
   if(to[0] == '\0') return;
   char* fromlabel = (char*)malloc(strlen(from) + 1);  // Allocate memory for fromlabel
-  char* tolabel = (char*)malloc(strlen(to) + 1); 
+  char* tolabel = (char*)malloc(strlen(to) + 1);
   int i = 0;
   while(from[i] != '\0'){
     fromlabel[i] = from[i];

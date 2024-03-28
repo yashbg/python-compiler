@@ -4,7 +4,7 @@
 
   extern FILE *lexer_logfile;
   extern void yyerror(const char *);
-  
+
   int dedentsToBeReturned = 0;
   int indentToBeReturned = 0;
   int line_join = 0;
@@ -35,7 +35,7 @@ EXPONENT_FLOAT      ({POINT_FLOAT}|{DIGITPART}){EXPONENT}
 FLOAT_NUMBER        {POINT_FLOAT}|{EXPONENT_FLOAT}
 IMAGINARY           ({FLOAT_NUMBER}|{DIGITPART})("j"|"J")
 
-LETTER              [_a-zA-Z]        
+LETTER              [_a-zA-Z]
 WHITESPACE          " "|"\f"|"\t"
 NAME                {LETTER}({LETTER}|{DIGIT})*
 
@@ -385,7 +385,7 @@ or                        {
                             return ARROW;
                           }
 
-                        
+
 
 
 "+"                       {
