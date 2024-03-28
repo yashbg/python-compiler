@@ -3,6 +3,7 @@
   #include <string>
   #include <vector>
   #include <map>
+  #include <utility>
   #include <cstring>
   #include <cstdlib>
   #include <fstream>
@@ -28,7 +29,8 @@
 
   int offset = 0; // TODO
   std::string var_type;
-  std::vector<std::string> func_param_types;
+  std::string func_param_type;
+  std::vector<std::pair<std::string, std::string>> func_params; // (name, type)
   std::string func_return_type;
 
   int is_digit(char c);
@@ -99,8 +101,8 @@ newline_or_stmt_list:
 funcdef:
   DEF NAME parameters arrow_test_opt ':'
   {
-    add_func($2, func_param_types, func_return_type);
-    func_param_types.clear();
+    add_func($2, func_params, func_return_type);
+    func_params.clear();
 
     global_scope = false;
     cur_symtable_ptr = gsymtable.func_symtable_ptrs[$2];
@@ -247,6 +249,8 @@ tfpdef:
     else {
       strcpy($$, s2.c_str());
     }
+
+    func_params.push_back({$1, func_param_type});
   }
 ;
 
@@ -345,7 +349,7 @@ colon_test_opt:
     emit_dot_edge(s1.c_str(), $2);
     strcpy($$, s1.c_str());
 
-    func_param_types.push_back(get_sem_val($2));
+    func_param_type = get_sem_val($2);
   }
 ;
 
@@ -441,7 +445,7 @@ expr_stmt:
     emit_dot_edge($2, $1);
     strcpy($$, $2);
 
-    insert_var(get_sem_val($1), {var_type, "", yylineno, get_size(var_type), offset});
+    insert_var(get_sem_val($1), {var_type, "", yylineno, get_size(var_type), offset}); // TODO
   }
 | testlist_star_expr augassign testlist
   {

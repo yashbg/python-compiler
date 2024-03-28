@@ -1,13 +1,18 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <utility>
 #include "symtable.h"
+
+extern int yylineno;
 
 extern bool global_scope;
 extern global_symtable gsymtable;
 extern local_symtable *cur_symtable_ptr;
 
 extern void yyerror(const char *);
+
+extern int get_size(const std::string &type);
 
 void insert_var(const std::string &name, const symtable_entry &entry) {
   // TODO: handle redeclarations
@@ -43,8 +48,13 @@ symtable_entry lookup_var(const std::string &name) {
   return entry_itr->second;
 }
 
-void add_func(const std::string &name, const std::vector<std::string> &param_types, const std::string &return_type) {
+void add_func(const std::string &name, const std::vector<std::pair<std::string, std::string>> &params, const std::string &return_type) {
   local_symtable *func_symtable_ptr = new local_symtable;
-  *func_symtable_ptr = {param_types, return_type, {}};
+  for (auto &param : params) {
+    func_symtable_ptr->param_types.push_back(param.second);
+    func_symtable_ptr->var_entries[param.first] = {param.second, "", yylineno, get_size(param.second), 0}; // TODO
+  }
+
+  func_symtable_ptr->return_type = return_type;
   gsymtable.func_symtable_ptrs[name] = func_symtable_ptr;
 }
