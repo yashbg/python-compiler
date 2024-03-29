@@ -25,7 +25,7 @@
   global_symtable gsymtable;
   local_symtable *cur_symtable_ptr = nullptr;
 
-  std::vector<std::vector<std::string>> ins; // 3AC instructions
+  std::vector<std::vector<std::string>> ac3_code; // 3AC instructions
 
   int offset = 0; // TODO
   std::string var_type;
@@ -37,6 +37,8 @@
 
   void emit_dot_node(const char* node_name, const char* label);
   void emit_dot_edge(const char* from, const char* to);
+
+  void gen(const char* op, const char* arg1, const char* arg2, const char* result); //gen function for 3AC
 
   std::string get_sem_val(char *c_str); // get semantic value from AST node
   int get_size(const std::string &type);
@@ -2261,4 +2263,18 @@ int get_size(const std::string &type) {
   // TODO: list
 
   return 4;
+}
+
+void gen(const char* op, const char* arg1, const char* arg2, const char* result) {
+
+  std::vector<std::string> line_code;
+  line_code.push_back(op);
+  line_code.push_back(arg1);
+  if(arg2[0] != '\0') {
+    line_code.push_back(arg2);
+  }
+  line_code.push_back(result);
+  ac3_code.push_back(line_code);
+
+  return;
 }
