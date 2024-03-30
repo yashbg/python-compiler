@@ -2473,7 +2473,7 @@ int get_list_size(char* list_datatype, char* list){
 
 void generate_3AC_for_list(char* list_datatype, char* list){
     std::string list_elem_type = get_list_element_datatype(list_datatype);
-    std::cout << list_elem_type << std::endl;
+    //std::cout << list_elem_type << std::endl;
     int element_number = get_list_element_count(list);
     int prev = 0, i = 1;
     while(i < strlen(list) - 1){
