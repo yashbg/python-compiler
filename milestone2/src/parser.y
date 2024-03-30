@@ -3,10 +3,12 @@
   #include <string>
   #include <vector>
   #include <map>
+  #include <unordered_map>
   #include <utility>
   #include <cstring>
   #include <cstdlib>
   #include <fstream>
+  #include <stack>
   #include "symtable.h"
 
   extern int yylex();
@@ -38,6 +40,8 @@
   std::vector<std::pair<std::string, std::string>> func_params; // (name, type)
   std::string func_return_type;
   std::string current_operator;
+  std::unordered_map<std::string, std::string> temp_types; // temp -> type
+  std::string list_idx_token;
 
   int is_digit(char c);
 
@@ -68,7 +72,7 @@
 %union { char tokenname[1024]; }
 
 %token<tokenname> PLUSEQUAL MINEQUAL STAREQUAL SLASHEQUAL PERCENTEQUAL AMPEREQUAL VBAREQUAL CIRCUMFLEXEQUAL LEFTSHIFTEQUAL
-%token<tokenname> RIGHTSHIFTEQUAL DOUBLESTAREQUAL DOUBLESLASHEQUAL DOUBLESLASH DOUBLESTAR NUMBER STRING NONE TRUE FALSE
+%token<tokenname> RIGHTSHIFTEQUAL DOUBLESTAREQUAL DOUBLESLASHEQUAL DOUBLESLASH DOUBLESTAR INTEGER FLOAT_NUMBER IMAGINARY STRING NONE TRUE FALSE
 %token<tokenname> NEWLINE ARROW DEF NAME BREAK CONTINUE RETURN GLOBAL IF WHILE FOR ELSE ELIF INDENT DEDENT
 %token<tokenname> AND OR NOT LESSTHAN GREATERTHAN DOUBLEEQUAL GREATERTHANEQUAL LESSTHANEQUAL NOTEQUAL IN IS LEFTSHIFT RIGHTSHIFT CLASS
 %token<tokenname> ',' '.' ';' ':' '(' ')' '[' ']' '=' '+' '-' '~' '*' '/' '%' '^' '&' '|'
@@ -1711,8 +1715,22 @@ atom_expr:
     }
     else if ($2[0] == '[') {
       symtable_entry entry = lookup_var($1);
+
+      std::string index = remove_sq_brackets($2);
+      if (list_idx_token != "NAME") {
+        if (list_idx_token != "INTEGER") {
+          yyerror(("Type error: list indices must be integers, not " + list_idx_token).c_str());
+        }
+      }
+      else {
+        std::string index_type = lookup_var(index).type;
+        if (index_type != "int") {
+          yyerror(("Type error: list indices must be integers, not " + index_type).c_str());
+        }
+      }
+
       std::string t = new_temp();
-      gen("*", remove_sq_brackets($2), std::to_string(entry.list_width), t);
+      gen("*", index, std::to_string(entry.list_width), t);
       strcpy($$, (std::string($1) + "[" + t + "]").c_str());
     }
     else {
@@ -1787,12 +1805,14 @@ atom:
     // strcat($$, temp.c_str());
 
     strcpy($$, $1);
-  }
-| NUMBER
-  {
-    parser_logfile << "NUMBER" << std::endl;
 
-    // strcpy($$, "NUMBER(");
+    list_idx_token = "NAME";
+  }
+| INTEGER
+  {
+    parser_logfile << "INTEGER" << std::endl;
+
+    // strcpy($$, "INTEGER(");
     // strcat($$, $1);
     // strcat($$, ")");
     // node_map[$$]++;
@@ -1803,6 +1823,44 @@ atom:
     // //strcpy($$, t.c_str());
 
     strcpy($$, $1);
+
+    list_idx_token = "INTEGER";
+  }
+| FLOAT_NUMBER
+  {
+    parser_logfile << "FLOAT_NUMBER" << std::endl;
+
+    // strcpy($$, "FLOAT_NUMBER(");
+    // strcat($$, $1);
+    // strcat($$, ")");
+    // node_map[$$]++;
+    // std::string temp = std::to_string(node_map[$$]);
+    // strcat($$, temp.c_str());
+    // //std::string t=new_temp();
+    // //gen("=", $1, "", t);
+    // //strcpy($$, t.c_str());
+
+    strcpy($$, $1);
+
+    list_idx_token = "FLOAT_NUMBER";
+  }
+| IMAGINARY
+  {
+    parser_logfile << "IMAGINARY" << std::endl;
+
+    // strcpy($$, "IMAGINARY(");
+    // strcat($$, $1);
+    // strcat($$, ")");
+    // node_map[$$]++;
+    // std::string temp = std::to_string(node_map[$$]);
+    // strcat($$, temp.c_str());
+    // //std::string t=new_temp();
+    // //gen("=", $1, "", t);
+    // //strcpy($$, t.c_str());
+
+    strcpy($$, $1);
+
+    list_idx_token = "IMAGINARY";
   }
 | STRING string_list
   {
@@ -1827,6 +1885,8 @@ atom:
     // }
     
     strcpy($$, $1);
+
+    list_idx_token = "STRING";
   }
 | NONE
   {
@@ -1838,6 +1898,8 @@ atom:
     // strcat($$, temp.c_str());
 
     strcpy($$, "None");
+
+    list_idx_token = "NONE";
   }
 | TRUE
   {
@@ -1849,6 +1911,8 @@ atom:
     // strcat($$, temp.c_str());
 
     strcpy($$, "True");
+
+    list_idx_token = "TRUE";
   }
 | FALSE
   {
@@ -1860,6 +1924,8 @@ atom:
     // strcat($$, temp.c_str());
 
     strcpy($$, "False");
+
+    list_idx_token = "FALSE";
   }
 ;
 

@@ -499,20 +499,20 @@ or                        {
 
 {INTEGER}                 {
                             store_token();
-                            fprintf(lexer_logfile, "%s\n", "NUMBER");
-                            return NUMBER;
+                            fprintf(lexer_logfile, "%s\n", "INTEGER");
+                            return INTEGER;
                           }
 
 {FLOAT_NUMBER}            {
                             store_token();
-                            fprintf(lexer_logfile, "%s\n", "NUMBER");
-                            return NUMBER;
+                            fprintf(lexer_logfile, "%s\n", "FLOAT_NUMBER");
+                            return FLOAT_NUMBER;
                           }
 
 {IMAGINARY}               {
                             store_token();
-                            fprintf(lexer_logfile, "%s\n", "NUMBER");
-                            return NUMBER;
+                            fprintf(lexer_logfile, "%s\n", "IMAGINARY");
+                            return IMAGINARY;
                           }
 
 {BYTE_STRING}             /* ignore BYTE_STRING */
