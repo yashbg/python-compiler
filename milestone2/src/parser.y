@@ -2284,15 +2284,6 @@ void print_curr_3AC_instr(std::vector<std::string> &line_code){
     std::cout << std::endl;
 }
 
-void print_curr_3AC_instr(std::vector<std::string> &line_code){
-    std::cout << line_code[line_code.size() - 1] << " ";
-    std::cout << "=";
-    for(int i = 0; i < line_code.size() - 1; i++){
-      std::cout << line_code[i] << " ";
-    }
-    std::cout << std::endl;
-}
-
 void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result) {
   std::vector<std::string> line_code;
   line_code.push_back(op);
