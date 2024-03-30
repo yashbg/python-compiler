@@ -37,6 +37,7 @@
   std::string func_param_type;
   std::vector<std::pair<std::string, std::string>> func_params; // (name, type)
   std::string func_return_type;
+  std::string current_operator;
 
   int is_digit(char c);
 
@@ -1424,13 +1425,18 @@ arith_expr:
   term plus_or_minus_term_list
   {
     parser_logfile << "term plus_or_minus_term_list" << std::endl;
-    if($2[0] == '\0'){
-      strcpy($$, $1);
-    }
-    else
-    {
-      emit_dot_edge($2, $1);
-      strcpy($$, $2);
+    // if($2[0] == '\0'){
+    //   strcpy($$, $1);
+    // }
+    // else
+    // {
+    //   emit_dot_edge($2, $1);
+    //   strcpy($$, $2);
+    // }
+    
+    if($2[0] != '\0'){
+      std::string t = new_temp();
+      gen(current_operator, get_sem_val($1), get_sem_val($2), t);
     }
   }
 ;
@@ -1467,8 +1473,9 @@ plus_or_minus_term_list:
     // }
     // strcpy($$, s.c_str());
     std::string t=new_temp();
-    gen($2, $3, $1, t);
+    gen(get_sem_val($2), get_sem_val($1), get_sem_val($3), t);
     strcpy($$, t.c_str()); 
+    if($1[0] == '\0') current_operator = $2;
   }
 ;
 
@@ -1626,7 +1633,7 @@ atom_expr:
       symtable_entry entry = lookup_var(get_sem_val($1));
       std::string t = new_temp();
       gen("*", get_sem_val($2), std::to_string(entry.size), t);
-      strcpy($$, t.c_str());
+      strcpy($$, (get_sem_val($1) + "[" + t + "]").c_str());
     }
     else {
       strcpy($$, $1);
@@ -2381,7 +2388,7 @@ void gen(std::string s) {
   std::vector<std::string> line_code;
   line_code.push_back(s);
   ac3_code.push_back(line_code);
-  print_curr_3AC_instr(line_code);
+  print_curr_3ac_instr(line_code);
   return;
 }
 
