@@ -25,12 +25,9 @@
   global_symtable gsymtable;
   local_symtable *cur_symtable_ptr = nullptr;
 
-  std::vector<std::vector<std::string>> ac3_code; // 3AC instructions
+  std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
   long int temp_count = 1; // counter for temporary variables
   std::string new_temp(); // generate new temporary variable
-
-  long int label_count = 1; // counter for labels
-  std::string new_label(); // generate new label
 
   int offset = 0; // TODO
   std::string var_type;
@@ -43,17 +40,14 @@
   void emit_dot_node(const char* node_name, const char* label);
   void emit_dot_edge(const char* from, const char* to);
 
-  void gen(std::string op, std::string arg1, std::string arg2, std::string result); //gen function for 3AC
-  void gen(std::string s); //gen function for goto operations
-  void backpatch(std::vector<std::string> &list, std::string label); //backpatch function for 3AC
-  std::map<std::string, std::string> true_list;
-  std::map<std::string, std::string> false_list;
-  std::string true_label;
-  std::string false_label;
-  std::string cond_label;
+  void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result); //gen function for 3AC
 
   std::string get_sem_val(char *c_str); // get semantic value from AST node
   int get_size(const std::string &type);
+  int get_list_element_count(char* list);
+  std::string get_list_element_datatype(char* list_type);
+  int get_list_size(char* list_datatype, char* list);
+  void generate_3AC_for_list(char* list_datatype, char* list);
 %}
 
 %union { char tokenname[1024]; }
@@ -364,7 +358,6 @@ colon_test_opt:
     s1 = ":"+std::to_string(node_map[":"]);
     emit_dot_edge(s1.c_str(), $2);
     strcpy($$, s1.c_str());
-    std::cout << $2 << " " << std::endl;
     func_param_type = get_sem_val($2);
   }
 ;
@@ -457,7 +450,7 @@ expr_stmt:
     strcpy($$, $2);
 
     insert_var(get_sem_val($1), {var_type, "", yylineno, get_size(var_type), offset}); // TODO
-    gen("", $2, "", $1);
+    if($2[0] != ':') gen("", $2, "", $1);
   }
 | testlist_star_expr augassign testlist
   {
@@ -530,9 +523,25 @@ annassign:
     if($3[0] != '\0'){
       std::string t = new_temp();
       //std::cout << $3 << std::endl << std::endl;
-      gen("", $3, "", t);
+
+      std::string temp = var_type.substr(0, 4);
+      if(temp == "list"){
+        int element_number = get_list_element_count($3);
+        int list_size = get_list_size($2, $3);
+        std::string alloc_bytes = "alloc " + std::to_string(list_size);
+        gen("", alloc_bytes, "", t);
+        generate_3AC_for_list($2, $3);
+      }
+      else{
+        gen("", $3, "", t);
+      }
       strcpy($$, t.c_str());
+      //strcpy($$, $3);
     }
+    else{
+      strcpy($$, ":");
+    }
+    //std::cout << $2 << std::endl;
   }
 ;
 
@@ -575,16 +584,25 @@ comma_test_or_star_expr_list:
 | comma_test_or_star_expr_list ',' test_or_star_expr
   {
     parser_logfile << "| comma_test_or_star_expr_list ',' test_or_star_expr" << std::endl;
-    node_map[","]++;
-    s1 = "," + std::to_string(node_map[","]);
-    emit_dot_edge(s1.c_str(), $3);
-    if($1[0] != '\0'){
-      emit_dot_edge(s1.c_str(), $1);
-      strcpy($$, s1.c_str());
+    // node_map[","]++;
+    // s1 = "," + std::to_string(node_map[","]);
+    // emit_dot_edge(s1.c_str(), $3);
+    // if($1[0] != '\0'){
+    //   emit_dot_edge(s1.c_str(), $1);
+    //   strcpy($$, s1.c_str());
+    // }
+    // else{
+    //   comma_number = node_map[","];
+    //   strcpy($$, s1.c_str());
+    // }
+    if($1[0] == '\0'){
+      strcpy($$, $3);
     }
     else{
-      comma_number = node_map[","];
-      strcpy($$, s1.c_str());
+      std::string temp = $1;
+      temp += ",";
+      temp += $3;
+      strcpy($$, temp.c_str());
     }
   }
 ;
@@ -802,55 +820,34 @@ compound_stmt:
 ;
 
 if_stmt:
-  IF 
+  IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt
   {
-    std::string l1 = new_label();
-    cond_label = l1;
-    gen(l1 + " if :");
-  }
-  test ':' 
-  {
-    std::string l2 = new_label();
-    true_label = l2;
-    gen("goto " + l2);
-    gen(l2 + " :");
-  }
-  suite
-  {
-    std::string l3 = new_label();
-    false_label = l3;
-    gen("goto " + cond_label);
-    gen(l3 + ":");
-  } 
-  elif_test_colon_suite_list else_colon_suite_opt
-  {
-    gen("goto " + cond_label); 
     parser_logfile << "IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt" << std::endl;
-    // node_map["IF"]++;
-    // std::string no=std::to_string(node_map["IF"]);
-    // std::string s="IF"+no;
-    // emit_dot_edge(s.c_str(), $2);
-    // node_map[":"]++;
-    // std::string no1=std::to_string(node_map[":"]);
-    // std::string s1=":"+no1;
-    // emit_dot_edge(s1.c_str(), s.c_str());
-    // emit_dot_edge(s1.c_str(), $4);
-    // strcpy($$, $3);
-    // std::string temp = std::to_string(node_map[":"]);
-    // strcat($$, temp.c_str());
-    // if(($5[0] == '\0') && ($6[0] == '\0')){
+    node_map["IF"]++;
+    std::string no=std::to_string(node_map["IF"]);
+    std::string s="IF"+no;
+    emit_dot_edge(s.c_str(), $2);
+    node_map[":"]++;
+    std::string no1=std::to_string(node_map[":"]);
+    std::string s1=":"+no1;
+    emit_dot_edge(s1.c_str(), s.c_str());
+    emit_dot_edge(s1.c_str(), $4);
+    strcpy($$, $3);
+    std::string temp = std::to_string(node_map[":"]);
+    strcat($$, temp.c_str());
+    if(($5[0] == '\0') && ($6[0] == '\0')){
 
-    // }
-    // else if($5[0] == '\0'){
-    //   emit_dot_edge($$, $6);
-    // }
-    // else if($6[0] == '\0'){
-    //   emit_dot_edge($$, $5);
-    // }
-    // else{
-    //   emit_dot_edge($$, $5);
-    //   emit_dot_edge($5, $6);
-    // }
+    }
+    else if($5[0] == '\0'){
+      emit_dot_edge($$, $6);
+    }
+    else if($6[0] == '\0'){
+      emit_dot_edge($$, $5);
+    }
+    else{
+      emit_dot_edge($$, $5);
+      emit_dot_edge($5, $6);
+    }
   }
 ;
 
@@ -1000,14 +997,17 @@ test:
   or_test if_or_test_else_test_opt
   {
     parser_logfile << "or_test if_or_test_else_test_opt" << std::endl;
-    if($2[0] == '\0'){
-      strcpy($$, $1);
-    }
-    else
-      {
-        emit_dot_edge($1,$2);
-        strcpy($$, $1);
-    }
+    // if($2[0] == '\0'){
+    //   strcpy($$, $1);
+    // }
+    // else
+    //   {
+    //     emit_dot_edge($1,$2);
+    //     strcpy($$, $1);
+    // }
+
+    std::string temp = get_sem_val($1);
+    strcpy($$, temp.c_str());
   }
 ;
 
@@ -1589,10 +1589,27 @@ atom_expr:
   atom trailer_list
   {
     parser_logfile << "atom trailer_list" << std::endl;
-    if($2[0] != '\0'){
-      emit_dot_edge($1, $2);
+
+    // if($2[0] != '\0'){
+    //   emit_dot_edge($1, $2);
+    // }
+    // strcpy($$, $1);
+
+    if ($2[0] == '\0') {
+      strcpy($$, $1);
     }
-    strcpy($$, $1);
+    else if (get_sem_val($1) == "list") {
+      strcpy($$, (get_sem_val($1) + get_sem_val($2)).c_str());
+    }
+    else if ($2[0] == '[') {
+      symtable_entry entry = lookup_var(get_sem_val($1));
+      std::string t = new_temp();
+      gen("*", get_sem_val($2), std::to_string(entry.size), t);
+      strcpy($$, t.c_str());
+    }
+    else {
+      strcpy($$, $1);
+    }
   }
 ;
 
@@ -1605,14 +1622,13 @@ trailer_list:
 | trailer_list trailer
   {
     parser_logfile << "| trailer_list trailer" << std::endl;
-    if($1[0] == '\0'){
+    if ($1[0] == '\0') {
       strcpy($$, $2);
     }
-    else
-      {
+    else {
       emit_dot_edge($1, $2);
       strcpy($$, $1);
-      }
+    }
   }
 ;
 
@@ -1620,27 +1636,32 @@ atom:
   '(' testlist_comp_opt ')'
   {
     parser_logfile << "'(' testlist_comp_opt ')'" << std::endl;
-    // node_map["()"]++;
-    // std::string no=std::to_string(node_map["()"]);
-    // std::string s="()"+no;
-    // //emit_dot_node(s.c_str(), "()");
-    // if($2[0]!='\0'){
-    //   emit_dot_edge(s.c_str(), $2);
-    // }
-    // strcpy($$, s.c_str());
+    node_map["()"]++;
+    std::string no=std::to_string(node_map["()"]);
+    std::string s="()"+no;
+    //emit_dot_node(s.c_str(), "()");
+    if($2[0]!='\0'){
+      emit_dot_edge(s.c_str(), $2);
+    }
+    strcpy($$, s.c_str());
     strcpy($$, $2);
   }
 | '[' testlist_comp_opt ']'
   {
     parser_logfile << "'[' testlist_comp_opt ']'" << std::endl;
-    node_map["[]"]++;
-    std::string no=std::to_string(node_map["[]"]);
-    std::string s="[]"+no;
-    //emit_dot_node(s.c_str(), "[]");
-    if($2[0]!='\0'){
-      emit_dot_edge(s.c_str(), $2);
-    }
-    strcpy($$, s.c_str());
+    // node_map["[]"]++;
+    // std::string no=std::to_string(node_map["[]"]);
+    // std::string s="[]"+no;
+    // emit_dot_node(s.c_str(), "[]");
+    // if($2[0]!='\0'){
+    //   emit_dot_edge(s.c_str(), $2);
+    // }
+    // strcpy($$, s.c_str());
+    // std::cout << $2 << std::endl;
+    std::string temp = "[";
+    temp += $2;
+    temp += "]";
+    strcpy($$, temp.c_str());
   }
 | NAME
   {
@@ -1655,15 +1676,15 @@ atom:
 | NUMBER
   {
     parser_logfile << "NUMBER" << std::endl;
-    // strcpy($$, "NUMBER(");
-    // strcat($$, $1);
-    // strcat($$, ")");
-    // node_map[$$]++;
-    // std::string temp = std::to_string(node_map[$$]);
-    // strcat($$, temp.c_str());
-    std::string t=new_temp();
-    gen("", $1, "", t);
-    strcpy($$, t.c_str());
+    strcpy($$, "NUMBER(");
+    strcat($$, $1);
+    strcat($$, ")");
+    node_map[$$]++;
+    std::string temp = std::to_string(node_map[$$]);
+    strcat($$, temp.c_str());
+    //std::string t=new_temp();
+    //gen("", $1, "", t);
+    //strcpy($$, t.c_str());
   }
 | STRING string_list
   {
@@ -1757,15 +1778,25 @@ testlist_comp:
   test_or_star_expr comp_for_OR_comma_test_or_star_expr_list_comma_opt
   {
     parser_logfile << "test_or_star_expr comp_for_OR_comma_test_or_star_expr_list_comma_opt" << std::endl;
+    // if($2[0] == '\0'){
+    //   strcpy($$, $1);
+    // }
+    // else{
+    //   //emit_dot_edge($1, $2);
+    //   //strcpy($$, $1);
+    //   s1 = "," + std::to_string(comma_number);
+    //   emit_dot_edge(s1.c_str(), $1);
+    //   strcpy($$, $2);
+    // }
+
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
     else{
-      //emit_dot_edge($1, $2);
-      //strcpy($$, $1);
-      s1 = "," + std::to_string(comma_number);
-      emit_dot_edge(s1.c_str(), $1);
-      strcpy($$, $2);
+      std::string temp = $1;
+      temp += ",";
+      temp += $2;
+      strcpy($$, temp.c_str());
     }
   }
 ;
@@ -1779,7 +1810,7 @@ comp_for_OR_comma_test_or_star_expr_list_comma_opt:
 | comma_test_or_star_expr_list comma_opt
   {
     parser_logfile << "| comma_test_or_star_expr_list comma_opt" << std::endl;
-      strcpy($$, $1);
+    strcpy($$, $1);
   }
 ;
 
@@ -1798,13 +1829,16 @@ trailer:
 | '[' subscriptlist ']'
   {
     parser_logfile << "'[' subscriptlist ']'" << std::endl;
-    node_map["[]"]++;
-    std::string no=std::to_string(node_map["[]"]);
-    std::string s="[]"+no;
-    //emit_dot_node(s.c_str(), "[]");
-    if($2[0]!='\0'){
-      emit_dot_edge(s.c_str(), $2);}
-    strcpy($$, s.c_str());
+
+    // node_map["[]"]++;
+    // std::string no=std::to_string(node_map["[]"]);
+    // std::string s="[]"+no;
+    // //emit_dot_node(s.c_str(), "[]");
+    // if($2[0]!='\0'){
+    //   emit_dot_edge(s.c_str(), $2);}
+    // strcpy($$, s.c_str());
+
+    strcpy($$, ("[" + get_sem_val($2) + "]").c_str());
   }
 | '.' NAME
   {
@@ -1843,6 +1877,7 @@ subscriptlist:
     parser_logfile << "subscript comma_subscript_list comma_opt" << std::endl;
     if($2[0]=='\0'){
       strcpy($$, $1);
+      //std::cout << $1 << "-----\n";
     }
     else {
       emit_dot_edge($2, $1);
@@ -2275,9 +2310,17 @@ std::string get_sem_val(char *c_str) {
 
 int get_size(const std::string &type) {
   if (type == "bool") {
-    return 2;
+    return 1;
   }
-
+  if(type == "int"){
+    return 4;
+  }
+  if(type == "float"){
+    return 4;
+  }
+  if(type == "double"){
+    return 8;
+  }
   if (type == "str") {
     // TODO
     return 0;
@@ -2290,33 +2333,23 @@ int get_size(const std::string &type) {
 
 void print_curr_3AC_instr(std::vector<std::string> &line_code){
     std::cout << line_code[line_code.size() - 1] << " ";
-    std::cout << "=";
-    for(int i = 0; i < line_code.size() - 1; i++){
-      std::cout << line_code[i] << " ";
-    }
+    std::cout << "= ";
+    std::cout << line_code[1] << " " << line_code[0] << " ";
+    if(line_code[0] != "") std::cout << line_code[2];
     std::cout << std::endl;
 }
 
-void gen(std::string op, std::string arg1, std::string arg2, std::string result) {
-
+void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result) {
   std::vector<std::string> line_code;
   line_code.push_back(op);
   line_code.push_back(arg1);
-  if(arg2[0] != '\0') {
+  if (!arg2.empty()) {
     line_code.push_back(arg2);
   }
+
   line_code.push_back(result);
   ac3_code.push_back(line_code);
   print_curr_3AC_instr(line_code);
-  return;
-}
-
-void gen(std::string s) {
-  std::vector<std::string> line_code;
-  line_code.push_back(s);
-  ac3_code.push_back(line_code);
-  print_curr_3AC_instr(line_code);
-  return;
 }
 
 std::string new_temp() {
@@ -2325,8 +2358,55 @@ std::string new_temp() {
   return temp;
 }
 
-std::string new_label() {
-  std::string label = "L" + std::to_string(label_count);
-  label_count++;
-  return label;
+int get_list_element_count(char* list){
+  int elems = 1;
+  for(int i = 0; i < strlen(list); i++){
+    if(list[i] == ',') elems++;
+  }
+  return elems;
+}
+
+std::string get_list_element_datatype(char* list_type){
+  std::string list_elem_type;
+  for(int i = 4; i < strlen(list_type) - 1; i++){
+    list_elem_type += list_type[i];
+  }
+  return list_elem_type;
+}
+
+int get_list_size(char* list_datatype, char* list){
+    std::string list_elem_type = get_list_element_datatype(list_datatype);
+    int element_number = get_list_element_count(list), list_size;
+    if(list_elem_type == "str"){
+      list_size = strlen(list) - element_number - 1;
+    }
+    else{
+      list_size = get_size(list_elem_type) * element_number;
+    }
+    return list_size;
+}
+
+void generate_3AC_for_list(char* list_datatype, char* list){
+    std::string list_elem_type = get_list_element_datatype(list_datatype);
+    int element_number = get_list_element_count(list);
+    int prev = 0, i = 1;
+    std::string temp = "t"+std::to_string(temp_count - 1);
+    std::string t = new_temp();
+    while(i < strlen(list) - 1){
+      std::string curr_elem;
+      while((i < strlen(list) - 1) && list[i] != ','){
+        curr_elem += list[i];
+        i++;
+      }
+      gen("+", temp, std::to_string(prev), t);
+      if(list_elem_type == "str"){
+        gen("*", "", curr_elem, t);
+        prev = curr_elem.size();
+      }
+      else{
+        gen("*", "", curr_elem, t);
+        prev = get_size(list_elem_type);
+      }
+      i++;
+    }
 }
