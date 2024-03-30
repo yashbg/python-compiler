@@ -468,7 +468,7 @@ expr_stmt:
       insert_var($1, {var_type, "", yylineno, get_size(var_type), 0, 0, offset}); // TODO
     }
 
-    if($2[0] != ':') gen("", $2, "", $1);
+    if($2[0] != ':') gen("=", $2, "", $1);
   }
 | testlist_star_expr augassign testlist
   {
@@ -481,7 +481,7 @@ expr_stmt:
     op = op.substr(0, op.size() - 1);
     std::string t = new_temp();
     gen(op, $1, $3, t);
-    gen("", t, "", $1);
+    gen("=", t, "", $1);
   }
 | testlist_star_expr expr_stmt_suffix_choices
   {
@@ -495,7 +495,7 @@ expr_stmt:
     //   strcpy($$, $2);
     // }
     if($2[0] != '\0'){
-      gen("", $2, "", $1);
+      gen("=", $2, "", $1);
     }
   }
 ;
@@ -525,7 +525,7 @@ equal_testlist_star_expr_list:
     // emit_dot_edge(s1.c_str(), $3);
     // strcpy($$, s1.c_str());
     std::string t = new_temp();
-    gen("", $3, "", t);
+    gen("=", $3, "", t);
     strcpy($$, t.c_str());
   }
 ;
@@ -558,11 +558,11 @@ annassign:
         int element_number = get_list_element_count($3);
         int list_size = get_list_size($2, $3);
         std::string alloc_bytes = "alloc " + std::to_string(list_size);
-        gen("", alloc_bytes, "", t);
+        gen("=", alloc_bytes, "", t);
         generate_3AC_for_list($2, $3);
       }
       else{
-        gen("", $3, "", t);
+        gen("=", $3, "", t);
       }
       strcpy($$, t.c_str());
       //strcpy($$, $3);
@@ -1726,7 +1726,7 @@ atom:
     // std::string temp = std::to_string(node_map[$$]);
     // strcat($$, temp.c_str());
     // //std::string t=new_temp();
-    // //gen("", $1, "", t);
+    // //gen("=", $1, "", t);
     // //strcpy($$, t.c_str());
 
     strcpy($$, $1);
@@ -2399,7 +2399,7 @@ int get_size(const std::string &type) {
 }
 
 void print_curr_3ac_instr(std::vector<std::string> &line_code){
-  if (line_code[0].empty()) {
+  if (line_code[0] == "=") {
     std::cout << line_code[3] << " = "
               << line_code[1] << std::endl;
   }
@@ -2480,7 +2480,7 @@ void generate_3AC_for_list(char* list_datatype, char* list){
         i++;
       }
       std::string temp =  "t" + std::to_string(temp_count - 1) + "[" + std::to_string(prev) + "]";
-      gen("", curr_elem, "", temp);
+      gen("=", curr_elem, "", temp);
       if(list_elem_type == "str"){
         prev = prev + curr_elem.size();
       }

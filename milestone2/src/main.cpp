@@ -151,7 +151,7 @@ void dump_3ac(const std::string &output_dir) {
   std::ofstream ac3_dumpfile;
   ac3_dumpfile.open(output_dir + "3ac.log");
   for (auto &line_code : ac3_code) {
-    if (line_code[0].empty()) {
+    if (line_code[0] == "=") {
       ac3_dumpfile << line_code[3] << " = "
                    << line_code[1] << std::endl;
     }
