@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <fstream>
 #include <cstdlib>
 #include <filesystem>
@@ -13,6 +14,7 @@ FILE *lexer_logfile;
 std::ofstream parser_logfile;
 
 extern global_symtable gsymtable;
+extern std::vector<std::vector<std::string>> ac3_code;
 
 void show_help();
 
@@ -21,6 +23,7 @@ void add_dot_footer();
 
 void add_csv_header(std::ofstream &csvfile);
 void dump_symtables(const std::string &output_dir);
+void dump_3ac(const std::string &output_dir);
 
 int main(int argc, char *argv[]) {
   std::string input_file, output_dir;
@@ -98,10 +101,11 @@ int main(int argc, char *argv[]) {
   // system(("dot -Tpdf graph.dot -o " + output_dir + "graph.pdf").c_str());
 
   if (verbose) {
-    std::cout << "Dumping symbol tables..." << std::endl;
+    std::cout << "Dumping symbol tables and 3AC..." << std::endl;
   }
 
   dump_symtables(output_dir);
+  dump_3ac(output_dir);
 
   return 0;
 }
@@ -140,5 +144,20 @@ void dump_symtables(const std::string &output_dir) {
     for (auto &entry : symtable.second->var_entries) {
       func_dumpfile << "NAME," << entry.first << "," << entry.second.type << "," << entry.second.lineno << std::endl;
     }
+  }
+}
+
+void dump_3ac(const std::string &output_dir) {
+  std::ofstream ac3_dumpfile;
+  ac3_dumpfile.open(output_dir + "3ac.log");
+  for (auto &line_code : ac3_code) {
+    ac3_dumpfile << line_code.back() << " = "
+                 << line_code[1] << " "
+                 << line_code[0] << " ";
+    if (!line_code[0].empty()) {
+      ac3_dumpfile << line_code[2] << " ";
+    }
+
+    ac3_dumpfile << std::endl;
   }
 }

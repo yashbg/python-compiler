@@ -2352,12 +2352,15 @@ int get_size(const std::string &type) {
   return 4;
 }
 
-void print_curr_3AC_instr(std::vector<std::string> &line_code){
-    std::cout << line_code[line_code.size() - 1] << " ";
-    std::cout << "= ";
-    std::cout << line_code[1] << " " << line_code[0] << " ";
-    if(line_code[0] != "") std::cout << line_code[2];
-    std::cout << std::endl;
+void print_curr_3ac_instr(std::vector<std::string> &line_code){
+  std::cout << line_code.back() << " = "
+            << line_code[1] << " "
+            << line_code[0] << " ";
+  if (!line_code[0].empty()) {
+    std::cout << line_code[2] << " ";
+  }
+
+  std::cout << std::endl;
 }
 
 void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result) {
@@ -2370,7 +2373,8 @@ void gen(const std::string &op, const std::string &arg1, const std::string &arg2
 
   line_code.push_back(result);
   ac3_code.push_back(line_code);
-  print_curr_3AC_instr(line_code);
+
+  // print_curr_3ac_instr(line_code);
 }
 
 void gen(std::string s) {
