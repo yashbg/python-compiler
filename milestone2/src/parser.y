@@ -40,7 +40,7 @@
   void emit_dot_node(const char* node_name, const char* label);
   void emit_dot_edge(const char* from, const char* to);
 
-  void gen(const char* op, const char* arg1, const char* arg2, const char* result); //gen function for 3AC
+  void gen(std::string op, std::string arg1, std::string arg2, std::string result); //gen function for 3AC
 
   std::string get_sem_val(char *c_str); // get semantic value from AST node
   int get_size(const std::string &type);
@@ -2245,7 +2245,7 @@ int get_size(const std::string &type) {
   return 4;
 }
 
-void gen(const char* op, const char* arg1, const char* arg2, const char* result) {
+void gen(std::string op, std::string arg1, std::string arg2, std::string result) {
 
   std::vector<std::string> line_code;
   line_code.push_back(op);
