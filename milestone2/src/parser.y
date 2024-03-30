@@ -58,6 +58,7 @@
   std::string get_list_element_datatype(char* list_type);
   int get_list_size(char* list_datatype, char* list);
   void generate_3AC_for_list(char* list_datatype, char* list);
+  std::string remove_sq_brackets(const std::string &str);
 %}
 
 %union { char tokenname[1024]; }
@@ -1625,7 +1626,7 @@ atom_expr:
     else if ($2[0] == '[') {
       symtable_entry entry = lookup_var(get_sem_val($1));
       std::string t = new_temp();
-      gen("*", get_sem_val($2), std::to_string(entry.size), t);
+      gen("*", remove_sq_brackets($2), std::to_string(entry.size), t);
       strcpy($$, (get_sem_val($1) + "[" + t + "]").c_str());
     }
     else {
@@ -2320,10 +2321,6 @@ std::string get_sem_val(char *c_str) {
     return "None";
   }
 
-  if (str[0] == '[') {
-    return str.substr(1, str.size() - 2);
-  }
-
   int start = str.find('(');
   if (start == std::string::npos) {
     return str;
@@ -2337,21 +2334,27 @@ int get_size(const std::string &type) {
   if (type == "bool") {
     return 1;
   }
+
   if(type == "int"){
     return 4;
   }
+
   if(type == "float"){
     return 4;
   }
+
   if(type == "double"){
     return 8;
   }
+  
   if (type == "str") {
     // TODO
     return 0;
   }
 
-  // TODO: list
+  if (type.substr(0, 4) == "list") {
+    return get_size(type.substr(5, type.size() - 6));
+  }
 
   return 4;
 }
@@ -2452,4 +2455,8 @@ void generate_3AC_for_list(char* list_datatype, char* list){
       }
       i++;
     }
+}
+
+std::string remove_sq_brackets(const std::string &str) {
+  return str.substr(1, str.size() - 2);
 }

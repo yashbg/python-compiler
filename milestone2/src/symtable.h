@@ -8,7 +8,7 @@ struct symtable_entry {
   std::string type;
   std::string src_file; // TODO
   int lineno; // TODO
-  int size;
+  int size; // width for lists
   int offset; // TODO
 };
 
