@@ -849,34 +849,56 @@ compound_stmt:
 ;
 
 if_stmt:
-  IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt
+  IF 
   {
+    cond_label = new_label();
+    true_label = new_label();
+    false_label = new_label();
+    gen(cond_label+":");
+  }
+  test ':'
+  {
+    gen("goto "+true_label);
+    gen("goto "+false_label);
+    gen(true_label+":");
+  }
+  suite 
+  {
+    gen("goto "+cond_label);
+    gen(false_label+":");
+  }
+  elif_test_colon_suite_list else_colon_suite_opt
+  {
+    if($6[0] != '\0'){
+      false_label = new_label();
+      gen("goto "+cond_label);
+    }
     parser_logfile << "IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt" << std::endl;
-    node_map["IF"]++;
-    std::string no=std::to_string(node_map["IF"]);
-    std::string s="IF"+no;
-    emit_dot_edge(s.c_str(), $2);
-    node_map[":"]++;
-    std::string no1=std::to_string(node_map[":"]);
-    std::string s1=":"+no1;
-    emit_dot_edge(s1.c_str(), s.c_str());
-    emit_dot_edge(s1.c_str(), $4);
-    strcpy($$, $3);
-    std::string temp = std::to_string(node_map[":"]);
-    strcat($$, temp.c_str());
-    if(($5[0] == '\0') && ($6[0] == '\0')){
+    // node_map["IF"]++;
+    // std::string no=std::to_string(node_map["IF"]);
+    // std::string s="IF"+no;
+    // emit_dot_edge(s.c_str(), $2);
+    // node_map[":"]++;
+    // std::string no1=std::to_string(node_map[":"]);
+    // std::string s1=":"+no1;
+    // emit_dot_edge(s1.c_str(), s.c_str());
+    // emit_dot_edge(s1.c_str(), $4);
+    // strcpy($$, $3);
+    // std::string temp = std::to_string(node_map[":"]);
+    // strcat($$, temp.c_str());
+    // if(($5[0] == '\0') && ($6[0] == '\0')){
 
-    }
-    else if($5[0] == '\0'){
-      emit_dot_edge($$, $6);
-    }
-    else if($6[0] == '\0'){
-      emit_dot_edge($$, $5);
-    }
-    else{
-      emit_dot_edge($$, $5);
-      emit_dot_edge($5, $6);
-    }
+    // }
+    // else if($5[0] == '\0'){
+    //   emit_dot_edge($$, $6);
+    // }
+    // else if($6[0] == '\0'){
+    //   emit_dot_edge($$, $5);
+    // }
+    // else{
+    //   emit_dot_edge($$, $5);
+    //   emit_dot_edge($5, $6);
+    // }
   }
 ;
 
