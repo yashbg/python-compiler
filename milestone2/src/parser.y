@@ -465,21 +465,29 @@ expr_stmt:
 | testlist_star_expr augassign testlist
   {
     parser_logfile << "| testlist_star_expr augassign testlist" << std::endl;
-    s1 = $2;
-    emit_dot_edge(s1.c_str(), $3);
-    emit_dot_edge(s1.c_str(), $1);
-    strcpy($$, s1.c_str());
+    // s1 = $2;
+    // emit_dot_edge(s1.c_str(), $3);
+    // emit_dot_edge(s1.c_str(), $1);
+    // strcpy($$, s1.c_str());
+    std::string op = $2;
+    op = op.substr(0, op.size() - 1);
+    std::string t = new_temp();
+    gen(op, $1, $3, t);
+    gen("", t, "", $1);
   }
 | testlist_star_expr expr_stmt_suffix_choices
   {
     parser_logfile << "| testlist_star_expr expr_stmt_suffix_choices" << std::endl;
-    if($2[0] == '\0'){
-      strcpy($$, $1);
-    }
-    else{
-      s1 = $2;
-      emit_dot_edge($2, $1);
-      strcpy($$, $2);
+    // if($2[0] == '\0'){
+    //   strcpy($$, $1);
+    // }
+    // else{
+    //   s1 = $2;
+    //   emit_dot_edge($2, $1);
+    //   strcpy($$, $2);
+    // }
+    if($2[0] != '\0'){
+      gen("", $2, "", $1);
     }
   }
 ;
@@ -501,13 +509,16 @@ equal_testlist_star_expr_list:
 | equal_testlist_star_expr_list '=' testlist_star_expr
   {
     parser_logfile << "| equal_testlist_star_expr_list '=' testlist_star_expr" << std::endl;
-    node_map["="]++;
-    s1 = "=" + std::to_string(node_map["="]);
-    if($1[0] != '\0'){
-      emit_dot_edge(s1.c_str(), $1);
-    }
-    emit_dot_edge(s1.c_str(), $3);
-    strcpy($$, s1.c_str());
+    // node_map["="]++;
+    // s1 = "=" + std::to_string(node_map["="]);
+    // if($1[0] != '\0'){
+    //   emit_dot_edge(s1.c_str(), $1);
+    // }
+    // emit_dot_edge(s1.c_str(), $3);
+    // strcpy($$, s1.c_str());
+    std::string t = new_temp();
+    gen("", $3, "", t);
+    strcpy($$, t.c_str());
   }
 ;
 
