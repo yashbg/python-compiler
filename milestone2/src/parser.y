@@ -460,7 +460,7 @@ expr_stmt:
     strcpy($$, $2);
 
     insert_var(get_sem_val($1), {var_type, "", yylineno, get_size(var_type), offset}); // TODO
-    if($2[0] != ':') gen("", $2, "", $1);
+    if($2[0] != ':') gen("", get_sem_val($2), "", get_sem_val($1));
   }
 | testlist_star_expr augassign testlist
   {
@@ -543,7 +543,7 @@ annassign:
         generate_3AC_for_list($2, $3);
       }
       else{
-        gen("", $3, "", t);
+        gen("", get_sem_val($3), "", t);
       }
       strcpy($$, t.c_str());
       //strcpy($$, $3);
@@ -1235,7 +1235,7 @@ star_expr:
     // emit_dot_edge(s.c_str(), $2);
     // strcpy($$, s.c_str());
     std::string t=new_temp();
-    gen("*", $2, "", t);
+    gen("*", get_sem_val($2), "", t);
     strcpy($$, t.c_str());
   }
 ;
@@ -1274,7 +1274,7 @@ or_xor_expr_list:
     // }
     // strcpy($$, s.c_str());
     std::string t=new_temp();
-    gen($2, $3, $1, t);
+    gen(get_sem_val($2), get_sem_val($3), get_sem_val($1), t);
     strcpy($$, t.c_str());
   }
 ;
@@ -1314,7 +1314,7 @@ xor_and_expr_list:
     // }
     // strcpy($$, s.c_str());
     std::string t=new_temp();
-    gen($2, $3, $1, t);
+    gen(get_sem_val($2), get_sem_val($3), get_sem_val($1), t);
     strcpy($$, t.c_str());
   }
 ;
@@ -1354,7 +1354,7 @@ and_shift_expr_list:
     // }
     //   strcpy($$, s.c_str());
     std::string t=new_temp();
-    gen($2, $3, $1, t);
+    gen(get_sem_val($2), get_sem_val($3), get_sem_val($1), t);
     strcpy($$, t.c_str());
   }
 ;
@@ -1404,7 +1404,7 @@ shift_arith_expr_list:
     // }
     // strcpy($$, s.c_str());
     std::string t=new_temp();
-    gen($2, $3, $1, t);
+    gen(get_sem_val($2), get_sem_val($3), get_sem_val($1), t);
     strcpy($$, t.c_str());
   }
 ;
@@ -1456,7 +1456,7 @@ plus_or_minus_term_list:
     // }
     // strcpy($$, s.c_str());
     std::string t=new_temp();
-    gen($2, $3, $1, t);
+    gen(get_sem_val($2), get_sem_val($3), get_sem_val($1), t);
     strcpy($$, t.c_str()); 
   }
 ;
@@ -1516,7 +1516,7 @@ star_or_slash_or_percent_or_doubleslash_factor_list:
     //   emit_dot_edge($1, s.c_str());}
     //   strcpy($$, s.c_str());
     std::string t=new_temp();
-    gen($2, $3, $1, t);
+    gen(get_sem_val($2), get_sem_val($3), get_sem_val($1), t);
     strcpy($$, t.c_str());
   }
 ;
@@ -1532,7 +1532,7 @@ factor:
     // emit_dot_edge(s.c_str(), $2);
     // strcpy($$, s.c_str());
     std::string t=new_temp();
-    gen($1, $2, "", t);
+    gen(get_sem_val($1), get_sem_val($2), "", t);
     strcpy($$, t.c_str());
   }
 | power
@@ -1590,7 +1590,7 @@ doublestar_factor_opt:
     // emit_dot_edge(s.c_str(), $2);
     // strcpy($$, s.c_str());
     std::string t=new_temp();
-    gen("**", $2, "", t);
+    gen("**", get_sem_val($2), "", t);
     strcpy($$, t.c_str());
   }
 ;
@@ -1693,7 +1693,7 @@ atom:
     std::string temp = std::to_string(node_map[$$]);
     strcat($$, temp.c_str());
     //std::string t=new_temp();
-    //gen("", $1, "", t);
+    //gen("", get_sem_val($1), "", t);
     //strcpy($$, t.c_str());
   }
 | STRING string_list
@@ -2309,6 +2309,10 @@ std::string get_sem_val(char *c_str) {
     return "None";
   }
 
+  if (str[0] == '[') {
+    return str.substr(1, str.size() - 2);
+  }
+
   int start = str.find('(');
   if (start == std::string::npos) {
     return str;
@@ -2370,8 +2374,8 @@ void gen(std::string s) {
   std::vector<std::string> line_code;
   line_code.push_back(s);
   ac3_code.push_back(line_code);
-  print_curr_3AC_instr(line_code);
-  return;
+
+  // print_curr_3ac_instr(line_code);
 }
 
 std::string new_temp() {
