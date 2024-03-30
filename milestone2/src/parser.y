@@ -2453,7 +2453,7 @@ int get_list_element_count(char* list){
 
 std::string get_list_element_datatype(char* list_type){
   std::string list_elem_type;
-  for(int i = 4; i < strlen(list_type) - 1; i++){
+  for(int i = 5; i < strlen(list_type) - 1; i++){
     list_elem_type += list_type[i];
   }
   return list_elem_type;
@@ -2473,24 +2473,22 @@ int get_list_size(char* list_datatype, char* list){
 
 void generate_3AC_for_list(char* list_datatype, char* list){
     std::string list_elem_type = get_list_element_datatype(list_datatype);
+    std::cout << list_elem_type << std::endl;
     int element_number = get_list_element_count(list);
     int prev = 0, i = 1;
-    std::string temp = "t"+std::to_string(temp_count - 1);
-    std::string t = new_temp();
     while(i < strlen(list) - 1){
       std::string curr_elem;
       while((i < strlen(list) - 1) && list[i] != ','){
         curr_elem += list[i];
         i++;
       }
-      gen("+", temp, std::to_string(prev), t);
+      std::string temp =  "t" + std::to_string(temp_count - 1) + "[" + std::to_string(prev) + "]";
+      gen("", curr_elem, "", temp);
       if(list_elem_type == "str"){
-        gen("*", "", curr_elem, t);
-        prev = curr_elem.size();
+        prev = prev + curr_elem.size();
       }
       else{
-        gen("*", "", curr_elem, t);
-        prev = get_size(list_elem_type);
+        prev = prev + get_size(list_elem_type);
       }
       i++;
     }
