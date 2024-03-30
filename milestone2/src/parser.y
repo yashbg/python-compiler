@@ -43,7 +43,7 @@
   std::string current_operator;
 
   std::unordered_map<std::string, std::string> temp_types; // temp -> type
-  std::string list_idx_token;
+  std::string atom_token;
   bool in_var_decl = false;
 
   bool is_valid_type(const std::string &type);
@@ -1874,12 +1874,17 @@ atom_expr:
     // strcpy($$, $1);
 
     if ($2[0] == '\0') {
+      // no trailer
       strcpy($$, $1);
     }
     else if (std::string($1) == "list") {
+      // list[type]
+      check_valid_type(strip_braces($2));
+
       strcpy($$, (std::string($1) + $2).c_str());
     }
     else if ($2[0] == '[') {
+      // array access
       std::string index = strip_braces($2);
       if (is_valid_type($1)) {
         yyerror("Type error: types are not subscriptable");
@@ -1887,6 +1892,7 @@ atom_expr:
       
       symtable_entry entry = lookup_var($1);
 
+      std::string list_idx_token = atom_token;
       if (list_idx_token != "NAME") {
         if (list_idx_token != "INTEGER") {
           yyerror(("Type error: list indices must be integers, not " + list_idx_token).c_str());
@@ -1984,7 +1990,12 @@ atom:
 
     strcpy($$, $1);
 
-    list_idx_token = "NAME";
+    if (is_valid_type($1)) {
+      atom_token = "TYPE";
+    }
+    else {
+      atom_token = "NAME";
+    }
   }
 | INTEGER
   {
@@ -2002,7 +2013,7 @@ atom:
 
     strcpy($$, $1);
 
-    list_idx_token = "INTEGER";
+    atom_token = "INTEGER";
   }
 | FLOAT_NUMBER
   {
@@ -2020,7 +2031,7 @@ atom:
 
     strcpy($$, $1);
 
-    list_idx_token = "FLOAT_NUMBER";
+    atom_token = "FLOAT_NUMBER";
   }
 | IMAGINARY
   {
@@ -2038,7 +2049,7 @@ atom:
 
     strcpy($$, $1);
 
-    list_idx_token = "IMAGINARY";
+    atom_token = "IMAGINARY";
   }
 | STRING string_list
   {
@@ -2064,7 +2075,7 @@ atom:
     
     strcpy($$, $1);
 
-    list_idx_token = "STRING";
+    atom_token = "STRING";
   }
 | NONE
   {
@@ -2077,7 +2088,7 @@ atom:
 
     strcpy($$, "None");
 
-    list_idx_token = "NONE";
+    atom_token = "NONE";
   }
 | TRUE
   {
@@ -2090,7 +2101,7 @@ atom:
 
     strcpy($$, "True");
 
-    list_idx_token = "TRUE";
+    atom_token = "TRUE";
   }
 | FALSE
   {
@@ -2103,7 +2114,7 @@ atom:
 
     strcpy($$, "False");
 
-    list_idx_token = "FALSE";
+    atom_token = "FALSE";
   }
 ;
 
@@ -2812,8 +2823,12 @@ std::string strip_braces(const std::string &str) {
 }
 
 bool is_valid_type(const std::string &type) {
+  if (type == "list") {
+    return false;
+  }
+  
   if (type.substr(0, 4) == "list") {
-    return is_valid_type(strip_braces(type));
+    return is_valid_type(type.substr(5, type.size() - 6));
   }
 
   return type == "int" || type == "float" || type == "str" || type == "bool";
