@@ -29,6 +29,9 @@
   long int temp_count = 1; // counter for temporary variables
   std::string new_temp(); // generate new temporary variable
 
+  long int label_count = 1; // counter for labels
+  std::string new_label(); // generate new label
+
   int offset = 0; // TODO
   std::string var_type;
   std::string func_param_type;
@@ -41,6 +44,13 @@
   void emit_dot_edge(const char* from, const char* to);
 
   void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result); //gen function for 3AC
+  void gen(std::string s); //gen function for goto operations
+  void backpatch(std::vector<std::string> &list, std::string label); //backpatch function for 3AC
+  std::map<std::string, std::string> true_list;
+  std::map<std::string, std::string> false_list;
+  std::string true_label;
+  std::string false_label;
+  std::string cond_label;
 
   std::string get_sem_val(char *c_str); // get semantic value from AST node
   int get_size(const std::string &type);
@@ -2352,10 +2362,24 @@ void gen(const std::string &op, const std::string &arg1, const std::string &arg2
   print_curr_3AC_instr(line_code);
 }
 
+void gen(std::string s) {
+  std::vector<std::string> line_code;
+  line_code.push_back(s);
+  ac3_code.push_back(line_code);
+  print_curr_3AC_instr(line_code);
+  return;
+}
+
 std::string new_temp() {
   std::string temp = "t" + std::to_string(temp_count);
   temp_count++;
   return temp;
+}
+
+std::string new_label() {
+  std::string label = "L" + std::to_string(label_count);
+  label_count++;
+  return label;
 }
 
 int get_list_element_count(char* list){
