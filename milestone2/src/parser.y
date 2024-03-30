@@ -25,7 +25,7 @@
   global_symtable gsymtable;
   local_symtable *cur_symtable_ptr = nullptr;
 
-  std::vector<std::vector<std::string>> ac3_code; // 3AC instructions
+  std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
   long int temp_count = 1; // counter for temporary variables
   std::string new_temp(); // generate new temporary variable
 
@@ -40,7 +40,7 @@
   void emit_dot_node(const char* node_name, const char* label);
   void emit_dot_edge(const char* from, const char* to);
 
-  void gen(std::string op, std::string arg1, std::string arg2, std::string result); //gen function for 3AC
+  void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result); //gen function for 3AC
 
   std::string get_sem_val(char *c_str); // get semantic value from AST node
   int get_size(const std::string &type);
@@ -358,7 +358,6 @@ colon_test_opt:
     s1 = ":"+std::to_string(node_map[":"]);
     emit_dot_edge(s1.c_str(), $2);
     strcpy($$, s1.c_str());
-    //std::cout << $2 << " " << std::endl;
     func_param_type = get_sem_val($2);
   }
 ;
@@ -1590,18 +1589,25 @@ atom_expr:
   atom trailer_list
   {
     parser_logfile << "atom trailer_list" << std::endl;
+
     // if($2[0] != '\0'){
     //   emit_dot_edge($1, $2);
     // }
     // strcpy($$, $1);
-    std::string atom_type = get_sem_val($1);
-    if(atom_type == "list"){
-      atom_type += "[";
-      atom_type += $2;
-      atom_type += "]";
-      strcpy($$, atom_type.c_str());
+
+    if ($2[0] == '\0') {
+      strcpy($$, $1);
     }
-    else{
+    else if (get_sem_val($1) == "list") {
+      strcpy($$, (get_sem_val($1) + get_sem_val($2)).c_str());
+    }
+    else if ($2[0] == '[') {
+      symtable_entry entry = lookup_var(get_sem_val($1));
+      std::string t = new_temp();
+      gen("*", get_sem_val($2), std::to_string(entry.size), t);
+      strcpy($$, t.c_str());
+    }
+    else {
       strcpy($$, $1);
     }
   }
@@ -1616,14 +1622,13 @@ trailer_list:
 | trailer_list trailer
   {
     parser_logfile << "| trailer_list trailer" << std::endl;
-    if($1[0] == '\0'){
+    if ($1[0] == '\0') {
       strcpy($$, $2);
     }
-    else
-      {
+    else {
       emit_dot_edge($1, $2);
       strcpy($$, $1);
-      }
+    }
   }
 ;
 
@@ -1824,6 +1829,7 @@ trailer:
 | '[' subscriptlist ']'
   {
     parser_logfile << "'[' subscriptlist ']'" << std::endl;
+
     // node_map["[]"]++;
     // std::string no=std::to_string(node_map["[]"]);
     // std::string s="[]"+no;
@@ -1831,7 +1837,8 @@ trailer:
     // if($2[0]!='\0'){
     //   emit_dot_edge(s.c_str(), $2);}
     // strcpy($$, s.c_str());
-    strcpy($$, $2);
+
+    strcpy($$, ("[" + get_sem_val($2) + "]").c_str());
   }
 | '.' NAME
   {
@@ -2332,18 +2339,17 @@ void print_curr_3AC_instr(std::vector<std::string> &line_code){
     std::cout << std::endl;
 }
 
-void gen(std::string op, std::string arg1, std::string arg2, std::string result) {
-
+void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result) {
   std::vector<std::string> line_code;
   line_code.push_back(op);
   line_code.push_back(arg1);
-  if(arg2[0] != '\0') {
+  if (!arg2.empty()) {
     line_code.push_back(arg2);
   }
+
   line_code.push_back(result);
   ac3_code.push_back(line_code);
   print_curr_3AC_instr(line_code);
-  return;
 }
 
 std::string new_temp() {
