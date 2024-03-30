@@ -85,9 +85,9 @@ int main(int argc, char *argv[]) {
     std::cout << "Parsing input file and creating DOT file..." << std::endl;
   }
 
-  add_dot_header();
+  // add_dot_header();
   yyparse();
-  add_dot_footer();
+  // add_dot_footer();
 
   std::filesystem::create_directories(output_dir);
 
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
     std::cout << "Creating AST..." << std::endl;
   }
 
-  system(("dot -Tpdf graph.dot -o " + output_dir + "graph.pdf").c_str());
+  // system(("dot -Tpdf graph.dot -o " + output_dir + "graph.pdf").c_str());
 
   if (verbose) {
     std::cout << "Dumping symbol tables..." << std::endl;
