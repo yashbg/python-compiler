@@ -54,11 +54,12 @@
   std::string cond_label;
 
   std::string get_sem_val(char *c_str); // get semantic value from AST node
-  int get_size(const std::string &type);
+  int get_size(const std::string &type); // returns width for lists
   int get_list_element_count(char* list);
   std::string get_list_element_datatype(char* list_type);
   int get_list_size(char* list_datatype, char* list);
   void generate_3AC_for_list(char* list_datatype, char* list);
+  std::string remove_sq_brackets(const std::string &str);
 %}
 
 %union { char tokenname[1024]; }
@@ -179,7 +180,7 @@ arrow_test_opt:
     emit_dot_edge(s1.c_str(), $2);
     strcpy($$,s1.c_str());
 
-    func_return_type = get_sem_val($2);
+    func_return_type = $2;
   }
 ;
 
@@ -369,7 +370,7 @@ colon_test_opt:
     s1 = ":"+std::to_string(node_map[":"]);
     emit_dot_edge(s1.c_str(), $2);
     strcpy($$, s1.c_str());
-    func_param_type = get_sem_val($2);
+    func_param_type = $2;
   }
 ;
 
@@ -460,7 +461,13 @@ expr_stmt:
     emit_dot_edge($2, $1);
     strcpy($$, $2);
 
-    insert_var(get_sem_val($1), {var_type, "", yylineno, get_size(var_type), offset}); // TODO
+    if (var_type.substr(0, 4) == "list") {
+      insert_var($1, {var_type, "", yylineno, 0, 0, get_size(var_type), offset}); // TODO
+    }
+    else {
+      insert_var($1, {var_type, "", yylineno, get_size(var_type), 0, 0, offset}); // TODO
+    }
+
     if($2[0] != ':') gen("", $2, "", $1);
   }
 | testlist_star_expr augassign testlist
@@ -541,7 +548,7 @@ annassign:
     //  strcpy($$, s2.c_str());
     //}
 
-    var_type = get_sem_val($2);
+    var_type = $2;
     if($3[0] != '\0'){
       std::string t = new_temp();
       //std::cout << $3 << std::endl << std::endl;
@@ -579,7 +586,7 @@ testlist_star_expr:
     //  strcpy($$, $1);
     //}
 
-    std::string temp = get_sem_val($1);
+    std::string temp = $1;
     strcpy($$, temp.c_str());
   }
 ;
@@ -1028,7 +1035,7 @@ test:
     //     strcpy($$, $1);
     // }
 
-    std::string temp = get_sem_val($1);
+    std::string temp = $1;
     strcpy($$, temp.c_str());
   }
 ;
@@ -1626,14 +1633,14 @@ atom_expr:
     if ($2[0] == '\0') {
       strcpy($$, $1);
     }
-    else if (get_sem_val($1) == "list") {
-      strcpy($$, (get_sem_val($1) + get_sem_val($2)).c_str());
+    else if (std::string($1) == "list") {
+      strcpy($$, (std::string($1) + $2).c_str());
     }
     else if ($2[0] == '[') {
-      symtable_entry entry = lookup_var(get_sem_val($1));
+      symtable_entry entry = lookup_var($1);
       std::string t = new_temp();
-      gen("*", get_sem_val($2), std::to_string(entry.size), t);
-      strcpy($$, (get_sem_val($1) + "[" + t + "]").c_str());
+      gen("*", remove_sq_brackets($2), std::to_string(entry.list_width), t);
+      strcpy($$, (std::string($1) + "[" + t + "]").c_str());
     }
     else {
       strcpy($$, $1);
@@ -1664,19 +1671,22 @@ atom:
   '(' testlist_comp_opt ')'
   {
     parser_logfile << "'(' testlist_comp_opt ')'" << std::endl;
-    node_map["()"]++;
-    std::string no=std::to_string(node_map["()"]);
-    std::string s="()"+no;
-    //emit_dot_node(s.c_str(), "()");
-    if($2[0]!='\0'){
-      emit_dot_edge(s.c_str(), $2);
-    }
-    strcpy($$, s.c_str());
+
+    // node_map["()"]++;
+    // std::string no=std::to_string(node_map["()"]);
+    // std::string s="()"+no;
+    // //emit_dot_node(s.c_str(), "()");
+    // if($2[0]!='\0'){
+    //   emit_dot_edge(s.c_str(), $2);
+    // }
+    // strcpy($$, s.c_str());
+    
     strcpy($$, $2);
   }
 | '[' testlist_comp_opt ']'
   {
     parser_logfile << "'[' testlist_comp_opt ']'" << std::endl;
+
     // node_map["[]"]++;
     // std::string no=std::to_string(node_map["[]"]);
     // std::string s="[]"+no;
@@ -1686,6 +1696,7 @@ atom:
     // }
     // strcpy($$, s.c_str());
     // std::cout << $2 << std::endl;
+    
     std::string temp = "[";
     temp += $2;
     temp += "]";
@@ -1694,68 +1705,88 @@ atom:
 | NAME
   {
     parser_logfile << "NAME" << std::endl;
-    node_map[$1]++;
-    strcpy($$, "NAME(");
-    strcat($$, $1);
-    strcat($$, ")");
-    std::string temp = std::to_string(node_map[$1]);
-    strcat($$, temp.c_str());
+
+    // node_map[$1]++;
+    // strcpy($$, "NAME(");
+    // strcat($$, $1);
+    // strcat($$, ")");
+    // std::string temp = std::to_string(node_map[$1]);
+    // strcat($$, temp.c_str());
+
+    strcpy($$, $1);
   }
 | NUMBER
   {
     parser_logfile << "NUMBER" << std::endl;
-    strcpy($$, "NUMBER(");
-    strcat($$, $1);
-    strcat($$, ")");
-    node_map[$$]++;
-    std::string temp = std::to_string(node_map[$$]);
-    strcat($$, temp.c_str());
-    //std::string t=new_temp();
-    //gen("", $1, "", t);
-    //strcpy($$, t.c_str());
+
+    // strcpy($$, "NUMBER(");
+    // strcat($$, $1);
+    // strcat($$, ")");
+    // node_map[$$]++;
+    // std::string temp = std::to_string(node_map[$$]);
+    // strcat($$, temp.c_str());
+    // //std::string t=new_temp();
+    // //gen("", $1, "", t);
+    // //strcpy($$, t.c_str());
+
+    strcpy($$, $1);
   }
 | STRING string_list
   {
     parser_logfile << "STRING string_list" << std::endl;
-    strcpy($$, "STRING(");
+
+    // strcpy($$, "STRING(");
+
     int len = strlen($1);
     //char* str = new char(len - 1);
     for(int i = 0; i < len - 1; i++){
       $1[i] = $1[i + 1];
     }
     $1[len - 2] = '\0';
-    strcat($$, $1);
-    strcat($$, ")");
-    node_map[$$]++;
-    std::string temp = std::to_string(node_map[$$]);
-    strcat($$, temp.c_str());
-    if($2[0] != '\0'){
-      emit_dot_edge($$, $2);
-    }
+
+    // strcat($$, $1);
+    // strcat($$, ")");
+    // node_map[$$]++;
+    // std::string temp = std::to_string(node_map[$$]);
+    // strcat($$, temp.c_str());
+    // if($2[0] != '\0'){
+    //   emit_dot_edge($$, $2);
+    // }
+    
+    strcpy($$, $1);
   }
 | NONE
   {
     parser_logfile << "NONE" << std::endl;
-    strcpy($$, "NONE");
-    node_map[$$]++;
-    std::string temp = std::to_string(node_map[$$]);
-    strcat($$, temp.c_str());
+    
+    // strcpy($$, "NONE");
+    // node_map[$$]++;
+    // std::string temp = std::to_string(node_map[$$]);
+    // strcat($$, temp.c_str());
+
+    strcpy($$, "None");
   }
 | TRUE
   {
     parser_logfile << "TRUE" << std::endl;
-    strcpy($$, "TRUE");
-    node_map[$$]++;
-    std::string temp = std::to_string(node_map[$$]);
-    strcat($$, temp.c_str());
+
+    // strcpy($$, "TRUE");
+    // node_map[$$]++;
+    // std::string temp = std::to_string(node_map[$$]);
+    // strcat($$, temp.c_str());
+
+    strcpy($$, "True");
   }
 | FALSE
   {
     parser_logfile << "FALSE" << std::endl;
-    strcpy($$, "FALSE");
-    node_map[$$]++;
-    std::string temp = std::to_string(node_map[$$]);
-    strcat($$, temp.c_str());
+
+    // strcpy($$, "FALSE");
+    // node_map[$$]++;
+    // std::string temp = std::to_string(node_map[$$]);
+    // strcat($$, temp.c_str());
+
+    strcpy($$, "False");
   }
 ;
 
@@ -1866,7 +1897,7 @@ trailer:
     //   emit_dot_edge(s.c_str(), $2);}
     // strcpy($$, s.c_str());
 
-    strcpy($$, ("[" + get_sem_val($2) + "]").c_str());
+    strcpy($$, ("[" + std::string($2) + "]").c_str());
   }
 | '.' NAME
   {
@@ -2321,6 +2352,7 @@ void emit_dot_edge(const char* from, const char* to) {
   free(tolabel);    // Free allocated memory
 }
 
+// get semantic value from AST node
 std::string get_sem_val(char *c_str) {
   std::string str = c_str;
   if (str.substr(0, 4) == "NONE") {
@@ -2336,25 +2368,32 @@ std::string get_sem_val(char *c_str) {
   return str.substr(start + 1, end - start - 1);
 }
 
+// returns width for lists
 int get_size(const std::string &type) {
   if (type == "bool") {
     return 1;
   }
+
   if(type == "int"){
     return 4;
   }
+
   if(type == "float"){
     return 4;
   }
+
   if(type == "double"){
     return 8;
   }
+  
   if (type == "str") {
     // TODO
     return 0;
   }
 
-  // TODO: list
+  if (type.substr(0, 4) == "list") {
+    return get_size(type.substr(5, type.size() - 6));
+  }
 
   return 4;
 }
@@ -2388,8 +2427,8 @@ void gen(std::string s) {
   std::vector<std::string> line_code;
   line_code.push_back(s);
   ac3_code.push_back(line_code);
-  print_curr_3ac_instr(line_code);
-  return;
+
+  // print_curr_3ac_instr(line_code);
 }
 
 std::string new_temp() {
@@ -2455,4 +2494,8 @@ void generate_3AC_for_list(char* list_datatype, char* list){
       }
       i++;
     }
+}
+
+std::string remove_sq_brackets(const std::string &str) {
+  return str.substr(1, str.size() - 2);
 }

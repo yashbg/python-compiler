@@ -94,9 +94,9 @@ int main(int argc, char *argv[]) {
 
   std::filesystem::create_directories(output_dir);
 
-  if (verbose) {
-    std::cout << "Creating AST..." << std::endl;
-  }
+  // if (verbose) {
+  //   std::cout << "Creating AST..." << std::endl;
+  // }
 
   // system(("dot -Tpdf graph.dot -o " + output_dir + "graph.pdf").c_str());
 
