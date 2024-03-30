@@ -1626,7 +1626,7 @@ atom_expr:
       symtable_entry entry = lookup_var(get_sem_val($1));
       std::string t = new_temp();
       gen("*", get_sem_val($2), std::to_string(entry.size), t);
-      strcpy($$, t.c_str());
+      strcpy($$, (get_sem_val($1) + "[" + t + "]").c_str());
     }
     else {
       strcpy($$, $1);
