@@ -56,7 +56,7 @@
 
 %type<tokenname> file_input newline_or_stmt newline_or_stmt_list funcdef arrow_test_opt parameters typedargslist_opt typedargslist tfpdef comma_opt equal_test_opt comma_tfpdef_equal_test_opt_list colon_test_opt
 %type<tokenname> semicolon_opt expr_stmt simple_stmt semicolon_small_stmt_list small_stmt stmt expr_stmt_suffix_choices equal_testlist_star_expr_list annassign testlist_star_expr test_or_star_expr comma_test_or_star_expr_list augassign flow_stmt break_stmt continue_stmt return_stmt
-%type<tokenname> testlist_opt global_stmt comma_name_list assert_stmt comma_test_opt compound_stmt if_stmt while_stmt for_stmt else_colon_suite_opt elif_test_colon_suite_list stmt_list test if_or_test_else_test_opt test_nocond or_test or_and_test_list and_test
+%type<tokenname> testlist_opt global_stmt comma_name_list comma_test_opt compound_stmt if_stmt while_stmt for_stmt else_colon_suite_opt elif_test_colon_suite_list stmt_list test if_or_test_else_test_opt test_nocond or_test or_and_test_list and_test
 %type<tokenname> and_not_test_list not_test comparison comp_op_expr_list comp_op star_expr expr or_xor_expr_list xor_expr xor_and_expr_list and_expr and_shift_expr_list shift_expr ltshift_or_rtshift shift_arith_expr_list arith_expr plus_or_minus
 %type<tokenname> plus_or_minus_term_list term star_or_slash_or_percent_or_doubleslash star_or_slash_or_percent_or_doubleslash_factor_list factor plus_or_minus_or_tilde power doublestar_factor_opt atom_expr trailer_list atom string_list testlist_comp_opt testlist_comp comp_for_OR_comma_test_or_star_expr_list_comma_opt
 %type<tokenname> trailer arglist_opt subscript subscriptlist comma_subscript_list test_opt exprlist comma_expr_or_star_expr_list expr_or_star_expr testlist
@@ -435,11 +435,6 @@ small_stmt:
     parser_logfile << "| global_stmt" << std::endl;
     strcpy($$, $1);
   }
-| assert_stmt
-  {
-    parser_logfile << "| assert_stmt" << std::endl;
-    strcpy($$, $1);
-  }
 ;
 
 expr_stmt:
@@ -752,21 +747,6 @@ comma_name_list:
     if($1[0]!='\0'){
       emit_dot_edge(s.c_str(), $1);
     }
-    strcpy($$, s.c_str());
-  }
-;
-
-assert_stmt:
-  ASSERT test comma_test_opt
-  {
-    parser_logfile << "ASSERT test comma_test_opt" << std::endl;
-    node_map["ASSERT"]++;
-    std::string no=std::to_string(node_map["ASSERT"]);
-    std::string s="ASSERT"+no;
-    //emit_dot_node(s.c_str(), "ASSERT");
-    emit_dot_edge(s.c_str(), $2);
-    if($3[0]!='\0'){
-      emit_dot_edge(s.c_str(), $3);}
     strcpy($$, s.c_str());
   }
 ;
@@ -1207,21 +1187,6 @@ comp_op:
   {
     parser_logfile << "| IN" << std::endl;
     strcpy($$, "IN");
-  }
-| NOT IN
-  {
-    parser_logfile << "| NOT IN" << std::endl;
-    strcpy($$, "NOT IN");
-  }
-| IS
-  {
-    parser_logfile << "| IS" << std::endl;
-    strcpy($$, "IS");
-  }
-| IS NOT
-  {
-    parser_logfile << "| IS NOT" << std::endl;
-    strcpy($$, "IS NOT");
   }
 ;
 
@@ -2308,7 +2273,6 @@ void gen(const char* op, const char* arg1, const char* arg2, const char* result)
   }
   line_code.push_back(result);
   ac3_code.push_back(line_code);
-
   return;
 }
 
