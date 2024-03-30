@@ -44,6 +44,10 @@
 
   std::string get_sem_val(char *c_str); // get semantic value from AST node
   int get_size(const std::string &type);
+  int get_list_element_count(char* list);
+  std::string get_list_element_datatype(char* list_type);
+  int get_list_size(char* list_datatype, char* list);
+  void generate_3AC_for_list(char* list_datatype, char* list);
 %}
 
 %union { char tokenname[1024]; }
@@ -354,7 +358,7 @@ colon_test_opt:
     s1 = ":"+std::to_string(node_map[":"]);
     emit_dot_edge(s1.c_str(), $2);
     strcpy($$, s1.c_str());
-    std::cout << $2 << " " << std::endl;
+    //std::cout << $2 << " " << std::endl;
     func_param_type = get_sem_val($2);
   }
 ;
@@ -447,7 +451,7 @@ expr_stmt:
     strcpy($$, $2);
 
     insert_var(get_sem_val($1), {var_type, "", yylineno, get_size(var_type), offset}); // TODO
-    gen("", $2, "", $1);
+    if($2[0] != ':') gen("", $2, "", $1);
   }
 | testlist_star_expr augassign testlist
   {
@@ -520,9 +524,25 @@ annassign:
     if($3[0] != '\0'){
       std::string t = new_temp();
       //std::cout << $3 << std::endl << std::endl;
-      gen("", $3, "", t);
+
+      std::string temp = var_type.substr(0, 4);
+      if(temp == "list"){
+        int element_number = get_list_element_count($3);
+        int list_size = get_list_size($2, $3);
+        std::string alloc_bytes = "alloc " + std::to_string(list_size);
+        gen("", alloc_bytes, "", t);
+        generate_3AC_for_list($2, $3);
+      }
+      else{
+        gen("", $3, "", t);
+      }
       strcpy($$, t.c_str());
+      //strcpy($$, $3);
     }
+    else{
+      strcpy($$, ":");
+    }
+    //std::cout << $2 << std::endl;
   }
 ;
 
@@ -565,16 +585,25 @@ comma_test_or_star_expr_list:
 | comma_test_or_star_expr_list ',' test_or_star_expr
   {
     parser_logfile << "| comma_test_or_star_expr_list ',' test_or_star_expr" << std::endl;
-    node_map[","]++;
-    s1 = "," + std::to_string(node_map[","]);
-    emit_dot_edge(s1.c_str(), $3);
-    if($1[0] != '\0'){
-      emit_dot_edge(s1.c_str(), $1);
-      strcpy($$, s1.c_str());
+    // node_map[","]++;
+    // s1 = "," + std::to_string(node_map[","]);
+    // emit_dot_edge(s1.c_str(), $3);
+    // if($1[0] != '\0'){
+    //   emit_dot_edge(s1.c_str(), $1);
+    //   strcpy($$, s1.c_str());
+    // }
+    // else{
+    //   comma_number = node_map[","];
+    //   strcpy($$, s1.c_str());
+    // }
+    if($1[0] == '\0'){
+      strcpy($$, $3);
     }
     else{
-      comma_number = node_map[","];
-      strcpy($$, s1.c_str());
+      std::string temp = $1;
+      temp += ",";
+      temp += $3;
+      strcpy($$, temp.c_str());
     }
   }
 ;
@@ -969,14 +998,17 @@ test:
   or_test if_or_test_else_test_opt
   {
     parser_logfile << "or_test if_or_test_else_test_opt" << std::endl;
-    if($2[0] == '\0'){
-      strcpy($$, $1);
-    }
-    else
-      {
-        emit_dot_edge($1,$2);
-        strcpy($$, $1);
-    }
+    // if($2[0] == '\0'){
+    //   strcpy($$, $1);
+    // }
+    // else
+    //   {
+    //     emit_dot_edge($1,$2);
+    //     strcpy($$, $1);
+    // }
+
+    std::string temp = get_sem_val($1);
+    strcpy($$, temp.c_str());
   }
 ;
 
@@ -1558,10 +1590,20 @@ atom_expr:
   atom trailer_list
   {
     parser_logfile << "atom trailer_list" << std::endl;
-    if($2[0] != '\0'){
-      emit_dot_edge($1, $2);
+    // if($2[0] != '\0'){
+    //   emit_dot_edge($1, $2);
+    // }
+    // strcpy($$, $1);
+    std::string atom_type = get_sem_val($1);
+    if(atom_type == "list"){
+      atom_type += "[";
+      atom_type += $2;
+      atom_type += "]";
+      strcpy($$, atom_type.c_str());
     }
-    strcpy($$, $1);
+    else{
+      strcpy($$, $1);
+    }
   }
 ;
 
@@ -1589,27 +1631,32 @@ atom:
   '(' testlist_comp_opt ')'
   {
     parser_logfile << "'(' testlist_comp_opt ')'" << std::endl;
-    // node_map["()"]++;
-    // std::string no=std::to_string(node_map["()"]);
-    // std::string s="()"+no;
-    // //emit_dot_node(s.c_str(), "()");
-    // if($2[0]!='\0'){
-    //   emit_dot_edge(s.c_str(), $2);
-    // }
-    // strcpy($$, s.c_str());
+    node_map["()"]++;
+    std::string no=std::to_string(node_map["()"]);
+    std::string s="()"+no;
+    //emit_dot_node(s.c_str(), "()");
+    if($2[0]!='\0'){
+      emit_dot_edge(s.c_str(), $2);
+    }
+    strcpy($$, s.c_str());
     strcpy($$, $2);
   }
 | '[' testlist_comp_opt ']'
   {
     parser_logfile << "'[' testlist_comp_opt ']'" << std::endl;
-    node_map["[]"]++;
-    std::string no=std::to_string(node_map["[]"]);
-    std::string s="[]"+no;
-    //emit_dot_node(s.c_str(), "[]");
-    if($2[0]!='\0'){
-      emit_dot_edge(s.c_str(), $2);
-    }
-    strcpy($$, s.c_str());
+    // node_map["[]"]++;
+    // std::string no=std::to_string(node_map["[]"]);
+    // std::string s="[]"+no;
+    // emit_dot_node(s.c_str(), "[]");
+    // if($2[0]!='\0'){
+    //   emit_dot_edge(s.c_str(), $2);
+    // }
+    // strcpy($$, s.c_str());
+    // std::cout << $2 << std::endl;
+    std::string temp = "[";
+    temp += $2;
+    temp += "]";
+    strcpy($$, temp.c_str());
   }
 | NAME
   {
@@ -1624,15 +1671,15 @@ atom:
 | NUMBER
   {
     parser_logfile << "NUMBER" << std::endl;
-    // strcpy($$, "NUMBER(");
-    // strcat($$, $1);
-    // strcat($$, ")");
-    // node_map[$$]++;
-    // std::string temp = std::to_string(node_map[$$]);
-    // strcat($$, temp.c_str());
-    std::string t=new_temp();
-    gen("", $1, "", t);
-    strcpy($$, t.c_str());
+    strcpy($$, "NUMBER(");
+    strcat($$, $1);
+    strcat($$, ")");
+    node_map[$$]++;
+    std::string temp = std::to_string(node_map[$$]);
+    strcat($$, temp.c_str());
+    //std::string t=new_temp();
+    //gen("", $1, "", t);
+    //strcpy($$, t.c_str());
   }
 | STRING string_list
   {
@@ -1726,15 +1773,25 @@ testlist_comp:
   test_or_star_expr comp_for_OR_comma_test_or_star_expr_list_comma_opt
   {
     parser_logfile << "test_or_star_expr comp_for_OR_comma_test_or_star_expr_list_comma_opt" << std::endl;
+    // if($2[0] == '\0'){
+    //   strcpy($$, $1);
+    // }
+    // else{
+    //   //emit_dot_edge($1, $2);
+    //   //strcpy($$, $1);
+    //   s1 = "," + std::to_string(comma_number);
+    //   emit_dot_edge(s1.c_str(), $1);
+    //   strcpy($$, $2);
+    // }
+
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
     else{
-      //emit_dot_edge($1, $2);
-      //strcpy($$, $1);
-      s1 = "," + std::to_string(comma_number);
-      emit_dot_edge(s1.c_str(), $1);
-      strcpy($$, $2);
+      std::string temp = $1;
+      temp += ",";
+      temp += $2;
+      strcpy($$, temp.c_str());
     }
   }
 ;
@@ -1748,7 +1805,7 @@ comp_for_OR_comma_test_or_star_expr_list_comma_opt:
 | comma_test_or_star_expr_list comma_opt
   {
     parser_logfile << "| comma_test_or_star_expr_list comma_opt" << std::endl;
-      strcpy($$, $1);
+    strcpy($$, $1);
   }
 ;
 
@@ -1767,13 +1824,14 @@ trailer:
 | '[' subscriptlist ']'
   {
     parser_logfile << "'[' subscriptlist ']'" << std::endl;
-    node_map["[]"]++;
-    std::string no=std::to_string(node_map["[]"]);
-    std::string s="[]"+no;
-    //emit_dot_node(s.c_str(), "[]");
-    if($2[0]!='\0'){
-      emit_dot_edge(s.c_str(), $2);}
-    strcpy($$, s.c_str());
+    // node_map["[]"]++;
+    // std::string no=std::to_string(node_map["[]"]);
+    // std::string s="[]"+no;
+    // //emit_dot_node(s.c_str(), "[]");
+    // if($2[0]!='\0'){
+    //   emit_dot_edge(s.c_str(), $2);}
+    // strcpy($$, s.c_str());
+    strcpy($$, $2);
   }
 | '.' NAME
   {
@@ -1812,6 +1870,7 @@ subscriptlist:
     parser_logfile << "subscript comma_subscript_list comma_opt" << std::endl;
     if($2[0]=='\0'){
       strcpy($$, $1);
+      //std::cout << $1 << "-----\n";
     }
     else {
       emit_dot_edge($2, $1);
@@ -2244,9 +2303,17 @@ std::string get_sem_val(char *c_str) {
 
 int get_size(const std::string &type) {
   if (type == "bool") {
-    return 2;
+    return 1;
   }
-
+  if(type == "int"){
+    return 4;
+  }
+  if(type == "float"){
+    return 4;
+  }
+  if(type == "double"){
+    return 8;
+  }
   if (type == "str") {
     // TODO
     return 0;
@@ -2259,10 +2326,9 @@ int get_size(const std::string &type) {
 
 void print_curr_3AC_instr(std::vector<std::string> &line_code){
     std::cout << line_code[line_code.size() - 1] << " ";
-    std::cout << "=";
-    for(int i = 0; i < line_code.size() - 1; i++){
-      std::cout << line_code[i] << " ";
-    }
+    std::cout << "= ";
+    std::cout << line_code[1] << " " << line_code[0] << " ";
+    if(line_code[0] != "") std::cout << line_code[2];
     std::cout << std::endl;
 }
 
@@ -2284,4 +2350,56 @@ std::string new_temp() {
   std::string temp = "t" + std::to_string(temp_count);
   temp_count++;
   return temp;
+}
+
+int get_list_element_count(char* list){
+  int elems = 1;
+  for(int i = 0; i < strlen(list); i++){
+    if(list[i] == ',') elems++;
+  }
+  return elems;
+}
+
+std::string get_list_element_datatype(char* list_type){
+  std::string list_elem_type;
+  for(int i = 4; i < strlen(list_type) - 1; i++){
+    list_elem_type += list_type[i];
+  }
+  return list_elem_type;
+}
+
+int get_list_size(char* list_datatype, char* list){
+    std::string list_elem_type = get_list_element_datatype(list_datatype);
+    int element_number = get_list_element_count(list), list_size;
+    if(list_elem_type == "str"){
+      list_size = strlen(list) - element_number - 1;
+    }
+    else{
+      list_size = get_size(list_elem_type) * element_number;
+    }
+    return list_size;
+}
+
+void generate_3AC_for_list(char* list_datatype, char* list){
+    std::string list_elem_type = get_list_element_datatype(list_datatype);
+    int element_number = get_list_element_count(list);
+    int prev = 0, i = 1;
+    std::string temp = "t"+std::to_string(temp_count);
+    std::string t = new_temp();
+    while(i < strlen(list) - 1){
+      std::string curr_elem;
+      while(list[i] != ','){
+        curr_elem += list[i];
+        i++;
+      }
+      gen("+", temp, std::to_string(prev), t);
+      if(list_elem_type == "str"){
+        gen("*", "", curr_elem, t);
+      }
+      else{
+        gen("*", "", curr_elem, t);
+      }
+      prev = curr_elem.size();
+      i++;
+    }
 }
