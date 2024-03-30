@@ -53,7 +53,7 @@
   std::string cond_label;
 
   std::string get_sem_val(char *c_str); // get semantic value from AST node
-  int get_size(const std::string &type);
+  int get_size(const std::string &type); // returns width for lists
   int get_list_element_count(char* list);
   std::string get_list_element_datatype(char* list_type);
   int get_list_size(char* list_datatype, char* list);
@@ -2321,6 +2321,7 @@ void emit_dot_edge(const char* from, const char* to) {
   free(tolabel);    // Free allocated memory
 }
 
+// get semantic value from AST node
 std::string get_sem_val(char *c_str) {
   std::string str = c_str;
   if (str.substr(0, 4) == "NONE") {
@@ -2336,6 +2337,7 @@ std::string get_sem_val(char *c_str) {
   return str.substr(start + 1, end - start - 1);
 }
 
+// returns width for lists
 int get_size(const std::string &type) {
   if (type == "bool") {
     return 1;
