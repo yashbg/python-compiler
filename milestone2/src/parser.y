@@ -52,6 +52,9 @@
   std::string true_label;
   std::string false_label;
   std::string cond_label;
+  std::stack<std::string> true_stack;
+  std::stack<std::string> false_stack;
+  std::stack<std::string> cond_stack;
 
   std::string get_sem_val(char *c_str); // get semantic value from AST node
   int get_size(const std::string &type); // returns width for lists
@@ -854,25 +857,26 @@ if_stmt:
     cond_label = new_label();
     true_label = new_label();
     false_label = new_label();
+    cond_stack.push(cond_label);
+    true_stack.push(true_label);
+    false_stack.push(false_label);
     gen(cond_label+":");
   }
   test ':'
   {
-    gen("goto "+true_label);
-    gen("goto "+false_label);
-    gen(true_label+":");
+    gen("goto "+true_stack.top());
+    gen("goto "+false_stack.top());
+    gen(true_stack.top()+":");
   }
   suite 
   {
-    gen("goto "+cond_label);
-    gen(false_label+":");
+    gen(false_stack.top()+":");
   }
   elif_test_colon_suite_list else_colon_suite_opt
   {
-    if($6[0] != '\0'){
-      false_label = new_label();
-      gen("goto "+cond_label);
-    }
+    true_stack.pop();
+    cond_stack.pop();
+    false_stack.pop();
     parser_logfile << "IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt" << std::endl;
     // node_map["IF"]++;
     // std::string no=std::to_string(node_map["IF"]);
