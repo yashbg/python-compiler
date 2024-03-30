@@ -460,7 +460,13 @@ expr_stmt:
     emit_dot_edge($2, $1);
     strcpy($$, $2);
 
-    insert_var(get_sem_val($1), {var_type, "", yylineno, get_size(var_type), offset}); // TODO
+    if (var_type.substr(0, 4) == "list") {
+      insert_var(get_sem_val($1), {var_type, "", yylineno, 0, 0, get_size(var_type), offset}); // TODO
+    }
+    else {
+      insert_var(get_sem_val($1), {var_type, "", yylineno, get_size(var_type), 0, 0, offset}); // TODO
+    }
+
     if($2[0] != ':') gen("", get_sem_val($2), "", get_sem_val($1));
   }
 | testlist_star_expr augassign testlist
@@ -1626,7 +1632,7 @@ atom_expr:
     else if ($2[0] == '[') {
       symtable_entry entry = lookup_var(get_sem_val($1));
       std::string t = new_temp();
-      gen("*", remove_sq_brackets($2), std::to_string(entry.size), t);
+      gen("*", remove_sq_brackets($2), std::to_string(entry.list_width), t);
       strcpy($$, (get_sem_val($1) + "[" + t + "]").c_str());
     }
     else {
