@@ -40,8 +40,13 @@
   std::vector<std::pair<std::string, std::string>> func_params; // (name, type)
   std::string func_return_type;
   std::string current_operator;
+
   std::unordered_map<std::string, std::string> temp_types; // temp -> type
   std::string list_idx_token;
+  bool in_var_decl = false;
+
+  bool is_valid_type(const std::string &type);
+  void check_valid_type(const std::string &type);
 
   int is_digit(char c);
 
@@ -66,7 +71,7 @@
   std::string get_list_element_datatype(char* list_type);
   int get_list_size(char* list_datatype, char* list);
   void generate_3AC_for_list(char* list_datatype, char* list);
-  std::string remove_sq_brackets(const std::string &str);
+  std::string strip_braces(const std::string &str);
 %}
 
 %union { char tokenname[1024]; }
@@ -462,11 +467,16 @@ small_stmt:
 ;
 
 expr_stmt:
-  testlist_star_expr annassign
+  testlist_star_expr
+  {
+    in_var_decl = true;
+  }
+  annassign
   {
     parser_logfile << "testlist_star_expr annassign" << std::endl;
-    emit_dot_edge($2, $1);
-    strcpy($$, $2);
+    emit_dot_edge($3, $1);
+    strcpy($$, $3);
+
 
     if (var_type.substr(0, 4) == "list") {
       insert_var($1, {var_type, "", yylineno, 0, 0, get_size(var_type), offset}); // TODO
@@ -475,7 +485,7 @@ expr_stmt:
       insert_var($1, {var_type, "", yylineno, get_size(var_type), 0, 0, offset}); // TODO
     }
 
-    if($2[0] != ':') gen("=", $2, "", $1);
+    if($3[0] != ':') gen("=", $3, "", $1);
   }
 | testlist_star_expr augassign testlist
   {
@@ -538,7 +548,11 @@ equal_testlist_star_expr_list:
 ;
 
 annassign:
-  ':' test equal_test_opt
+  ':' test
+  {
+    in_var_decl = false;
+  }
+  equal_test_opt
   {
     parser_logfile << "':' test equal_test_opt" << std::endl;
     //node_map[":"]++;
@@ -547,8 +561,8 @@ annassign:
 
     //s2 = ":" + std::to_string(node_map[":"]);
 
-    //if($3[0] != '\0'){
-    //  emit_dot_edge(s1.c_str(), $3);
+    //if($4[0] != '\0'){
+    //  emit_dot_edge(s1.c_str(), $4);
     //  strcpy($$, s1.c_str());
     //}
     //else{
@@ -556,23 +570,23 @@ annassign:
     //}
 
     var_type = $2;
-    if($3[0] != '\0'){
+    if($4[0] != '\0'){
       std::string t = new_temp();
-      //std::cout << $3 << std::endl << std::endl;
+      //std::cout << $4 << std::endl << std::endl;
 
       std::string temp = var_type.substr(0, 4);
       if(temp == "list"){
-        int element_number = get_list_element_count($3);
-        int list_size = get_list_size($2, $3);
+        int element_number = get_list_element_count($4);
+        int list_size = get_list_size($2, $4);
         std::string alloc_bytes = "alloc " + std::to_string(list_size);
         gen("=", alloc_bytes, "", t);
-        generate_3AC_for_list($2, $3);
+        generate_3AC_for_list($2, $4);
       }
       else{
-        gen("=", $3, "", t);
+        gen("=", $4, "", t);
       }
       strcpy($$, t.c_str());
-      //strcpy($$, $3);
+      //strcpy($$, $4);
     }
     else{
       strcpy($$, ":");
@@ -1714,9 +1728,13 @@ atom_expr:
       strcpy($$, (std::string($1) + $2).c_str());
     }
     else if ($2[0] == '[') {
+      std::string index = strip_braces($2);
+      if (is_valid_type($1)) {
+        yyerror("Type error: types are not subscriptable");
+      }
+      
       symtable_entry entry = lookup_var($1);
 
-      std::string index = remove_sq_brackets($2);
       if (list_idx_token != "NAME") {
         if (list_idx_token != "INTEGER") {
           yyerror(("Type error: list indices must be integers, not " + list_idx_token).c_str());
@@ -1772,6 +1790,10 @@ atom:
     // }
     // strcpy($$, s.c_str());
     
+    if (in_var_decl) {
+      yyerror(("Type error: invalid type: (" + std::string($2) + ")").c_str());
+    }
+    
     strcpy($$, $2);
   }
 | '[' testlist_comp_opt ']'
@@ -1787,6 +1809,10 @@ atom:
     // }
     // strcpy($$, s.c_str());
     // std::cout << $2 << std::endl;
+
+    if (in_var_decl) {
+      check_valid_type($2);
+    }
     
     std::string temp = "[";
     temp += $2;
@@ -2630,6 +2656,22 @@ void generate_3AC_for_list(char* list_datatype, char* list){
     }
 }
 
-std::string remove_sq_brackets(const std::string &str) {
+std::string strip_braces(const std::string &str) {
   return str.substr(1, str.size() - 2);
+}
+
+bool is_valid_type(const std::string &type) {
+  if (type.substr(0, 4) == "list") {
+    return is_valid_type(strip_braces(type));
+  }
+
+  return type == "int" || type == "float" || type == "str" || type == "bool";
+}
+
+void check_valid_type(const std::string &type) {
+  if (is_valid_type(type)) {
+    return;
+  }
+
+  yyerror(("Type error: invalid type: " + type).c_str());
 }
