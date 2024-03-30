@@ -861,6 +861,7 @@ if_stmt:
     true_stack.push(true_label);
     false_stack.push(false_label);
     gen(cond_label+":");
+    gen("if ");
   }
   test ':'
   {
@@ -907,25 +908,51 @@ if_stmt:
 ;
 
 while_stmt:
-  WHILE test ':' suite else_colon_suite_opt
+  WHILE 
   {
+    cond_label = new_label();
+    true_label = new_label();
+    false_label = new_label();
+    cond_stack.push(cond_label);
+    true_stack.push(true_label);
+    false_stack.push(false_label);
+    gen(cond_label+":");
+    gen("if ");
+  }
+  test ':' 
+  {
+    gen("goto "+true_stack.top());
+    gen("goto "+false_stack.top());
+    gen(true_stack.top()+":");
+  }
+  suite 
+  {
+    gen("goto "+cond_stack.top());
+    gen(false_stack.top()+":");
+  }
+  else_colon_suite_opt
+  {
+    true_stack.pop();
+    cond_stack.pop();
+    false_stack.pop();
     parser_logfile << "WHILE test ':' suite else_colon_suite_opt" << std::endl;
-    node_map["WHILE"]++;
-    std::string no=std::to_string(node_map["WHILE"]);
-    std::string s="WHILE"+no;
-    //emit_dot_node(s.c_str(), "WHILE");
-    emit_dot_edge(s.c_str(), $2);
-    if($4[0]!='\0'){
-      emit_dot_edge(s.c_str(), $4);
-    }
-    node_map[":"]++;
-    std::string no1=std::to_string(node_map[":"]);
-    std::string s1=":"+no1;
-    //emit_dot_node(s1.c_str(), ":");
-    emit_dot_edge(s.c_str(), s1.c_str());
-    strcpy($$, s.c_str());
+    // node_map["WHILE"]++;
+    // std::string no=std::to_string(node_map["WHILE"]);
+    // std::string s="WHILE"+no;
+    // //emit_dot_node(s.c_str(), "WHILE");
+    // emit_dot_edge(s.c_str(), $2);
+    // if($4[0]!='\0'){
+    //   emit_dot_edge(s.c_str(), $4);
+    // }
+    // node_map[":"]++;
+    // std::string no1=std::to_string(node_map[":"]);
+    // std::string s1=":"+no1;
+    // //emit_dot_node(s1.c_str(), ":");
+    // emit_dot_edge(s.c_str(), s1.c_str());
+    // strcpy($$, s.c_str());
   }
 ;
+
 for_stmt:
   FOR exprlist IN testlist ':' suite else_colon_suite_opt
   {
@@ -981,22 +1008,42 @@ elif_test_colon_suite_list:
     parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
-| elif_test_colon_suite_list ELIF test ':' suite
+| elif_test_colon_suite_list ELIF 
   {
+    cond_label = new_label();
+    true_label = new_label();
+    false_label = new_label();
+    cond_stack.push(cond_label);
+    true_stack.push(true_label);
+    false_stack.push(false_label);
+    gen(cond_label+":");
+    gen("if ");
+  }
+  test ':' 
+  {
+    gen("goto "+true_stack.top());
+    gen("goto "+false_stack.top());
+    gen(true_stack.top()+":");
+  }
+  suite
+  {
+    true_stack.pop();
+    cond_stack.pop();
+    false_stack.pop();
     parser_logfile << "| elif_test_colon_suite_list ELIF test ':' suite" << std::endl;
-    node_map["ELIF"]++;
-    std::string no=std::to_string(node_map["ELIF"]);
-    std::string s="ELIF"+no;
-    node_map[":"]++;
-    std::string no1=std::to_string(node_map[":"]);
-    std::string s1=":"+no1;
-    emit_dot_edge(s.c_str(), s1.c_str());
-    emit_dot_edge(s1.c_str(), $5);
-    emit_dot_edge(s1.c_str(), $3);
-    strcpy($$, s.c_str());
-    if($1[0] != '\0'){
-      emit_dot_edge(s1.c_str(),$1);
-    }
+    // node_map["ELIF"]++;
+    // std::string no=std::to_string(node_map["ELIF"]);
+    // std::string s="ELIF"+no;
+    // node_map[":"]++;
+    // std::string no1=std::to_string(node_map[":"]);
+    // std::string s1=":"+no1;
+    // emit_dot_edge(s.c_str(), s1.c_str());
+    // emit_dot_edge(s1.c_str(), $5);
+    // emit_dot_edge(s1.c_str(), $3);
+    // strcpy($$, s.c_str());
+    // if($1[0] != '\0'){
+    //   emit_dot_edge(s1.c_str(),$1);
+    // }
   }
 ;
 
