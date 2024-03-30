@@ -211,12 +211,6 @@ while                     {
                             return WHILE;
                           }
 
-assert                    {
-                            store_token();
-                            fprintf(lexer_logfile, "%s\n", "ASSERT");
-                            return ASSERT;
-                          }
-
 global                    {
                             store_token();
                             fprintf(lexer_logfile, "%s\n", "GLOBAL");
