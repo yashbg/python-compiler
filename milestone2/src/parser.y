@@ -26,7 +26,7 @@
   local_symtable *cur_symtable_ptr = nullptr;
 
   std::vector<std::vector<std::string>> ac3_code; // 3AC instructions
-  long int temp_counter = 0; // counter for temporary variables
+  long int temp_count = 0; // counter for temporary variables
   std::string new_temp(); // generate new temporary variable
 
   int offset = 0; // TODO
@@ -1417,9 +1417,9 @@ arith_expr:
       strcpy($$, $1);
     }
     else
-      {
-    emit_dot_edge($2, $1);
-    strcpy($$, $2);
+    {
+      emit_dot_edge($2, $1);
+      strcpy($$, $2);
     }
   }
 ;
