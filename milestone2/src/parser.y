@@ -2390,22 +2390,23 @@ void generate_3AC_for_list(char* list_datatype, char* list){
     std::string list_elem_type = get_list_element_datatype(list_datatype);
     int element_number = get_list_element_count(list);
     int prev = 0, i = 1;
-    std::string temp = "t"+std::to_string(temp_count);
+    std::string temp = "t"+std::to_string(temp_count - 1);
     std::string t = new_temp();
     while(i < strlen(list) - 1){
       std::string curr_elem;
-      while(list[i] != ','){
+      while((i < strlen(list) - 1) && list[i] != ','){
         curr_elem += list[i];
         i++;
       }
       gen("+", temp, std::to_string(prev), t);
       if(list_elem_type == "str"){
         gen("*", "", curr_elem, t);
+        prev = curr_elem.size();
       }
       else{
         gen("*", "", curr_elem, t);
+        prev = get_size(list_elem_type);
       }
-      prev = curr_elem.size();
       i++;
     }
 }
