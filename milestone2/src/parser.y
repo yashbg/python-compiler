@@ -26,7 +26,7 @@
   local_symtable *cur_symtable_ptr = nullptr;
 
   std::vector<std::vector<std::string>> ac3_code; // 3AC instructions
-  long int temp_count = 0; // counter for temporary variables
+  long int temp_count = 1; // counter for temporary variables
   std::string new_temp(); // generate new temporary variable
 
   int offset = 0; // TODO
@@ -282,10 +282,12 @@ equal_test_opt:
 | '=' test
   {
     parser_logfile << "| '=' test" << std::endl;
-    node_map["="]++;
-    s1 = "="+std::to_string(node_map["="]);
-    emit_dot_edge(s1.c_str(), $2);
-    strcpy($$, s1.c_str());
+    //node_map["="]++;
+    //s1 = "="+std::to_string(node_map["="]);
+    //emit_dot_edge(s1.c_str(), $2);
+    //strcpy($$, s1.c_str());
+    //std::cout << $2 << std::endl << std:: endl;
+    strcpy($$, $2);
   }
 ;
 
@@ -445,6 +447,7 @@ expr_stmt:
     strcpy($$, $2);
 
     insert_var(get_sem_val($1), {var_type, "", yylineno, get_size(var_type), offset}); // TODO
+    gen("", $2, "", $1);
   }
 | testlist_star_expr augassign testlist
   {
@@ -499,21 +502,27 @@ annassign:
   ':' test equal_test_opt
   {
     parser_logfile << "':' test equal_test_opt" << std::endl;
-    node_map[":"]++;
-    s1 = ":" + std::to_string(node_map[":"]);
-    emit_dot_edge(s1.c_str(), $2);
+    //node_map[":"]++;
+    //s1 = ":" + std::to_string(node_map[":"]);
+    //emit_dot_edge(s1.c_str(), $2);
 
-    s2 = ":" + std::to_string(node_map[":"]);
+    //s2 = ":" + std::to_string(node_map[":"]);
 
-    if($3[0] != '\0'){
-      emit_dot_edge(s1.c_str(), $3);
-      strcpy($$, s1.c_str());
-    }
-    else{
-      strcpy($$, s2.c_str());
-    }
+    //if($3[0] != '\0'){
+    //  emit_dot_edge(s1.c_str(), $3);
+    //  strcpy($$, s1.c_str());
+    //}
+    //else{
+    //  strcpy($$, s2.c_str());
+    //}
 
     var_type = get_sem_val($2);
+    if($3[0] != '\0'){
+      std::string t = new_temp();
+      //std::cout << $3 << std::endl << std::endl;
+      gen("", $3, "", t);
+      strcpy($$, t.c_str());
+    }
   }
 ;
 
@@ -521,13 +530,16 @@ testlist_star_expr:
   test_or_star_expr comma_test_or_star_expr_list comma_opt
   {
     parser_logfile << "test_or_star_expr comma_test_or_star_expr_list comma_opt" << std::endl;
-    if($2[0] != '\0'){
-      emit_dot_edge($2, $1);
-      strcpy($$, $2);
-    }
-    else{
-      strcpy($$, $1);
-    }
+    //if($2[0] != '\0'){
+    //  emit_dot_edge($2, $1);
+    //  strcpy($$, $2);
+    //}
+    //else{
+    //  strcpy($$, $1);
+    //}
+
+    std::string temp = get_sem_val($1);
+    strcpy($$, temp.c_str());
   }
 ;
 
@@ -2245,6 +2257,15 @@ int get_size(const std::string &type) {
   return 4;
 }
 
+void print_curr_3AC_instr(std::vector<std::string> &line_code){
+    std::cout << line_code[line_code.size() - 1] << " ";
+    std::cout << "=";
+    for(int i = 0; i < line_code.size() - 1; i++){
+      std::cout << line_code[i] << " ";
+    }
+    std::cout << std::endl;
+}
+
 void gen(std::string op, std::string arg1, std::string arg2, std::string result) {
 
   std::vector<std::string> line_code;
@@ -2255,6 +2276,7 @@ void gen(std::string op, std::string arg1, std::string arg2, std::string result)
   }
   line_code.push_back(result);
   ac3_code.push_back(line_code);
+  print_curr_3AC_instr(line_code);
   return;
 }
 
