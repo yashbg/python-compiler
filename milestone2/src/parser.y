@@ -1428,14 +1428,18 @@ star_expr:
   '*' expr
   {
     parser_logfile << "'*' expr" << std::endl;
+
     // node_map["*"]++;
     // std::string no=std::to_string(node_map["*"]);
     // std::string s="*"+no;
     // emit_dot_edge(s.c_str(), $2);
     // strcpy($$, s.c_str());
+    
     std::string t=new_temp();
     gen("*", $2, "", t);
     strcpy($$, t.c_str());
+
+    temp_types[t] = get_type($2);
   }
 ;
 
@@ -1459,12 +1463,12 @@ expr:
     else{
       std::string op = current_operator;
       std::string arg_type1 = get_type($1);
-      if (arg_type1 != "bool") {
+      if (arg_type1 != "int") {
         type_err_op(op, arg_type1);
       }
 
       std::string arg_type2 = get_type($2);
-      if (arg_type2 != "bool") {
+      if (arg_type2 != "int") {
         type_err_op(op, arg_type2);
       }
       
@@ -1472,7 +1476,7 @@ expr:
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "bool";
+      temp_types[t] = "int";
     }
   }
 ;
@@ -1502,12 +1506,12 @@ or_xor_expr_list:
     else{
       std::string op = "|";
       std::string arg_type1 = get_type($1);
-      if (arg_type1 != "bool") {
+      if (arg_type1 != "int") {
         type_err_op(op, arg_type1);
       }
 
       std::string arg_type2 = get_type($3);
-      if (arg_type2 != "bool") {
+      if (arg_type2 != "int") {
         type_err_op(op, arg_type2);
       }
 
@@ -1515,7 +1519,7 @@ or_xor_expr_list:
       gen("|", $1, $3, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "bool";
+      temp_types[t] = "int";
     }
 
     // std::string t=new_temp();
@@ -1544,12 +1548,12 @@ xor_expr:
     else{
       std::string op = current_operator;
       std::string arg_type1 = get_type($1);
-      if (arg_type1 != "bool") {
+      if (arg_type1 != "int") {
         type_err_op(op, arg_type1);
       }
 
       std::string arg_type2 = get_type($2);
-      if (arg_type2 != "bool") {
+      if (arg_type2 != "int") {
         type_err_op(op, arg_type2);
       }
       
@@ -1557,7 +1561,7 @@ xor_expr:
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "bool";
+      temp_types[t] = "int";
     }
   }
 ;
@@ -1587,12 +1591,12 @@ xor_and_expr_list:
     else{
       std::string op = $2;
       std::string arg_type1 = get_type($1);
-      if (arg_type1 != "bool") {
+      if (arg_type1 != "int") {
         type_err_op(op, arg_type1);
       }
 
       std::string arg_type2 = get_type($3);
-      if (arg_type2 != "bool") {
+      if (arg_type2 != "int") {
         type_err_op(op, arg_type2);
       }
       
@@ -1600,7 +1604,7 @@ xor_and_expr_list:
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "bool";
+      temp_types[t] = "int";
     }
 
     // std::string t=new_temp();
@@ -1629,12 +1633,12 @@ and_expr:
     else{
       std::string op = current_operator;
       std::string arg_type1 = get_type($1);
-      if (arg_type1 != "bool") {
+      if (arg_type1 != "int") {
         type_err_op(op, arg_type1);
       }
 
       std::string arg_type2 = get_type($2);
-      if (arg_type2 != "bool") {
+      if (arg_type2 != "int") {
         type_err_op(op, arg_type2);
       }
       
@@ -1642,7 +1646,7 @@ and_expr:
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "bool";
+      temp_types[t] = "int";
     }
   }
 ;
@@ -1672,12 +1676,12 @@ and_shift_expr_list:
     else{
       std::string op = $2;
       std::string arg_type1 = get_type($1);
-      if (arg_type1 != "bool") {
+      if (arg_type1 != "int") {
         type_err_op(op, arg_type1);
       }
 
       std::string arg_type2 = get_type($3);
-      if (arg_type2 != "bool") {
+      if (arg_type2 != "int") {
         type_err_op(op, arg_type2);
       }
 
@@ -1685,7 +1689,7 @@ and_shift_expr_list:
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "bool";
+      temp_types[t] = "int";
     }
 
     // std::string t=new_temp();
