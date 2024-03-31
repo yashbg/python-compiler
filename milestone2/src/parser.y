@@ -551,6 +551,7 @@ equal_testlist_star_expr_list:
 | equal_testlist_star_expr_list '=' testlist_star_expr
   {
     parser_logfile << "| equal_testlist_star_expr_list '=' testlist_star_expr" << std::endl;
+    
     // node_map["="]++;
     // s1 = "=" + std::to_string(node_map["="]);
     // if($1[0] != '\0'){
@@ -558,9 +559,8 @@ equal_testlist_star_expr_list:
     // }
     // emit_dot_edge(s1.c_str(), $3);
     // strcpy($$, s1.c_str());
-    std::string t = new_temp(); // TODO: type checking
-    gen("=", $3, "", t);
-    strcpy($$, t.c_str());
+    
+    strcpy($$, $3);
   }
 ;
 
