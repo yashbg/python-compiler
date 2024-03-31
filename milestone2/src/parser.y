@@ -67,6 +67,7 @@
   std::stack<std::string> true_stack;
   std::stack<std::string> false_stack;
   std::stack<std::string> cond_stack;
+  std::stack<std::string> end_stack;
   std::stack<std::string> loop_stack;
   std::stack<std::string> loop_stack_false;
   std::stack<std::vector<std::string>> code_stack;
@@ -752,7 +753,7 @@ flow_stmt:
 break_stmt:
   BREAK
   {
-    gen("", loop_stack_false.top(), "", "goto ");
+    gen("", loop_stack_false.top(), "", "goto");
     parser_logfile << "BREAK" << std::endl;
     // node_map["BREAK"]++;
     // std::string no=std::to_string(node_map["BREAK"]);
@@ -765,7 +766,7 @@ break_stmt:
 continue_stmt:
   CONTINUE
   {
-    gen("", loop_stack.top(), "", "goto ");
+    gen("", loop_stack.top(), "", "goto");
     parser_logfile << "CONTINUE" << std::endl;
     // node_map["CONTINUE"]++;
     // std::string no=std::to_string(node_map["CONTINUE"]);
@@ -886,23 +887,28 @@ if_stmt:
     cond_label = new_label();
     true_label = new_label();
     false_label = new_label();
+    end_label = new_label();
     cond_stack.push(cond_label);
     true_stack.push(true_label);
     false_stack.push(false_label);
+    end_stack.push(end_label);
     gen("", ":", "", cond_label);
   }
   test ':'
   {
-    gen($3, "goto ", true_stack.top(), "if ");
-    gen("", false_stack.top(), "", "goto ");
+    gen($3, "goto", true_stack.top(), "if");
+    gen("", false_stack.top(), "", "goto");
     gen("", ":", "", true_stack.top());
   }
   suite 
   {
+    gen("", end_stack.top(), "", "goto");
     gen("", ":", "", false_stack.top());
   }
   elif_test_colon_suite_list else_colon_suite_opt
   {
+    gen("", ":", "", end_stack.top());  
+    end_stack.pop();
     true_stack.pop();
     cond_stack.pop();
     false_stack.pop();
@@ -950,13 +956,13 @@ while_stmt:
   }
   test ':' 
   {
-    gen($3, "goto ", true_stack.top(), "if ");
-    gen("", false_stack.top(), "", "goto ");
+    gen($3, "goto", true_stack.top(), "if");
+    gen("", false_stack.top(), "", "goto");
     gen("", ":", "", true_stack.top());
   }
   suite 
   {
-    gen("", cond_stack.top(), "", "goto ");
+    gen("", cond_stack.top(), "", "goto");
     gen("", ":", "", false_stack.top());
   }
   else_colon_suite_opt
@@ -1021,15 +1027,15 @@ else_colon_suite_opt:
 | ELSE ':' suite
   {
     parser_logfile << "| ELSE ':' suite" << std::endl;
-    node_map["ELSE"]++;
-    std::string no=std::to_string(node_map["ELSE"]);
-    std::string s="ELSE"+no;
-    node_map[":"]++;
-    std::string no1=std::to_string(node_map[":"]);
-    std::string s1=":"+no1;
-    emit_dot_edge(s1.c_str(), s.c_str());
-    emit_dot_edge(s1.c_str(), $3);
-    strcpy($$, s1.c_str());
+    // node_map["ELSE"]++;
+    // std::string no=std::to_string(node_map["ELSE"]);
+    // std::string s="ELSE"+no;
+    // node_map[":"]++;
+    // std::string no1=std::to_string(node_map[":"]);
+    // std::string s1=":"+no1;
+    // emit_dot_edge(s1.c_str(), s.c_str());
+    // emit_dot_edge(s1.c_str(), $3);
+    // strcpy($$, s1.c_str());
   }
 ;
 
@@ -1051,12 +1057,14 @@ elif_test_colon_suite_list:
   }
   test ':' 
   {
-    gen($4, "goto ", true_stack.top(), "if ");
-    gen("", false_stack.top(), "", "goto ");
+    gen($4, "goto", true_stack.top(), "if");
+    gen("", false_stack.top(), "", "goto");
     gen("", ":", "", true_stack.top());
   }
   suite
   {
+    gen("", end_stack.top(), "", "goto"); 
+    gen("", ":", "", false_stack.top());
     true_stack.pop();
     cond_stack.pop();
     false_stack.pop();
