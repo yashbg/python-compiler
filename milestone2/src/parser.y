@@ -1060,6 +1060,10 @@ for_stmt:
   }
   suite else_colon_suite_opt
   {
+    std::string n1 = get_sem_val($2);
+    std::string t = new_temp(); // TODO: type checking
+    gen("", n1, "", t);
+    gen("+", t, "1", n1);
     gen("", cond_stack.top(), "", "goto");
     gen("", ":", "", false_stack.top());
     true_stack.pop();
@@ -1067,9 +1071,107 @@ for_stmt:
     cond_stack.pop();
     false_stack.pop();
   }
-  | FOR NAME IN NAME '(' NAME ')' ':' suite else_colon_suite_opt
-  | FOR NAME IN NAME '(' INTEGER ',' INTEGER ')' ':' suite else_colon_suite_opt
-  | FOR NAME IN NAME '(' NAME '(' NAME ')' ')' ':' suite else_colon_suite_opt
+  | FOR NAME IN NAME '(' NAME ')' ':' 
+  {
+    std::string n2 = get_sem_val($4);
+    std::string n1 = get_sem_val($2);
+    std::string in = get_sem_val($6);
+    if( n2 != "range")
+      yyerror("Invalid iterator");
+    else {
+      cond_label = new_label();
+      true_label = new_label();
+      false_label = new_label();
+      cond_stack.push(cond_label);
+      loop_stack.push(cond_label);
+      true_stack.push(true_label);
+      false_stack.push(false_label);
+      std::string t = n1 + "<" + in;
+      gen("", ":", "", cond_label);
+      gen(t, "goto", true_label, "if");
+      gen("", false_label, "", "goto");
+      gen("", ":", "", true_label);
+    }
+  }
+  suite else_colon_suite_opt
+  {
+    std::string n1 = get_sem_val($2);
+    std::string t = new_temp(); // TODO: type checking
+    gen("", n1, "", t);
+    gen("+", t, "1", n1);
+    gen("", cond_stack.top(), "", "goto");
+    gen("", ":", "", false_stack.top());
+    true_stack.pop();
+    loop_stack.pop();
+    cond_stack.pop();
+    false_stack.pop();
+  }
+  | FOR NAME IN NAME '(' INTEGER ',' INTEGER ')' ':' 
+  {
+    std::string n2 = get_sem_val($4);
+    std::string n1 = get_sem_val($2);
+    std::string in1 = get_sem_val($6);
+    std::string in2 = get_sem_val($8);
+    if( n2 != "range")
+      yyerror("Invalid iterator");
+    else {
+      cond_label = new_label();
+      true_label = new_label();
+      false_label = new_label();
+      cond_stack.push(cond_label);
+      loop_stack.push(cond_label);
+      true_stack.push(true_label);
+      false_stack.push(false_label);
+      gen("", in1, "", n1);
+      std::string t = n1 + "<" + in2;
+      gen("", ":", "", cond_label);
+      gen(t, "goto", true_label, "if");
+      gen("", false_label, "", "goto");
+      gen("", ":", "", true_label);
+    }
+  }
+  suite else_colon_suite_opt
+  {
+    std::string n1 = get_sem_val($2);
+    std::string t = new_temp(); // TODO: type checking
+    gen("", n1, "", t);
+    gen("+", t, "1", n1);
+    gen("", cond_stack.top(), "", "goto");
+    gen("", ":", "", false_stack.top());
+    true_stack.pop();
+    loop_stack.pop();
+    cond_stack.pop();
+    false_stack.pop();
+  }
+  | FOR NAME IN NAME '(' NAME '(' NAME ')' ')' ':' 
+  {
+    std::string n1 = get_sem_val($2);
+    std::string n2 = get_sem_val($4);
+    std::string n3 = get_sem_val($6);
+    std::string n4 = get_sem_val($8);
+    if( n2 != "range")
+      yyerror("Invalid iterator");
+    else if(n3 != "len")
+      yyerror("Invalid iterator");
+    else
+    {
+      cond_label = new_label();
+      // true_label = new_label();
+      // false_label = new_label();
+      // cond_stack.push(cond_label);
+      // loop_stack.push(cond_label);
+      // true_stack.push(true_label);
+      // false_stack.push(false_label);
+      // gen("", n3, "", n1);
+      // std::string t = n1 + "<" + n4;
+      // gen("", ":", "", cond_label);
+      // gen(t, "goto", true_label, "if");
+      // gen("", false_label, "", "goto");
+      // gen("", ":", "", true_label);
+    }
+
+  }
+  suite else_colon_suite_opt
   {
     parser_logfile << "FOR exprlist IN testlist ':' suite else_colon_suite_opt" << std::endl;
     // node_map["FOR"]++;
