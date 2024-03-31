@@ -752,7 +752,7 @@ flow_stmt:
 break_stmt:
   BREAK
   {
-    gen("goto ", loop_stack_false.top());
+    gen("", loop_stack_false.top(), "", "goto ");
     parser_logfile << "BREAK" << std::endl;
     // node_map["BREAK"]++;
     // std::string no=std::to_string(node_map["BREAK"]);
@@ -765,7 +765,7 @@ break_stmt:
 continue_stmt:
   CONTINUE
   {
-    gen("goto ", loop_stack.top());
+    gen("", loop_stack.top(), "", "goto ");
     parser_logfile << "CONTINUE" << std::endl;
     // node_map["CONTINUE"]++;
     // std::string no=std::to_string(node_map["CONTINUE"]);
@@ -889,17 +889,17 @@ if_stmt:
     cond_stack.push(cond_label);
     true_stack.push(true_label);
     false_stack.push(false_label);
-    gen(cond_label+":");
+    gen("", ":", "", cond_label);
   }
   test ':'
   {
-    gen("if ", $3, "goto "+true_stack.top());
-    gen("goto "+false_stack.top());
-    gen(true_stack.top()+":");
+    gen($3, "goto ", true_stack.top(), "if ");
+    gen("", false_stack.top(), "", "goto ");
+    gen("", ":", "", true_stack.top());
   }
   suite 
   {
-    gen(false_stack.top()+":");
+    gen("", ":", "", false_stack.top());
   }
   elif_test_colon_suite_list else_colon_suite_opt
   {
@@ -946,18 +946,18 @@ while_stmt:
     true_stack.push(true_label);
     false_stack.push(false_label);
     loop_stack_false.push(false_label);
-    gen(cond_label+":");
+    gen("", ":", "", cond_label);
   }
   test ':' 
   {
-    gen("if ", $3, "goto "+true_stack.top());
-    gen("goto "+false_stack.top());
-    gen(true_stack.top()+":");
+    gen($3, "goto ", true_stack.top(), "if ");
+    gen("", false_stack.top(), "", "goto ");
+    gen("", ":", "", true_stack.top());
   }
   suite 
   {
-    gen("goto "+cond_stack.top());
-    gen(false_stack.top()+":");
+    gen("", cond_stack.top(), "", "goto ");
+    gen("", ":", "", false_stack.top());
   }
   else_colon_suite_opt
   {
@@ -1047,13 +1047,13 @@ elif_test_colon_suite_list:
     cond_stack.push(cond_label);
     true_stack.push(true_label);
     false_stack.push(false_label);
-    gen(cond_label+":");
+    gen("", ":", "", cond_label);
   }
   test ':' 
   {
-    gen("if ", $4, "goto "+true_stack.top());
-    gen("goto "+false_stack.top());
-    gen(true_stack.top()+":");
+    gen($4, "goto ", true_stack.top(), "if ");
+    gen("", false_stack.top(), "", "goto ");
+    gen("", ":", "", true_stack.top());
   }
   suite
   {
