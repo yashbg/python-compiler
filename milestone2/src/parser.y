@@ -734,13 +734,11 @@ augassign:
 flow_stmt:
   break_stmt
   {
-    gen("goto ", loop_stack_false.top());
     parser_logfile << "break_stmt " << std::endl;
     strcpy($$, $1);
   }
 | continue_stmt
   {
-    gen("goto ", loop_stack.top());
     parser_logfile << "| continue_stmt" << std::endl;
     strcpy($$, $1);
   }
@@ -754,24 +752,26 @@ flow_stmt:
 break_stmt:
   BREAK
   {
+    gen("goto ", loop_stack_false.top());
     parser_logfile << "BREAK" << std::endl;
-    node_map["BREAK"]++;
-    std::string no=std::to_string(node_map["BREAK"]);
-    std::string s="BREAK"+no;
-    //emit_dot_node(s.c_str(), "BREAK");
-    strcpy($$, s.c_str());
+    // node_map["BREAK"]++;
+    // std::string no=std::to_string(node_map["BREAK"]);
+    // std::string s="BREAK"+no;
+    // //emit_dot_node(s.c_str(), "BREAK");
+    // strcpy($$, s.c_str());
   }
 ;
 
 continue_stmt:
   CONTINUE
   {
+    gen("goto ", loop_stack.top());
     parser_logfile << "CONTINUE" << std::endl;
-    node_map["CONTINUE"]++;
-    std::string no=std::to_string(node_map["CONTINUE"]);
-    std::string s="CONTINUE"+no;
-    //emit_dot_node(s.c_str(), "CONTINUE");
-    strcpy($$, s.c_str());
+    // node_map["CONTINUE"]++;
+    // std::string no=std::to_string(node_map["CONTINUE"]);
+    // std::string s="CONTINUE"+no;
+    // //emit_dot_node(s.c_str(), "CONTINUE");
+    // strcpy($$, s.c_str());
   }
 ;
 
@@ -893,7 +893,7 @@ if_stmt:
   }
   test ':'
   {
-    gen("if ", $2, "goto "+true_stack.top());
+    gen("if ", $3, "goto "+true_stack.top());
     gen("goto "+false_stack.top());
     gen(true_stack.top()+":");
   }
@@ -950,7 +950,7 @@ while_stmt:
   }
   test ':' 
   {
-    gen("if ", $2, "goto "+true_stack.top());
+    gen("if ", $3, "goto "+true_stack.top());
     gen("goto "+false_stack.top());
     gen(true_stack.top()+":");
   }
@@ -1048,11 +1048,10 @@ elif_test_colon_suite_list:
     true_stack.push(true_label);
     false_stack.push(false_label);
     gen(cond_label+":");
-    gen("if ");
   }
   test ':' 
   {
-    gen("goto "+true_stack.top());
+    gen("if ", $4, "goto "+true_stack.top());
     gen("goto "+false_stack.top());
     gen(true_stack.top()+":");
   }
