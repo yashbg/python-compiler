@@ -53,6 +53,7 @@
   std::string max_type(const std::string &type1, const std::string &type2);
   bool is_int_literal(const std::string &str);
   bool is_float_literal(const std::string &str);
+  std::string get_list_literal_type(const std::string &str);
 
   void type_err_op(const std::string &op, const std::string &arg);
   void check_type_equiv(const std::string &type1, const std::string &type2);
@@ -624,7 +625,7 @@ annassign:
     check_valid_type(var_type);
 
     if($4[0] != '\0'){
-      check_type_equiv(var_type, get_type($4));      
+      check_type_equiv(var_type, get_type($4));
 
       std::string temp = var_type.substr(0, 4);
       if(temp == "list"){
@@ -2480,6 +2481,10 @@ atom_expr:
       gen("=", (std::string($1) + "[" + t + "]").c_str(), "", t2);
       strcpy($$, t2.c_str());
       //strcpy($$, (std::string($1) + "[" + t + "]").c_str());
+
+      temp_types[t] = "int";
+      std::string list_type = get_type($1);
+      temp_types[t2] = list_type.substr(5, list_type.size() - 6);
     }
     else {
       strcpy($$, $1);
@@ -3488,6 +3493,10 @@ std::string get_type(const std::string &type) {
     return temp_types[type];
   }
 
+  if (type[0] == '[') {
+    return get_list_literal_type(type);
+  }
+
   return lookup_var(type).type;
 }
 
@@ -3535,4 +3544,27 @@ void check_type_equiv(const std::string &type1, const std::string &type2) {
   if (type1 != type2) {
     yyerror(("Type mismatch: " + type1 + " and " + type2).c_str());
   }
+}
+
+std::string get_list_literal_type(const std::string &str) {
+  std::string vals = str.substr(1, str.size() - 2);
+  int comma = vals.find(',');
+  std::string val;
+  if (comma == std::string::npos) {
+    val = vals;
+  }
+  else {
+    val = vals.substr(0, comma);
+  }
+
+  if (is_int_literal(val)) {
+    return "list[int]";
+  }
+  
+  if (is_float_literal(val)) {
+    return "list[float]";
+  }
+
+  std::cout << "Can't get type for " << str << std::endl;
+  return str;
 }
