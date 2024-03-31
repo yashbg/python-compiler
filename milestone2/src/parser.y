@@ -105,7 +105,7 @@
 %type<tokenname> and_not_test_list not_test comparison comp_op_expr_list comp_op star_expr expr or_xor_expr_list xor_expr xor_and_expr_list and_expr and_shift_expr_list shift_expr ltshift_or_rtshift shift_arith_expr_list arith_expr plus_or_minus
 %type<tokenname> plus_or_minus_term_list term star_or_slash_or_percent_or_doubleslash star_or_slash_or_percent_or_doubleslash_factor_list factor plus_or_minus_or_tilde power doublestar_factor_opt atom_expr trailer_list atom string_list testlist_comp_opt testlist_comp comp_for_OR_comma_test_or_star_expr_list_comma_opt
 %type<tokenname> trailer arglist_opt subscript subscriptlist comma_subscript_list test_opt exprlist comma_expr_or_star_expr_list expr_or_star_expr testlist
-%type<tokenname> comma_test_list classdef parenthesis_arglist_opt_opt arglist comma_argument_list argument suite comp_for_opt comp_iter comp_for comp_if comp_iter_opt
+%type<tokenname> int_name comma_test_list classdef parenthesis_arglist_opt_opt arglist comma_argument_list argument suite comp_for_opt comp_iter comp_for comp_if comp_iter_opt
 
 %%
 
@@ -1035,6 +1035,19 @@ while_stmt:
   }
 ;
 
+int_name:
+  NAME
+  {
+    parser_logfile << "NAME" << std::endl;
+    strcpy($$, $1);
+  }
+  | INTEGER
+  {
+    parser_logfile << "INTEGER" << std::endl;
+    strcpy($$, $1);
+  }
+;
+
 for_stmt:
   FOR NAME IN NAME '(' INTEGER ')' ':' 
   {
@@ -1106,7 +1119,7 @@ for_stmt:
     cond_stack.pop();
     false_stack.pop();
   }
-  | FOR NAME IN NAME '(' INTEGER ',' INTEGER ')' ':' 
+  | FOR NAME IN NAME '(' int_name ',' int_name ')' ':' 
   {
     std::string n2 = get_sem_val($4);
     std::string n1 = get_sem_val($2);
@@ -1155,24 +1168,38 @@ for_stmt:
       yyerror("Invalid iterator");
     else
     {
+      symtable_entry entry = lookup_var(n4);
+      if(entry.type != "list")
+        yyerror("Invalid iterator");
+      std::string in = std::to_string(entry.list_len);
       cond_label = new_label();
-      // true_label = new_label();
-      // false_label = new_label();
-      // cond_stack.push(cond_label);
-      // loop_stack.push(cond_label);
-      // true_stack.push(true_label);
-      // false_stack.push(false_label);
-      // gen("", n3, "", n1);
-      // std::string t = n1 + "<" + n4;
-      // gen("", ":", "", cond_label);
-      // gen(t, "goto", true_label, "if");
-      // gen("", false_label, "", "goto");
-      // gen("", ":", "", true_label);
+      true_label = new_label();
+      false_label = new_label();
+      cond_stack.push(cond_label);
+      loop_stack.push(cond_label);
+      true_stack.push(true_label);
+      false_stack.push(false_label);
+      gen("", "0", "", n1);
+      std::string t = n1 + "<" + in;
+      gen("", ":", "", cond_label);
+      gen(t, "goto", true_label, "if");
+      gen("", false_label, "", "goto");
+      gen("", ":", "", true_label);
     }
 
   }
   suite else_colon_suite_opt
   {
+    std::string n1 = get_sem_val($2);
+    std::string t = new_temp(); // TODO: type checking
+    gen("", n1, "", t);
+    gen("+", t, "1", n1);
+    gen("", cond_stack.top(), "", "goto");
+    gen("", ":", "", false_stack.top());
+    true_stack.pop();
+    loop_stack.pop();
+    cond_stack.pop();
+    false_stack.pop();
     parser_logfile << "FOR exprlist IN testlist ':' suite else_colon_suite_opt" << std::endl;
     // node_map["FOR"]++;
     // std::string no=std::to_string(node_map["FOR"]);
