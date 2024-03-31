@@ -885,7 +885,7 @@ if_stmt:
   }
   test ':'
   {
-    gen("goto "+true_stack.top());
+    gen("goto "+true_stack.top(), 0);
     gen("goto "+false_stack.top());
     gen(true_stack.top()+":");
   }
@@ -2812,6 +2812,16 @@ void gen(const std::string &op, const std::string &arg1, const std::string &arg2
 
 void gen(std::string s) {
   ac3_code.push_back({s});
+  // print_curr_3ac_instr(line_code);
+}
+
+void gen(std::string s1, int new_ln) {
+  if(new_ln==0)
+  {
+    ac3_code[ac3_code.size()-1].push_back(s1);
+    return;
+  }
+  ac3_code.push_back({s1, s2});
   // print_curr_3ac_instr(line_code);
 }
 
