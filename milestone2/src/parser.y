@@ -2503,12 +2503,19 @@ exprlist:
   expr_or_star_expr comma_expr_or_star_expr_list comma_opt
   {
     parser_logfile << "expr_or_star_expr comma_expr_or_star_expr_list comma_opt" << std::endl;
-    if($2[0]=='\0'){
+    // if($2[0]=='\0'){
+    //   strcpy($$, $1);
+    // }
+    // else{
+    //   emit_dot_edge($2, $1);
+    //   strcpy($$, $2);
+    // }
+    if($2[0] == '\0'){
       strcpy($$, $1);
     }
     else{
-      emit_dot_edge($2, $1);
-      strcpy($$, $2);
+      std::string temp = $1 + "," + $2;
+      strcpy($$, temp.c_str());
     }
   }
 ;
@@ -2522,15 +2529,22 @@ comma_expr_or_star_expr_list:
 | comma_expr_or_star_expr_list ',' expr_or_star_expr
   {
     parser_logfile << "| comma_expr_or_star_expr_list ',' expr_or_star_expr" << std::endl;
-    node_map[","]++;
-    std::string no=std::to_string(node_map[","]);
-    std::string s=","+no;
-    //emit_dot_node(s.c_str(), ",");
-    if($1[0]!='\0'){
-      emit_dot_edge(s.c_str(), $1);
+    // node_map[","]++;
+    // std::string no=std::to_string(node_map[","]);
+    // std::string s=","+no;
+    // //emit_dot_node(s.c_str(), ",");
+    // if($1[0]!='\0'){
+    //   emit_dot_edge(s.c_str(), $1);
+    // }
+    // emit_dot_edge(s.c_str(), $2);
+    // strcpy($$, s.c_str());
+    if($1[0] == '\0'){
+      strcpy($$, $3);
     }
-    emit_dot_edge(s.c_str(), $2);
-    strcpy($$, s.c_str());
+    else{
+      std::string temp = $1 + "," + $3;
+      strcpy($$, temp.c_str());
+    }
   }
 ;
 
@@ -2551,12 +2565,19 @@ testlist:
   test comma_test_list comma_opt
   {
     parser_logfile << "test comma_test_list comma_opt" << std::endl;
-    if($2[0]=='\0'){
+    // if($2[0]=='\0'){
+    //   strcpy($$, $1);
+    // }
+    // else if($2[0]!='\0'){
+    //   emit_dot_edge($2, $1);
+    //   strcpy($$, $2);
+    // }
+    if($2[0] == '\0'){
       strcpy($$, $1);
     }
-    else if($2[0]!='\0'){
-      emit_dot_edge($2, $1);
-      strcpy($$, $2);
+    else{
+      std::string temp = $1 + "," + $2;
+      strcpy($$, temp.c_str());
     }
   }
 ;
@@ -2570,15 +2591,20 @@ comma_test_list:
 | comma_test_list ',' test
   {
     parser_logfile << "| comma_test_list ',' test" << std::endl;
-    node_map[","]++;
-    std::string no=std::to_string(node_map[","]);
-    std::string s=","+no;
-    //emit_dot_node(s.c_str(), ",");
-    if($1[0]!='\0'){
-      emit_dot_edge(s.c_str(), $1);
+    // node_map[","]++;
+    // std::string no=std::to_string(node_map[","]);
+    // std::string s=","+no;
+    // //emit_dot_node(s.c_str(), ",");
+    // if($1[0]!='\0'){
+    //   emit_dot_edge(s.c_str(), $1);
+    // }
+    // emit_dot_edge(s.c_str(), $3);
+    // strcpy($$, s.c_str());
+    if($1[0] == '\0') strcpy($$, $3);
+    else{
+      std::string temp = $1 + "," + $3;
+      strcpy($$, temp.c_str());
     }
-    emit_dot_edge(s.c_str(), $3);
-    strcpy($$, s.c_str());
   }
 ;
 
@@ -2632,26 +2658,36 @@ parenthesis_arglist_opt_opt:
 | '(' arglist_opt ')'
   {
     parser_logfile << "'(' arglist_opt ')'" << std::endl;
-    node_map["()"]++;
-    std::string no=std::to_string(node_map["()"]);
-    std::string s="()"+no;
-    //emit_dot_node(s.c_str(), "()");
-    emit_dot_edge(s.c_str(), $2);
-    strcpy($$, s.c_str());
+    // node_map["()"]++;
+    // std::string no=std::to_string(node_map["()"]);
+    // std::string s="()"+no;
+    // //emit_dot_node(s.c_str(), "()");
+    // emit_dot_edge(s.c_str(), $2);
+    // strcpy($$, s.c_str());
+    std::string temp = "(" + $2 + ")";
+    strcpy($$, temp.c_str());
   }
 ;
 
 arglist:
-  argument comma_argument_list  comma_opt
+  argument comma_argument_list comma_opt
   {
     parser_logfile << "argument comma_argument_list  comma_opt" << std::endl;
-    if($2[0]=='\0'){
-      strcpy($$, $1);}
-    else
-      {
-        emit_dot_edge($2, $1);
-        strcpy($$, $2);
-      }
+    // if($2[0]=='\0'){
+    //   strcpy($$, $1);}
+    // else
+    //   {
+    //     emit_dot_edge($2, $1);
+    //     strcpy($$, $2);
+    //   }
+
+    if($2[0] == '\0'){
+      strcpy($$, $1);
+    }
+    else{
+      std::string temp = $1 + "," + $2;
+      strcpy($$, temp.c_str());
+    }
   }
 ;
 
@@ -2664,17 +2700,22 @@ comma_argument_list:
 | comma_argument_list ',' argument
   {
     parser_logfile << "| comma_argument_list ',' argument" << std::endl;
-    if($3[0]=='\0'){
-      strcpy($$, $1);
-    }
+    // if($3[0]=='\0'){
+    //   strcpy($$, $1);
+    // }
+    // else{
+    //   node_map[","]++;
+    //   std::string no=std::to_string(node_map[","]);
+    //   std::string s=","+no;
+    //   //emit_dot_node(s.c_str(), ",");
+    //   emit_dot_edge(s.c_str(), $1);
+    //   emit_dot_edge(s.c_str(), $3);
+    //   strcpy($$, s.c_str());
+    // }
+    if($1[0] == '\0') strcpy($$, $3);
     else{
-      node_map[","]++;
-      std::string no=std::to_string(node_map[","]);
-      std::string s=","+no;
-      //emit_dot_node(s.c_str(), ",");
-      emit_dot_edge(s.c_str(), $1);
-      emit_dot_edge(s.c_str(), $3);
-      strcpy($$, s.c_str());
+      std::string temp = $1 + "," + $3;
+      strcpy($$, temp.c_str());
     }
   }
 ;
