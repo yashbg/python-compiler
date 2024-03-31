@@ -56,6 +56,7 @@
 
   void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result); //gen function for 3AC
   void gen(std::string s); //gen function for goto operations
+  void gen(std::string s, int); //gen function for goto operations
   void backpatch(std::vector<std::string> &list, std::string label); //backpatch function for 3AC
   std::map<std::string, std::string> true_list;
   std::map<std::string, std::string> false_list;
