@@ -331,7 +331,6 @@ equal_test_opt:
     //s1 = "="+std::to_string(node_map["="]);
     //emit_dot_edge(s1.c_str(), $2);
     //strcpy($$, s1.c_str());
-    //std::cout << $2 << std::endl << std:: endl;
     strcpy($$, $2);
   }
 ;
@@ -502,7 +501,9 @@ expr_stmt:
       insert_var($1, {var_type, "", yylineno, get_size(var_type), 0, 0, offset}); // TODO
     }
 
-    if($3[0] != ':') gen("=", $3, "", $1);
+    if($3[0] != ':') {
+      gen("=", $3, "", $1);
+    }
   }
 | testlist_star_expr augassign testlist
   {
@@ -591,32 +592,29 @@ annassign:
     check_valid_type(var_type);
 
     if($4[0] != '\0'){
-      check_type_equiv(var_type, get_type($4));
-      
-      std::string t = new_temp();
-      //std::cout << $4 << std::endl << std::endl;
+      check_type_equiv(var_type, get_type($4));      
 
       std::string temp = var_type.substr(0, 4);
       if(temp == "list"){
         int element_number = get_list_element_count($4);
         int list_size = get_list_size($2, $4);
         std::string alloc_bytes = "alloc " + std::to_string(list_size);
+        
+        std::string t = new_temp();
         gen("=", alloc_bytes, "", t);
         generate_3AC_for_list($2, $4);
+
+        strcpy($$, t.c_str());
+
+        temp_types[t] = var_type;
       }
       else{
-        gen("=", $4, "", t);
+        strcpy($$, $4);
       }
-
-      strcpy($$, t.c_str());
-      //strcpy($$, $4);
-
-      temp_types[t] = var_type;
     }
     else{
       strcpy($$, ":");
     }
-    //std::cout << $2 << std::endl;
   }
 ;
 
@@ -2372,7 +2370,6 @@ atom:
     //   emit_dot_edge(s.c_str(), $2);
     // }
     // strcpy($$, s.c_str());
-    // std::cout << $2 << std::endl;
 
     if (in_var_decl) {
       check_valid_type($2);
@@ -2670,7 +2667,6 @@ subscriptlist:
     parser_logfile << "subscript comma_subscript_list comma_opt" << std::endl;
     if($2[0]=='\0'){
       strcpy($$, $1);
-      //std::cout << $1 << "-----\n";
     }
     else {
       emit_dot_edge($2, $1);
@@ -3255,7 +3251,6 @@ int get_list_size(char* list_datatype, char* list){
 
 void generate_3AC_for_list(char* list_datatype, char* list){
     std::string list_elem_type = get_list_element_datatype(list_datatype);
-    //std::cout << list_elem_type << std::endl;
     int element_number = get_list_element_count(list);
     int prev = 0, i = 1;
     while(i < strlen(list) - 1){
