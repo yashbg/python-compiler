@@ -572,6 +572,9 @@ annassign:
     //}
 
     var_type = $2;
+
+    check_valid_type(var_type);
+
     if($4[0] != '\0'){
       std::string t = new_temp();
       //std::cout << $4 << std::endl << std::endl;
@@ -2807,12 +2810,12 @@ void print_curr_3ac_instr(std::vector<std::string> &line_code){
 
 void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result) {
   ac3_code.push_back({op, arg1, arg2, result});
-  // print_curr_3ac_instr(line_code);
+  // print_curr_3ac_instr(ac3_code.back());
 }
 
 void gen(std::string s) {
   ac3_code.push_back({s});
-  // print_curr_3ac_instr(line_code);
+  // print_curr_3ac_instr(ac3_code.back());
 }
 
 std::string new_temp() {
