@@ -1161,15 +1161,23 @@ or_test:
   and_test or_and_test_list
   {
     parser_logfile << "and_test or_and_test_list" << std::endl;
+    // if($2[0] == '\0'){
+    //   strcpy($$, $1);
+    // }
+    // else
+    //   {
+    //     std::string no=std::to_string(node_map["OR"]);
+    //     std::string s="OR"+no;
+    //     emit_dot_edge(s.c_str(), $1);
+    //     strcpy($$, s.c_str());
+    // }
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
-    else
-      {
-        std::string no=std::to_string(node_map["OR"]);
-        std::string s="OR"+no;
-        emit_dot_edge(s.c_str(), $1);
-        strcpy($$, s.c_str());
+    else{
+      std::string t = new_temp();
+      gen(current_operator, $1, $2, t);
+      strcpy($$, t.c_str());
     }
   }
 ;
@@ -1183,14 +1191,24 @@ or_and_test_list:
 | or_and_test_list OR and_test
   {
     parser_logfile << "| or_and_test_list OR and_test" << std::endl;
-    node_map["OR"]++;
-    std::string no=std::to_string(node_map["OR"]);
-    std::string s="OR"+no;
-    emit_dot_edge(s.c_str(), $3);
-    if($1[0] != '\0'){
-      emit_dot_edge(s.c_str(), $1);
+    // node_map["OR"]++;
+    // std::string no=std::to_string(node_map["OR"]);
+    // std::string s="OR"+no;
+    // emit_dot_edge(s.c_str(), $3);
+    // if($1[0] != '\0'){
+    //   emit_dot_edge(s.c_str(), $1);
+    // }
+    // strcpy($$, s.c_str());
+
+    if($1[0] == '\0'){
+      current_operator = $2;
+      strcpy($$, $3);
     }
-    strcpy($$, s.c_str());
+    else{
+      std::string t = new_temp();
+      gen($2, $1, $3, t);
+      strcpy($$, t.c_str());
+    }
   }
 ;
 
@@ -1198,14 +1216,22 @@ and_test:
   not_test and_not_test_list
   {
     parser_logfile << "not_test and_not_test_list" << std::endl;
+    // if($2[0] == '\0'){
+    //   strcpy($$, $1);}
+    // else
+    //   {
+    //     std::string no=std::to_string(node_map["AND"]);
+    //     std::string s="AND"+no;
+    //     emit_dot_edge(s.c_str(), $1);
+    //     strcpy($$, s.c_str());
+    // }
     if($2[0] == '\0'){
-      strcpy($$, $1);}
-    else
-      {
-        std::string no=std::to_string(node_map["AND"]);
-        std::string s="AND"+no;
-        emit_dot_edge(s.c_str(), $1);
-        strcpy($$, s.c_str());
+      strcpy($$, $1);
+    }
+    else{
+      std::string t = new_temp();
+      gen(current_operator, $1, $2, t);
+      strcpy($$, t.c_str());
     }
   }
 ;
@@ -1219,14 +1245,24 @@ and_not_test_list:
 | and_not_test_list AND not_test
   {
     parser_logfile << "| and_not_test_list AND not_test" << std::endl;
-    node_map["AND"]++;
-    std::string no=std::to_string(node_map["AND"]);
-    std::string s="AND"+no;
-    emit_dot_edge(s.c_str(), $3);
-    if($1[0] != '\0'){
-      emit_dot_edge(s.c_str(), $1);
+    // node_map["AND"]++;
+    // std::string no=std::to_string(node_map["AND"]);
+    // std::string s="AND"+no;
+    // emit_dot_edge(s.c_str(), $3);
+    // if($1[0] != '\0'){
+    //   emit_dot_edge(s.c_str(), $1);
+    // }
+    //   strcpy($$, s.c_str());
+
+    if($1[0] == '\0'){
+      current_operator = $2;
+      strcpy($$, $3);
     }
-      strcpy($$, s.c_str());
+    else{
+      std::string t = new_temp();
+      gen($2, $1, $3, t);
+      strcpy($$, t.c_str());
+    }
   }
 ;
 
@@ -1234,11 +1270,16 @@ not_test:
   NOT not_test
   {
     parser_logfile << "NOT not_test" << std::endl;
-    node_map["NOT"]++;
-    std::string no=std::to_string(node_map["NOT"]);
-    std::string s="NOT"+no;
-    emit_dot_edge(s.c_str(), $2);
-    strcpy($$, s.c_str());
+    // node_map["NOT"]++;
+    // std::string no=std::to_string(node_map["NOT"]);
+    // std::string s="NOT"+no;
+    // emit_dot_edge(s.c_str(), $2);
+    // strcpy($$, s.c_str());
+    
+    current_operator = $1;
+    std::string t = new_temp();
+    gen(current_operator, $2, "", t);
+    strcpy($$, t.c_str());
   }
 | comparison
   {
@@ -1251,24 +1292,33 @@ comparison:
   expr comp_op_expr_list
   {
     parser_logfile << "expr comp_op_expr_list" << std::endl;
+    // if($2[0] == '\0'){
+    //   strcpy($$, $1);
+    // }
+    // else
+    // {
+    //   strcpy($$, "COMP_OP(");
+    //   int len = strlen($2), i = len - 1;
+    //   while((i >= 0) && (is_digit($2[i]))){
+    //     $2[i] = '\0';
+    //     i--;
+    //   }
+    //   strcat($$, $2);
+    //   strcat($$, ")");
+    //   node_map[$$]++;
+    //   std::string no=std::to_string(node_map[$$]);
+    //   std::string s=$$+no;
+    //   emit_dot_edge(s.c_str(), $1);
+    //   strcat($$, no.c_str());
+    // }
+
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
-    else
-    {
-      strcpy($$, "COMP_OP(");
-      int len = strlen($2), i = len - 1;
-      while((i >= 0) && (is_digit($2[i]))){
-        $2[i] = '\0';
-        i--;
-      }
-      strcat($$, $2);
-      strcat($$, ")");
-      node_map[$$]++;
-      std::string no=std::to_string(node_map[$$]);
-      std::string s=$$+no;
-      emit_dot_edge(s.c_str(), $1);
-      strcat($$, no.c_str());
+    else{
+      std::string t = new_temp();
+      gen(current_operator, $1, $2, t);
+      strcpy($$, t.c_str());
     }
   }
 ;
@@ -1282,17 +1332,27 @@ comp_op_expr_list:
 | comp_op_expr_list comp_op expr
   {
     parser_logfile << "| comp_op_expr_list comp_op expr" << std::endl;
-    node_map[$2]++;
-    std::string s3 = "COMP_OP(";
-    std::string no=std::to_string(node_map[$2]);
-    std::string s2 = $2+no;
-    std::string s=s3 + $2 + ")" + no;
+    // node_map[$2]++;
+    // std::string s3 = "COMP_OP(";
+    // std::string no=std::to_string(node_map[$2]);
+    // std::string s2 = $2+no;
+    // std::string s=s3 + $2 + ")" + no;
+ 
+    // emit_dot_edge(s.c_str(), $3);
+    // if($1[0] != '\0'){
+    //   emit_dot_edge(s.c_str(), $1);
+    // }
+    // strcpy($$, s2.c_str());
 
-    emit_dot_edge(s.c_str(), $3);
-    if($1[0] != '\0'){
-      emit_dot_edge(s.c_str(), $1);
+    if($1[0] == '\0'){
+      current_operator = $2;
+      strcpy($$, $3);
     }
-    strcpy($$, s2.c_str());
+    else{
+      std::string t = new_temp();
+      gen($2, $1, $3, t);
+      strcpy($$, t.c_str());
+    }
   }
 ;
 
