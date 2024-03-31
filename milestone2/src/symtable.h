@@ -20,6 +20,7 @@ struct local_symtable {
   std::unordered_map<std::string, symtable_entry> var_entries; // identifier -> symtable_entry
 };
 
+// TODO: add keywords
 struct global_symtable {
   std::unordered_map<std::string, symtable_entry> var_entries; // identifier -> symtable_entry
   std::unordered_map<std::string, local_symtable *> func_symtable_ptrs; // identifier -> local_symtable *

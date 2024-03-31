@@ -49,6 +49,12 @@
 
   bool is_valid_type(const std::string &type);
   void check_valid_type(const std::string &type);
+  std::string get_type(const std::string &type);
+  std::string max_type(const std::string &type1, const std::string &type2);
+  bool is_int_literal(const std::string &str);
+  bool is_float_literal(const std::string &str);
+
+  void type_err_op(const std::string &op, const std::string &arg);
 
   int is_digit(char c);
 
@@ -64,6 +70,7 @@
   std::string true_label;
   std::string false_label;
   std::string cond_label;
+  std::string end_label;
   std::stack<std::string> true_stack;
   std::stack<std::string> false_stack;
   std::stack<std::string> cond_stack;
@@ -1868,6 +1875,22 @@ factor:
     std::string t=new_temp();
     gen($1, $2, "", t);
     strcpy($$, t.c_str());
+
+    std::string op = std::string($1);
+    std::string arg_type = get_type($2);
+    if (op == "+" || op == "-") {
+      if (!(arg_type == "int" || arg_type == "float")) {
+        type_err_op(op, arg_type);
+      }
+    }
+
+    if (op == "~") {
+      if (arg_type != "bool") {
+        type_err_op(op, arg_type);
+      }
+    }
+
+    temp_types[t] = arg_type;
   }
 | power
   {
@@ -1909,9 +1932,21 @@ power:
       strcpy($$, $1);
     }
     else{
+      std::string arg_type = get_type($1);
+      if (!(arg_type == "int" || arg_type == "float")) {
+        type_err_op("**", arg_type);
+      }
+
+      arg_type = get_type($2);
+      if (!(arg_type == "int" || arg_type == "float")) {
+        type_err_op("**", arg_type);
+      }
+      
       std::string t = new_temp();
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = max_type(get_type($1), get_type($2));
     }
   }
 ;
@@ -2929,4 +2964,69 @@ void check_valid_type(const std::string &type) {
   }
 
   yyerror(("Type error: invalid type: " + type).c_str());
+}
+
+std::string get_type(const std::string &type) {
+  if (type == "None" || type == "True" || type == "False") {
+    return type;
+  }
+  
+  if (is_int_literal(type)) {
+    return "int";
+  }
+
+  if (is_float_literal(type)) {
+    return "float";
+  }
+
+  if (is_valid_type(type)) {
+    return type;
+  }
+
+  if (temp_types.find(type) != temp_types.end()) {
+    return temp_types[type];
+  }
+
+  std::cout << "Can't get type: " << type << std::endl;
+  return type; // TODO
+}
+
+std::string max_type(const std::string &type1, const std::string &type2) {
+  if (type1 == "float" || type2 == "float") {
+    return "float";
+  }
+
+  if (type1 == "int" || type2 == "int") {
+    return "int";
+  }
+
+  if (type1 == "bool" || type2 == "bool") {
+    return "bool";
+  }
+
+  std::cout << "Can't calculate max type: " << type1 << " " << type2 << std::endl;
+  return type1;
+}
+
+bool is_int_literal(const std::string &str) {
+  for (auto c : str) {
+    if (!is_digit(c)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool is_float_literal(const std::string &str) {
+  int dot = str.find('.');
+  if (dot == std::string::npos || dot == 0 || dot == str.size() - 1) {
+    return false;
+  }
+
+  return is_int_literal(str.substr(0, dot)) && is_int_literal(str.substr(dot + 1, str.size() - dot - 1));
+}
+
+void type_err_op(const std::string &op, const std::string &arg) {
+  yyerror(("Incompatible operator " + op +  " with operand of type " + arg).c_str());
 }
