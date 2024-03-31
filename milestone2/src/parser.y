@@ -1000,30 +1000,63 @@ while_stmt:
 ;
 
 for_stmt:
-  FOR exprlist IN testlist ':' suite else_colon_suite_opt
+  FOR NAME IN NAME '(' INTEGER ')' ':' 
+  {
+    std::string n2 = get_sem_val($4);
+    std::string n1 = get_sem_val($2);
+    std::string in = get_sem_val($6);
+    if( n2 != "range")
+      yyerror("Invalid iterator");
+    else {
+      cond_label = new_label();
+      true_label = new_label();
+      false_label = new_label();
+      cond_stack.push(cond_label);
+      loop_stack.push(cond_label);
+      true_stack.push(true_label);
+      false_stack.push(false_label);
+      std::string t = n1 + "<" + in;
+      gen("", ":", "", cond_label);
+      gen(t, "goto", true_label, "if");
+      gen("", false_label, "", "goto");
+      gen("", ":", "", true_label);
+    }
+  }
+  suite else_colon_suite_opt
+  {
+    gen("", cond_stack.top(), "", "goto");
+    gen("", ":", "", false_stack.top());
+    true_stack.pop();
+    loop_stack.pop();
+    cond_stack.pop();
+    false_stack.pop();
+  }
+  | FOR NAME IN NAME '(' NAME ')' ':' suite else_colon_suite_opt
+  | FOR NAME IN NAME '(' INTEGER ',' INTEGER ')' ':' suite else_colon_suite_opt
+  | FOR NAME IN NAME '(' NAME '(' NAME ')' ')' ':' suite else_colon_suite_opt
   {
     parser_logfile << "FOR exprlist IN testlist ':' suite else_colon_suite_opt" << std::endl;
-    node_map["FOR"]++;
-    std::string no=std::to_string(node_map["FOR"]);
-    std::string s="FOR"+no;
+    // node_map["FOR"]++;
+    // std::string no=std::to_string(node_map["FOR"]);
+    // std::string s="FOR"+no;
     //emit_dot_node(s.c_str(), "FOR");
-    emit_dot_edge(s.c_str(), $2);
+    // emit_dot_edge(s.c_str(), $2);
 
-    node_map["IN"]++;
-    std::string no1=std::to_string(node_map["IN"]);
-    std::string s1="IN"+no1;
-    //emit_dot_node(s1.c_str(), "IN");
-    emit_dot_edge(s.c_str(), s1.c_str());
+    // node_map["IN"]++;
+    // std::string no1=std::to_string(node_map["IN"]);
+    // std::string s1="IN"+no1;
+    // //emit_dot_node(s1.c_str(), "IN");
+    // emit_dot_edge(s.c_str(), s1.c_str());
 
-    node_map[":"]++;
-    std::string no2=std::to_string(node_map[":"]);
-    std::string s2=":"+no2;
-    //emit_dot_node(s2.c_str(), ":");
-    emit_dot_edge(s1.c_str(), s2.c_str());
-    emit_dot_edge(s2.c_str(), $4);
-    emit_dot_edge(s2.c_str(), $6);
+    // node_map[":"]++;
+    // std::string no2=std::to_string(node_map[":"]);
+    // std::string s2=":"+no2;
+    // //emit_dot_node(s2.c_str(), ":");
+    // emit_dot_edge(s1.c_str(), s2.c_str());
+    // emit_dot_edge(s2.c_str(), $4);
+    // emit_dot_edge(s2.c_str(), $6);
 
-    strcpy($$, s.c_str());
+    // strcpy($$, s.c_str());
   }
 ;
 
