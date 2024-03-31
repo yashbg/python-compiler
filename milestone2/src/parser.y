@@ -562,6 +562,8 @@ expr_stmt:
     // }
     
     if($2[0] != '\0'){
+      check_type_equiv(get_type($1), get_type($2));
+
       gen("=", $2, "", $1);
 
       strcpy($$, $2);
@@ -2481,9 +2483,9 @@ atom_expr:
         }
       }
 
-      std::string t = new_temp(); // TODO: type checking
+      std::string t = new_temp();
       gen("*", index, std::to_string(entry.list_width), t);
-      std::string t2 = new_temp(); // TODO: type checking
+      std::string t2 = new_temp();
       gen("=", (std::string($1) + "[" + t + "]").c_str(), "", t2);
       strcpy($$, t2.c_str());
       //strcpy($$, (std::string($1) + "[" + t + "]").c_str());
