@@ -2020,7 +2020,10 @@ atom_expr:
 
       std::string t = new_temp();
       gen("*", index, std::to_string(entry.list_width), t);
-      strcpy($$, (std::string($1) + "[" + t + "]").c_str());
+      std::string t2 = new_temp(); // TODO: type checking
+      gen("=", (std::string($1) + "[" + t + "]").c_str(), "", t2);
+      strcpy($$, t2.c_str());
+      //strcpy($$, (std::string($1) + "[" + t + "]").c_str());
     }
     else {
       strcpy($$, $1);
