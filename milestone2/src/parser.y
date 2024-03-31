@@ -10,6 +10,7 @@
   #include <cstdlib>
   #include <fstream>
   #include <stack>
+  #include <algorithm>
   #include "symtable.h"
 
   extern int yylex();
@@ -46,6 +47,7 @@
   std::unordered_map<std::string, std::string> temp_types; // temp -> type
   std::string atom_token;
   bool in_var_decl = false;
+  int list_len = 0;
 
   bool is_valid_type(const std::string &type);
   void check_valid_type(const std::string &type);
@@ -54,6 +56,7 @@
   bool is_int_literal(const std::string &str);
   bool is_float_literal(const std::string &str);
   std::string get_list_literal_type(const std::string &str);
+  int calc_list_len(const std::string &str);
 
   void type_err_op(const std::string &op, const std::string &arg);
   void check_type_equiv(const std::string &type1, const std::string &type2);
@@ -496,7 +499,8 @@ expr_stmt:
     // strcpy($$, $3);
 
     if (var_type.substr(0, 4) == "list") {
-      insert_var($1, {var_type, "", yylineno, 0, 0, get_size(var_type), offset}); // TODO
+      insert_var($1, {var_type, "", yylineno, list_len * get_size(var_type), list_len, get_size(var_type), offset}); // TODO
+      list_len = 0;
     }
     else {
       insert_var($1, {var_type, "", yylineno, get_size(var_type), 0, 0, offset}); // TODO
@@ -636,6 +640,8 @@ annassign:
         std::string t = new_temp();
         gen("=", alloc_bytes, "", t);
         generate_3AC_for_list($2, $4);
+
+        list_len = calc_list_len($4);
 
         strcpy($$, t.c_str());
 
@@ -3423,25 +3429,25 @@ int get_list_size(char* list_datatype, char* list){
 }
 
 void generate_3AC_for_list(char* list_datatype, char* list){
-    std::string list_elem_type = get_list_element_datatype(list_datatype);
-    int element_number = get_list_element_count(list);
-    int prev = 0, i = 1;
-    while(i < strlen(list) - 1){
-      std::string curr_elem;
-      while((i < strlen(list) - 1) && list[i] != ','){
-        curr_elem += list[i];
-        i++;
-      }
-      std::string temp =  "t" + std::to_string(temp_count - 1) + "[" + std::to_string(prev) + "]";
-      gen("=", curr_elem, "", temp);
-      if(list_elem_type == "str"){
-        prev = prev + curr_elem.size();
-      }
-      else{
-        prev = prev + get_size(list_elem_type);
-      }
+  std::string list_elem_type = get_list_element_datatype(list_datatype);
+  int element_number = get_list_element_count(list);
+  int prev = 0, i = 1;
+  while(i < strlen(list) - 1){
+    std::string curr_elem;
+    while((i < strlen(list) - 1) && list[i] != ','){
+      curr_elem += list[i];
       i++;
     }
+    std::string temp =  "t" + std::to_string(temp_count - 1) + "[" + std::to_string(prev) + "]";
+    gen("=", curr_elem, "", temp);
+    if(list_elem_type == "str"){
+      prev = prev + curr_elem.size();
+    }
+    else{
+      prev = prev + get_size(list_elem_type);
+    }
+    i++;
+  }
 }
 
 std::string strip_braces(const std::string &str) {
@@ -3570,4 +3576,9 @@ std::string get_list_literal_type(const std::string &str) {
   }
 
   return "list[" + get_type(val) + "]";
+}
+
+int calc_list_len(const std::string &str) {
+  // not for lists of type list[str]
+  return std::count(str.begin(), str.end(), ',') + 1;
 }
