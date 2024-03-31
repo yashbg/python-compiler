@@ -31,6 +31,7 @@
   std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
   long int temp_count = 1; // counter for temporary variables
   std::string new_temp(); // generate new temporary variable
+  std::string current_temp; // current temporary variable
 
   long int label_count = 1; // counter for labels
   std::string new_label(); // generate new label
@@ -66,6 +67,8 @@
   std::stack<std::string> true_stack;
   std::stack<std::string> false_stack;
   std::stack<std::string> cond_stack;
+  std::stack<std::string> loop_stack;
+  std::stack<std::string> loop_stack_false;
   std::stack<std::vector<std::string>> code_stack;
 
   std::string get_sem_val(char *c_str); // get semantic value from AST node
@@ -731,11 +734,13 @@ augassign:
 flow_stmt:
   break_stmt
   {
+    gen("goto ", loop_stack_false.top());
     parser_logfile << "break_stmt " << std::endl;
     strcpy($$, $1);
   }
 | continue_stmt
   {
+    gen("goto ", loop_stack.top());
     parser_logfile << "| continue_stmt" << std::endl;
     strcpy($$, $1);
   }
@@ -885,11 +890,10 @@ if_stmt:
     true_stack.push(true_label);
     false_stack.push(false_label);
     gen(cond_label+":");
-    gen("if ");
   }
   test ':'
   {
-    gen("goto "+true_stack.top(), 0);
+    gen("if ", $2, "goto "+true_stack.top());
     gen("goto "+false_stack.top());
     gen(true_stack.top()+":");
   }
@@ -938,14 +942,15 @@ while_stmt:
     true_label = new_label();
     false_label = new_label();
     cond_stack.push(cond_label);
+    loop_stack.push(cond_label);
     true_stack.push(true_label);
     false_stack.push(false_label);
+    loop_stack_false.push(false_label);
     gen(cond_label+":");
-    gen("if ");
   }
   test ':' 
   {
-    gen("goto "+true_stack.top());
+    gen("if ", $2, "goto "+true_stack.top());
     gen("goto "+false_stack.top());
     gen(true_stack.top()+":");
   }
@@ -957,8 +962,10 @@ while_stmt:
   else_colon_suite_opt
   {
     true_stack.pop();
+    loop_stack.pop();
     cond_stack.pop();
     false_stack.pop();
+    loop_stack_false.pop();
     parser_logfile << "WHILE test ':' suite else_colon_suite_opt" << std::endl;
     // node_map["WHILE"]++;
     // std::string no=std::to_string(node_map["WHILE"]);
@@ -2832,6 +2839,7 @@ void gen(std::string s1, int new_ln) {
 std::string new_temp() {
   std::string temp = "t" + std::to_string(temp_count);
   temp_count++;
+  current_temp = temp;
   return temp;
 }
 
