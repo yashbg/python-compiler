@@ -3565,6 +3565,5 @@ std::string get_list_literal_type(const std::string &str) {
     return "list[float]";
   }
 
-  std::cout << "Can't get type for " << str << std::endl;
-  return str;
+  return "list[" + get_type(val) + "]";
 }
