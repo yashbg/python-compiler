@@ -1049,7 +1049,7 @@ int_name:
 ;
 
 for_stmt:
-  FOR NAME IN NAME '(' INTEGER ')' ':' 
+  FOR NAME IN NAME '(' arith_expr ')' ':' 
   {
     std::string n2 = get_sem_val($4);
     std::string n1 = get_sem_val($2);
@@ -1064,6 +1064,7 @@ for_stmt:
       loop_stack.push(cond_label);
       true_stack.push(true_label);
       false_stack.push(false_label);
+      loop_stack_false.push(false_label);
       std::string t = n1 + "<" + in;
       gen("", ":", "", cond_label);
       gen(t, "goto", true_label, "if");
@@ -1083,6 +1084,7 @@ for_stmt:
     loop_stack.pop();
     cond_stack.pop();
     false_stack.pop();
+    loop_stack_false.pop();
   }
   | FOR NAME IN NAME '(' NAME ')' ':' 
   {
@@ -1099,6 +1101,7 @@ for_stmt:
       loop_stack.push(cond_label);
       true_stack.push(true_label);
       false_stack.push(false_label);
+      loop_stack_false.push(false_label);
       std::string t = n1 + "<" + in;
       gen("", ":", "", cond_label);
       gen(t, "goto", true_label, "if");
@@ -1117,9 +1120,10 @@ for_stmt:
     true_stack.pop();
     loop_stack.pop();
     cond_stack.pop();
+    loop_stack_false.pop();
     false_stack.pop();
   }
-  | FOR NAME IN NAME '(' int_name ',' int_name ')' ':' 
+  | FOR NAME IN NAME '(' arith_expr ',' arith_expr ')' ':' 
   {
     std::string n2 = get_sem_val($4);
     std::string n1 = get_sem_val($2);
@@ -1135,6 +1139,7 @@ for_stmt:
       loop_stack.push(cond_label);
       true_stack.push(true_label);
       false_stack.push(false_label);
+      loop_stack_false.push(false_label);
       gen("", in1, "", n1);
       std::string t = n1 + "<" + in2;
       gen("", ":", "", cond_label);
@@ -1155,6 +1160,7 @@ for_stmt:
     loop_stack.pop();
     cond_stack.pop();
     false_stack.pop();
+    loop_stack_false.pop(); 
   }
   | FOR NAME IN NAME '(' NAME '(' NAME ')' ')' ':' 
   {
@@ -1179,6 +1185,7 @@ for_stmt:
       loop_stack.push(cond_label);
       true_stack.push(true_label);
       false_stack.push(false_label);
+      loop_stack_false.push(false_label);
       gen("", "0", "", n1);
       std::string t = n1 + "<" + in;
       gen("", ":", "", cond_label);
@@ -1200,6 +1207,7 @@ for_stmt:
     loop_stack.pop();
     cond_stack.pop();
     false_stack.pop();
+    loop_stack_false.pop();
     parser_logfile << "FOR exprlist IN testlist ':' suite else_colon_suite_opt" << std::endl;
     // node_map["FOR"]++;
     // std::string no=std::to_string(node_map["FOR"]);
