@@ -512,7 +512,7 @@ expr_stmt:
     // strcpy($$, s1.c_str());
     std::string op = $2;
     op = op.substr(0, op.size() - 1);
-    std::string t = new_temp();
+    std::string t = new_temp(); // TODO: type checking
     gen(op, $1, $3, t);
     gen("=", t, "", $1);
   }
@@ -557,7 +557,7 @@ equal_testlist_star_expr_list:
     // }
     // emit_dot_edge(s1.c_str(), $3);
     // strcpy($$, s1.c_str());
-    std::string t = new_temp();
+    std::string t = new_temp(); // TODO: type checking
     gen("=", $3, "", t);
     strcpy($$, t.c_str());
   }
@@ -590,7 +590,7 @@ annassign:
     check_valid_type(var_type);
 
     if($4[0] != '\0'){
-      std::string t = new_temp();
+      std::string t = new_temp(); // TODO: type checking
       //std::cout << $4 << std::endl << std::endl;
 
       std::string temp = var_type.substr(0, 4);
@@ -2115,15 +2115,13 @@ factor:
   plus_or_minus_or_tilde factor
   {
     parser_logfile << "plus_or_minus_or_tilde factor" << std::endl;
+    
     // node_map[$1]++;
     // std::string no=std::to_string(node_map[$1]);
     // std::string s=$1+no;
     // //emit_dot_node(s.c_str(), $1);
     // emit_dot_edge(s.c_str(), $2);
     // strcpy($$, s.c_str());
-    std::string t=new_temp();
-    gen($1, $2, "", t);
-    strcpy($$, t.c_str());
 
     std::string op = $1;
     std::string arg_type = get_type($2);
@@ -2138,6 +2136,10 @@ factor:
         type_err_op(op, arg_type);
       }
     }
+
+    std::string t = new_temp();
+    gen($1, $2, "", t);
+    strcpy($$, t.c_str());
 
     temp_types[t] = arg_type;
   }
@@ -2267,7 +2269,7 @@ atom_expr:
         }
       }
 
-      std::string t = new_temp();
+      std::string t = new_temp(); // TODO: type checking
       gen("*", index, std::to_string(entry.list_width), t);
       std::string t2 = new_temp(); // TODO: type checking
       gen("=", (std::string($1) + "[" + t + "]").c_str(), "", t2);
