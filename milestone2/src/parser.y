@@ -55,6 +55,7 @@
   bool is_float_literal(const std::string &str);
 
   void type_err_op(const std::string &op, const std::string &arg);
+  void check_type_equiv(const std::string &type1, const std::string &type2);
 
   int is_digit(char c);
 
@@ -590,7 +591,9 @@ annassign:
     check_valid_type(var_type);
 
     if($4[0] != '\0'){
-      std::string t = new_temp(); // TODO: type checking
+      check_type_equiv(var_type, get_type($4));
+      
+      std::string t = new_temp();
       //std::cout << $4 << std::endl << std::endl;
 
       std::string temp = var_type.substr(0, 4);
@@ -604,8 +607,11 @@ annassign:
       else{
         gen("=", $4, "", t);
       }
+
       strcpy($$, t.c_str());
       //strcpy($$, $4);
+
+      temp_types[t] = var_type;
     }
     else{
       strcpy($$, ":");
@@ -2744,7 +2750,7 @@ exprlist:
       strcpy($$, $1);
     }
     else{
-      std::string temp = $1 + "," + $2;
+      std::string temp = std::string($1) + "," + std::string($2);
       strcpy($$, temp.c_str());
     }
   }
@@ -2772,7 +2778,7 @@ comma_expr_or_star_expr_list:
       strcpy($$, $3);
     }
     else{
-      std::string temp = $1 + "," + $3;
+      std::string temp = std::string($1) + "," + std::string($3);
       strcpy($$, temp.c_str());
     }
   }
@@ -2806,7 +2812,7 @@ testlist:
       strcpy($$, $1);
     }
     else{
-      std::string temp = $1 + "," + $2;
+      std::string temp = std::string($1) + "," + std::string($2);
       strcpy($$, temp.c_str());
     }
   }
@@ -2832,7 +2838,7 @@ comma_test_list:
     // strcpy($$, s.c_str());
     if($1[0] == '\0') strcpy($$, $3);
     else{
-      std::string temp = $1 + "," + $3;
+      std::string temp = std::string($1) + "," + std::string($3);
       strcpy($$, temp.c_str());
     }
   }
@@ -2894,7 +2900,7 @@ parenthesis_arglist_opt_opt:
     // //emit_dot_node(s.c_str(), "()");
     // emit_dot_edge(s.c_str(), $2);
     // strcpy($$, s.c_str());
-    std::string temp = "(" + $2 + ")";
+    std::string temp = "(" + std::string($2) + ")";
     strcpy($$, temp.c_str());
   }
 ;
@@ -2915,7 +2921,7 @@ arglist:
       strcpy($$, $1);
     }
     else{
-      std::string temp = $1 + "," + $2;
+      std::string temp = std::string($1) + "," + std::string($2);
       strcpy($$, temp.c_str());
     }
   }
@@ -2944,7 +2950,7 @@ comma_argument_list:
     // }
     if($1[0] == '\0') strcpy($$, $3);
     else{
-      std::string temp = $1 + "," + $3;
+      std::string temp = std::string($1) + "," + std::string($3);
       strcpy($$, temp.c_str());
     }
   }
@@ -3361,4 +3367,10 @@ bool is_float_literal(const std::string &str) {
 
 void type_err_op(const std::string &op, const std::string &arg) {
   yyerror(("Incompatible operator " + op +  " with operand of type " + arg).c_str());
+}
+
+void check_type_equiv(const std::string &type1, const std::string &type2) {
+  if (type1 != type2) {
+    yyerror(("Type mismatch: " + type1 + " and " + type2).c_str());
+  }
 }
