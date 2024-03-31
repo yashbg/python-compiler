@@ -1184,7 +1184,7 @@ for_stmt:
     else
     {
       symtable_entry entry = lookup_var(n4);
-      if(entry.type != "list")
+      if(entry.type.substr(0, 4) != "list")
         yyerror("Invalid iterator");
       std::string in = std::to_string(entry.list_len);
       cond_label = new_label();
