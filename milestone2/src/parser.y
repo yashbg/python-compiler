@@ -65,6 +65,7 @@
   void gen(std::string s); //gen function for goto operations
   void gen(std::string s, int); //gen function for goto operations
   void backpatch(std::vector<std::string> &list, std::string label); //backpatch function for 3AC
+
   std::map<std::string, std::string> true_list;
   std::map<std::string, std::string> false_list;
   std::string true_label;
@@ -84,6 +85,7 @@
   int get_list_element_count(char* list);
   std::string get_list_element_datatype(char* list_type);
   int get_list_size(char* list_datatype, char* list);
+  void print_curr_3ac_instr(std::vector<std::string> &line_code);
   void generate_3AC_for_list(char* list_datatype, char* list);
   std::string strip_braces(const std::string &str);
 %}
@@ -1798,9 +1800,33 @@ term:
       strcpy($$, $1);
     }
     else{
+      // std::string op = std::string($2);
+      // std::string arg_type1 = get_type($1);
+      // if (!(arg_type1 == "int" || arg_type1 == "float")) {
+      //   type_err_op(op, arg_type1);
+      // }
+
+      // std::string arg_type2 = get_type($3);
+      // if (!(arg_type2 == "int" || arg_type2 == "float")) {
+      //   type_err_op(op, arg_type2);
+      // }
+      
+      std::string op = current_operator;
+      std::string arg_type1 = get_type($1);
+      if (!(arg_type1 == "int" || arg_type1 == "float")) {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($2);
+      if (!(arg_type2 == "int" || arg_type2 == "float")) {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = max_type(arg_type1, arg_type2);
     }
   }
 ;
@@ -1851,9 +1877,22 @@ star_or_slash_or_percent_or_doubleslash_factor_list:
       strcpy($$, $3);
     }
     else{
+      std::string op = std::string($2);
+      std::string arg_type1 = get_type($1);
+      if (!(arg_type1 == "int" || arg_type1 == "float")) {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($3);
+      if (!(arg_type2 == "int" || arg_type2 == "float")) {
+        type_err_op(op, arg_type2);
+      }
+
       std::string t = new_temp();
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = max_type(arg_type1, arg_type2);
     }
 
     // std::string t=new_temp();
@@ -1932,21 +1971,21 @@ power:
       strcpy($$, $1);
     }
     else{
-      std::string arg_type = get_type($1);
-      if (!(arg_type == "int" || arg_type == "float")) {
-        type_err_op("**", arg_type);
+      std::string arg_type1 = get_type($1);
+      if (!(arg_type1 == "int" || arg_type1 == "float")) {
+        type_err_op("**", arg_type1);
       }
 
-      arg_type = get_type($2);
-      if (!(arg_type == "int" || arg_type == "float")) {
-        type_err_op("**", arg_type);
+      std::string arg_type2 = get_type($2);
+      if (!(arg_type2 == "int" || arg_type2 == "float")) {
+        type_err_op("**", arg_type2);
       }
       
       std::string t = new_temp();
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = max_type(get_type($1), get_type($2));
+      temp_types[t] = max_type(arg_type1, arg_type2);
     }
   }
 ;
@@ -2840,7 +2879,7 @@ int get_size(const std::string &type) {
   return 4;
 }
 
-void print_curr_3ac_instr(std::vector<std::string> &line_code){
+void print_curr_3ac_instr(std::vector<std::string> &line_code) {
   if (line_code[0] == "=") {
     std::cout << line_code[3] << " = "
               << line_code[1] << std::endl;
