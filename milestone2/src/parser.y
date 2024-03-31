@@ -1701,9 +1701,22 @@ arith_expr:
     
 
     if($2[0] != '\0'){
+      std::string op = current_operator;
+      std::string arg_type1 = get_type($1);
+      if (!(arg_type1 == "int" || arg_type1 == "float")) {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($2);
+      if (!(arg_type2 == "int" || arg_type2 == "float")) {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen(current_operator , $1, $2, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = max_type(arg_type1, arg_type2);
     }
     else{
       strcpy($$, $1);
@@ -1761,9 +1774,22 @@ plus_or_minus_term_list:
       strcpy($$, $3);
     }
     else{
+      std::string op = std::string($2);
+      std::string arg_type1 = get_type($1);
+      if (!(arg_type1 == "int" || arg_type1 == "float")) {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($3);
+      if (!(arg_type2 == "int" || arg_type2 == "float")) {
+        type_err_op(op, arg_type2);
+      }
+
       std::string t = new_temp();
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = max_type(arg_type1, arg_type2);
     }
 
     // std::string t=new_temp();
@@ -1800,17 +1826,6 @@ term:
       strcpy($$, $1);
     }
     else{
-      // std::string op = std::string($2);
-      // std::string arg_type1 = get_type($1);
-      // if (!(arg_type1 == "int" || arg_type1 == "float")) {
-      //   type_err_op(op, arg_type1);
-      // }
-
-      // std::string arg_type2 = get_type($3);
-      // if (!(arg_type2 == "int" || arg_type2 == "float")) {
-      //   type_err_op(op, arg_type2);
-      // }
-      
       std::string op = current_operator;
       std::string arg_type1 = get_type($1);
       if (!(arg_type1 == "int" || arg_type1 == "float")) {
