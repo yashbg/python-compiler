@@ -490,9 +490,9 @@ expr_stmt:
   annassign
   {
     parser_logfile << "testlist_star_expr annassign" << std::endl;
-    emit_dot_edge($3, $1);
-    strcpy($$, $3);
 
+    // emit_dot_edge($3, $1);
+    // strcpy($$, $3);
 
     if (var_type.substr(0, 4) == "list") {
       insert_var($1, {var_type, "", yylineno, 0, 0, get_size(var_type), offset}); // TODO
@@ -504,23 +504,49 @@ expr_stmt:
     if($3[0] != ':') {
       gen("=", $3, "", $1);
     }
+
+    strcpy($$, $3);
   }
 | testlist_star_expr augassign testlist
   {
     parser_logfile << "| testlist_star_expr augassign testlist" << std::endl;
+
     // s1 = $2;
     // emit_dot_edge(s1.c_str(), $3);
     // emit_dot_edge(s1.c_str(), $1);
     // strcpy($$, s1.c_str());
-    std::string op = $2;
-    op = op.substr(0, op.size() - 1);
-    std::string t = new_temp(); // TODO: type checking
-    gen(op, $1, $3, t);
-    gen("=", t, "", $1);
+
+    std::string aug_op = $2;
+    std::string op = aug_op.substr(0, aug_op.size() - 1);
+    std::string arg_type1 = get_type($1);
+    std::string arg_type2 = get_type($3);
+    if (op == "+" || op == "-" || op == "*" || op == "/" || op == "%" || op == "**" || op == "//") {
+      if (!(arg_type1 == "int" || arg_type1 == "float")) {
+        type_err_op(aug_op, arg_type1);
+      }
+
+      if (!(arg_type2 == "int" || arg_type2 == "float")) {
+        type_err_op(aug_op, arg_type2);
+      }
+    }
+    else if (op == "&" || op == "|" || op == "^" || op == "<<" || op == ">>") {
+      if (arg_type1 != "int") {
+        type_err_op(aug_op, arg_type1);
+      }
+
+      if (arg_type2 != "int") {
+        type_err_op(aug_op, arg_type2);
+      }
+    }
+
+    gen(op, $1, $3, $1);
+
+    strcpy($$, $1);
   }
 | testlist_star_expr expr_stmt_suffix_choices
   {
     parser_logfile << "| testlist_star_expr expr_stmt_suffix_choices" << std::endl;
+    
     // if($2[0] == '\0'){
     //   strcpy($$, $1);
     // }
@@ -529,8 +555,14 @@ expr_stmt:
     //   emit_dot_edge($2, $1);
     //   strcpy($$, $2);
     // }
+    
     if($2[0] != '\0'){
       gen("=", $2, "", $1);
+
+      strcpy($$, $2);
+    }
+    else {
+      strcpy($$, $1);
     }
   }
 ;
@@ -2167,8 +2199,7 @@ factor:
         type_err_op(op, arg_type);
       }
     }
-
-    if (op == "~") {
+    else if (op == "~") {
       if (arg_type != "bool") {
         type_err_op(op, arg_type);
       }
@@ -3320,8 +3351,7 @@ std::string get_type(const std::string &type) {
     return temp_types[type];
   }
 
-  std::cout << "Can't get type: " << type << std::endl;
-  return type; // TODO
+  return lookup_var(type).type;
 }
 
 std::string max_type(const std::string &type1, const std::string &type2) {
