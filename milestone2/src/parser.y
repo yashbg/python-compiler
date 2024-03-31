@@ -3,11 +3,13 @@
   #include <string>
   #include <vector>
   #include <map>
+  #include <unordered_map>
   #include <utility>
   #include <cstring>
   #include <stack>
   #include <cstdlib>
   #include <fstream>
+  #include <stack>
   #include "symtable.h"
 
   extern int yylex();
@@ -40,6 +42,13 @@
   std::string func_return_type;
   std::string current_operator;
 
+  std::unordered_map<std::string, std::string> temp_types; // temp -> type
+  std::string list_idx_token;
+  bool in_var_decl = false;
+
+  bool is_valid_type(const std::string &type);
+  void check_valid_type(const std::string &type);
+
   int is_digit(char c);
 
   void emit_dot_node(const char* node_name, const char* label);
@@ -64,15 +73,13 @@
   std::string get_list_element_datatype(char* list_type);
   int get_list_size(char* list_datatype, char* list);
   void generate_3AC_for_list(char* list_datatype, char* list);
-  std::string remove_sq_brackets(const std::string &str);
-  void empty_code_stack();
-  std::string remove_leading_minus(char* str);
+  std::string strip_braces(const std::string &str);
 %}
 
 %union { char tokenname[1024]; }
 
 %token<tokenname> PLUSEQUAL MINEQUAL STAREQUAL SLASHEQUAL PERCENTEQUAL AMPEREQUAL VBAREQUAL CIRCUMFLEXEQUAL LEFTSHIFTEQUAL
-%token<tokenname> RIGHTSHIFTEQUAL DOUBLESTAREQUAL DOUBLESLASHEQUAL DOUBLESLASH DOUBLESTAR NUMBER STRING NONE TRUE FALSE
+%token<tokenname> RIGHTSHIFTEQUAL DOUBLESTAREQUAL DOUBLESLASHEQUAL DOUBLESLASH DOUBLESTAR INTEGER FLOAT_NUMBER IMAGINARY STRING NONE TRUE FALSE
 %token<tokenname> NEWLINE ARROW DEF NAME BREAK CONTINUE RETURN GLOBAL IF WHILE FOR ELSE ELIF INDENT DEDENT
 %token<tokenname> AND OR NOT LESSTHAN GREATERTHAN DOUBLEEQUAL GREATERTHANEQUAL LESSTHANEQUAL NOTEQUAL IN IS LEFTSHIFT RIGHTSHIFT CLASS
 %token<tokenname> ',' '.' ';' ':' '(' ')' '[' ']' '=' '+' '-' '~' '*' '/' '%' '^' '&' '|'
@@ -462,11 +469,16 @@ small_stmt:
 ;
 
 expr_stmt:
-  testlist_star_expr annassign
+  testlist_star_expr
+  {
+    in_var_decl = true;
+  }
+  annassign
   {
     parser_logfile << "testlist_star_expr annassign" << std::endl;
-    emit_dot_edge($2, $1);
-    strcpy($$, $2);
+    emit_dot_edge($3, $1);
+    strcpy($$, $3);
+
 
     if (var_type.substr(0, 4) == "list") {
       insert_var($1, {var_type, "", yylineno, 0, 0, get_size(var_type), offset}); // TODO
@@ -475,7 +487,7 @@ expr_stmt:
       insert_var($1, {var_type, "", yylineno, get_size(var_type), 0, 0, offset}); // TODO
     }
 
-    if($2[0] != ':') gen("=", $2, "", $1);
+    if($3[0] != ':') gen("=", $3, "", $1);
   }
 | testlist_star_expr augassign testlist
   {
@@ -538,7 +550,11 @@ equal_testlist_star_expr_list:
 ;
 
 annassign:
-  ':' test equal_test_opt
+  ':' test
+  {
+    in_var_decl = false;
+  }
+  equal_test_opt
   {
     parser_logfile << "':' test equal_test_opt" << std::endl;
     //node_map[":"]++;
@@ -547,8 +563,8 @@ annassign:
 
     //s2 = ":" + std::to_string(node_map[":"]);
 
-    //if($3[0] != '\0'){
-    //  emit_dot_edge(s1.c_str(), $3);
+    //if($4[0] != '\0'){
+    //  emit_dot_edge(s1.c_str(), $4);
     //  strcpy($$, s1.c_str());
     //}
     //else{
@@ -556,23 +572,23 @@ annassign:
     //}
 
     var_type = $2;
-    if($3[0] != '\0'){
+    if($4[0] != '\0'){
       std::string t = new_temp();
-      //std::cout << $3 << std::endl << std::endl;
+      //std::cout << $4 << std::endl << std::endl;
 
       std::string temp = var_type.substr(0, 4);
       if(temp == "list"){
-        int element_number = get_list_element_count($3);
-        int list_size = get_list_size($2, $3);
+        int element_number = get_list_element_count($4);
+        int list_size = get_list_size($2, $4);
         std::string alloc_bytes = "alloc " + std::to_string(list_size);
         gen("=", alloc_bytes, "", t);
-        generate_3AC_for_list($2, $3);
+        generate_3AC_for_list($2, $4);
       }
       else{
-        gen("=", $3, "", t);
+        gen("=", $4, "", t);
       }
       strcpy($$, t.c_str());
-      //strcpy($$, $3);
+      //strcpy($$, $4);
     }
     else{
       strcpy($$, ":");
@@ -1864,9 +1880,27 @@ atom_expr:
       strcpy($$, (std::string($1) + $2).c_str());
     }
     else if ($2[0] == '[') {
+      std::string index = strip_braces($2);
+      if (is_valid_type($1)) {
+        yyerror("Type error: types are not subscriptable");
+      }
+      
       symtable_entry entry = lookup_var($1);
+
+      if (list_idx_token != "NAME") {
+        if (list_idx_token != "INTEGER") {
+          yyerror(("Type error: list indices must be integers, not " + list_idx_token).c_str());
+        }
+      }
+      else {
+        std::string index_type = lookup_var(index).type;
+        if (index_type != "int") {
+          yyerror(("Type error: list indices must be integers, not " + index_type).c_str());
+        }
+      }
+
       std::string t = new_temp();
-      gen("*", remove_sq_brackets($2), std::to_string(entry.list_width), t);
+      gen("*", index, std::to_string(entry.list_width), t);
       strcpy($$, (std::string($1) + "[" + t + "]").c_str());
     }
     else {
@@ -1908,6 +1942,10 @@ atom:
     // }
     // strcpy($$, s.c_str());
     
+    if (in_var_decl) {
+      yyerror(("Type error: invalid type: (" + std::string($2) + ")").c_str());
+    }
+    
     strcpy($$, $2);
   }
 | '[' testlist_comp_opt ']'
@@ -1923,6 +1961,10 @@ atom:
     // }
     // strcpy($$, s.c_str());
     // std::cout << $2 << std::endl;
+
+    if (in_var_decl) {
+      check_valid_type($2);
+    }
     
     std::string temp = "[";
     temp += $2;
@@ -1941,12 +1983,14 @@ atom:
     // strcat($$, temp.c_str());
 
     strcpy($$, $1);
-  }
-| NUMBER
-  {
-    parser_logfile << "NUMBER" << std::endl;
 
-    // strcpy($$, "NUMBER(");
+    list_idx_token = "NAME";
+  }
+| INTEGER
+  {
+    parser_logfile << "INTEGER" << std::endl;
+
+    // strcpy($$, "INTEGER(");
     // strcat($$, $1);
     // strcat($$, ")");
     // node_map[$$]++;
@@ -1957,6 +2001,44 @@ atom:
     // //strcpy($$, t.c_str());
 
     strcpy($$, $1);
+
+    list_idx_token = "INTEGER";
+  }
+| FLOAT_NUMBER
+  {
+    parser_logfile << "FLOAT_NUMBER" << std::endl;
+
+    // strcpy($$, "FLOAT_NUMBER(");
+    // strcat($$, $1);
+    // strcat($$, ")");
+    // node_map[$$]++;
+    // std::string temp = std::to_string(node_map[$$]);
+    // strcat($$, temp.c_str());
+    // //std::string t=new_temp();
+    // //gen("=", $1, "", t);
+    // //strcpy($$, t.c_str());
+
+    strcpy($$, $1);
+
+    list_idx_token = "FLOAT_NUMBER";
+  }
+| IMAGINARY
+  {
+    parser_logfile << "IMAGINARY" << std::endl;
+
+    // strcpy($$, "IMAGINARY(");
+    // strcat($$, $1);
+    // strcat($$, ")");
+    // node_map[$$]++;
+    // std::string temp = std::to_string(node_map[$$]);
+    // strcat($$, temp.c_str());
+    // //std::string t=new_temp();
+    // //gen("=", $1, "", t);
+    // //strcpy($$, t.c_str());
+
+    strcpy($$, $1);
+
+    list_idx_token = "IMAGINARY";
   }
 | STRING string_list
   {
@@ -1981,6 +2063,8 @@ atom:
     // }
     
     strcpy($$, $1);
+
+    list_idx_token = "STRING";
   }
 | NONE
   {
@@ -1992,6 +2076,8 @@ atom:
     // strcat($$, temp.c_str());
 
     strcpy($$, "None");
+
+    list_idx_token = "NONE";
   }
 | TRUE
   {
@@ -2003,6 +2089,8 @@ atom:
     // strcat($$, temp.c_str());
 
     strcpy($$, "True");
+
+    list_idx_token = "TRUE";
   }
 | FALSE
   {
@@ -2014,6 +2102,8 @@ atom:
     // strcat($$, temp.c_str());
 
     strcpy($$, "False");
+
+    list_idx_token = "FALSE";
   }
 ;
 
@@ -2717,19 +2807,22 @@ void generate_3AC_for_list(char* list_datatype, char* list){
     }
 }
 
-std::string remove_sq_brackets(const std::string &str) {
+std::string strip_braces(const std::string &str) {
   return str.substr(1, str.size() - 2);
 }
 
-void empty_code_stack(){
-  while(!code_stack.empty()){
-    ac3_code.push_back(code_stack.top());
-    code_stack.pop();
+bool is_valid_type(const std::string &type) {
+  if (type.substr(0, 4) == "list") {
+    return is_valid_type(strip_braces(type));
   }
+
+  return type == "int" || type == "float" || type == "str" || type == "bool";
 }
 
-std::string remove_leading_minus(char* str){
-    std::string res = str;
-    if(str[0] == '-')  res = res.substr(1, strlen(str) - 1);
-    return res;
+void check_valid_type(const std::string &type) {
+  if (is_valid_type(type)) {
+    return;
+  }
+
+  yyerror(("Type error: invalid type: " + type).c_str());
 }
