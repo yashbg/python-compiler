@@ -1613,12 +1613,12 @@ comparison:
     else{
       std::string op = current_operator;
       std::string arg_type1 = get_type($1);
-      if (!(arg_type1 == "int" || arg_type1 == "float")) {
+      if (!(arg_type1 == "int" || arg_type1 == "float" || arg_type1 == "str")) {
         type_err_op(op, arg_type1);
       }
 
       std::string arg_type2 = get_type($2);
-      if (!(arg_type2 == "int" || arg_type2 == "float")) {
+      if (!(arg_type2 == "int" || arg_type2 == "float" || arg_type2 == "str")) {
         type_err_op(op, arg_type2);
       }
       
@@ -1659,12 +1659,12 @@ comp_op_expr_list:
     else{
       std::string op = $2;
       std::string arg_type1 = get_type($1);
-      if (!(arg_type1 == "int" || arg_type1 == "float")) {
+      if (!(arg_type1 == "int" || arg_type1 == "float" || arg_type1 == "str")) {
         type_err_op(op, arg_type1);
       }
 
       std::string arg_type2 = get_type($3);
-      if (!(arg_type2 == "int" || arg_type2 == "float")) {
+      if (!(arg_type2 == "int" || arg_type2 == "float" || arg_type2 == "str")) {
         type_err_op(op, arg_type2);
       }
       
@@ -2649,7 +2649,7 @@ atom:
     //   emit_dot_edge($$, $2);
     // }
     
-    strcpy($$, $1);
+    strcpy($$, (("\"" + std::string($1) + "\"").c_str()));
 
     atom_token = "STRING";
   }
@@ -3468,36 +3468,40 @@ void check_valid_type(const std::string &type) {
   yyerror(("Type error: invalid type: " + type).c_str());
 }
 
-std::string get_type(const std::string &type) {
-  if (type == "None") {
+std::string get_type(const std::string &str) {
+  if (str == "None") {
     return "None";
   }
 
-  if (type == "True" || type == "False") {
+  if (str == "True" || str == "False") {
     return "bool";
   }
   
-  if (is_int_literal(type)) {
+  if (is_int_literal(str)) {
     return "int";
   }
 
-  if (is_float_literal(type)) {
+  if (is_float_literal(str)) {
     return "float";
   }
 
-  if (is_valid_type(type)) {
-    return type;
+  if (is_valid_type(str)) {
+    return str;
   }
 
-  if (temp_types.find(type) != temp_types.end()) {
-    return temp_types[type];
+  if (temp_types.find(str) != temp_types.end()) {
+    return temp_types[str];
   }
 
-  if (type[0] == '[') {
-    return get_list_literal_type(type);
+  if (str[0] == '[') {
+    return get_list_literal_type(str);
   }
 
-  return lookup_var(type).type;
+  if (str[0] == '"') {
+    return "str";
+  }
+
+  return lookup_var(str).type;
 }
 
 std::string max_type(const std::string &type1, const std::string &type2) {
