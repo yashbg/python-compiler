@@ -1,9 +1,11 @@
+n: int = 5
+
 def bubbleSort(array: list[int]) -> None:
   i: int = 0
-  for i in range(len(array)):
+  for i in range(n):
     swapped: bool = False
     j: int = 0
-    for j in range(0, len(array) - i - 1):
+    for j in range(0, n - i - 1):
       if array[j] > array[j + 1]:
         temp: int = array[j]
         array[j] = array[j + 1]
@@ -15,7 +17,7 @@ def bubbleSort(array: list[int]) -> None:
 
 def insertionSort(arr: list[int]) -> None:
   i: int = 0
-  for i in range(1, len(arr)):
+  for i in range(1, n):
     key: int = arr[i] 
     j: int = i - 1
     while j >= 0 and key < arr[j]:
@@ -33,11 +35,11 @@ def main():
 
   print('Sorted array using bubble sort:')
   i: int = 0
-  for i in range(len(data1)):
+  for i in range(n):
     print(data1[i])
   
   print('Sorted array using insertion sort:')
-  for i in range(len(data2)):
+  for i in range(n):
     print(data2[i])
 
 
