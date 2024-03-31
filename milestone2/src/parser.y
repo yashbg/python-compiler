@@ -512,7 +512,7 @@ expr_stmt:
     // strcpy($$, s1.c_str());
     std::string op = $2;
     op = op.substr(0, op.size() - 1);
-    std::string t = new_temp();
+    std::string t = new_temp(); // TODO: type checking
     gen(op, $1, $3, t);
     gen("=", t, "", $1);
   }
@@ -557,7 +557,7 @@ equal_testlist_star_expr_list:
     // }
     // emit_dot_edge(s1.c_str(), $3);
     // strcpy($$, s1.c_str());
-    std::string t = new_temp();
+    std::string t = new_temp(); // TODO: type checking
     gen("=", $3, "", t);
     strcpy($$, t.c_str());
   }
@@ -590,7 +590,7 @@ annassign:
     check_valid_type(var_type);
 
     if($4[0] != '\0'){
-      std::string t = new_temp();
+      std::string t = new_temp(); // TODO: type checking
       //std::cout << $4 << std::endl << std::endl;
 
       std::string temp = var_type.substr(0, 4);
@@ -1235,9 +1235,22 @@ or_test:
       strcpy($$, $1);
     }
     else{
+      std::string op = current_operator;
+      std::string arg_type1 = get_type($1);
+      if (arg_type1 != "bool") {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($2);
+      if (arg_type2 != "bool") {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "bool";
     }
   }
 ;
@@ -1265,9 +1278,22 @@ or_and_test_list:
       strcpy($$, $3);
     }
     else{
+      std::string op = $2;
+      std::string arg_type1 = get_type($1);
+      if (arg_type1 != "bool") {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($3);
+      if (arg_type2 != "bool") {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "bool";
     }
   }
 ;
@@ -1289,9 +1315,22 @@ and_test:
       strcpy($$, $1);
     }
     else{
+      std::string op = current_operator;
+      std::string arg_type1 = get_type($1);
+      if (arg_type1 != "bool") {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($2);
+      if (arg_type2 != "bool") {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "bool";
     }
   }
 ;
@@ -1319,9 +1358,22 @@ and_not_test_list:
       strcpy($$, $3);
     }
     else{
+      std::string op = $2;
+      std::string arg_type1 = get_type($1);
+      if (arg_type1 != "bool") {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($3);
+      if (arg_type2 != "bool") {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "bool";
     }
   }
 ;
@@ -1337,9 +1389,18 @@ not_test:
     // strcpy($$, s.c_str());
     
     current_operator = $1;
+
+    std::string op = current_operator;
+    std::string arg_type = get_type($2);
+    if (arg_type != "bool") {
+      type_err_op(op, arg_type);
+    }
+    
     std::string t = new_temp();
     gen(current_operator, $2, "", t);
     strcpy($$, t.c_str());
+
+    temp_types[t] = "bool";
   }
 | comparison
   {
@@ -1376,9 +1437,22 @@ comparison:
       strcpy($$, $1);
     }
     else{
+      std::string op = current_operator;
+      std::string arg_type1 = get_type($1);
+      if (!(arg_type1 == "int" || arg_type1 == "float")) {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($2);
+      if (!(arg_type2 == "int" || arg_type2 == "float")) {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "bool";
     }
   }
 ;
@@ -1409,9 +1483,22 @@ comp_op_expr_list:
       strcpy($$, $3);
     }
     else{
+      std::string op = $2;
+      std::string arg_type1 = get_type($1);
+      if (!(arg_type1 == "int" || arg_type1 == "float")) {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($3);
+      if (!(arg_type2 == "int" || arg_type2 == "float")) {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "bool";
     }
   }
 ;
@@ -1461,14 +1548,18 @@ star_expr:
   '*' expr
   {
     parser_logfile << "'*' expr" << std::endl;
+
     // node_map["*"]++;
     // std::string no=std::to_string(node_map["*"]);
     // std::string s="*"+no;
     // emit_dot_edge(s.c_str(), $2);
     // strcpy($$, s.c_str());
+    
     std::string t=new_temp();
     gen("*", $2, "", t);
     strcpy($$, t.c_str());
+
+    temp_types[t] = get_type($2);
   }
 ;
 
@@ -1490,9 +1581,22 @@ expr:
       strcpy($$, $1);
     }
     else{
+      std::string op = current_operator;
+      std::string arg_type1 = get_type($1);
+      if (arg_type1 != "int") {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($2);
+      if (arg_type2 != "int") {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "int";
     }
   }
 ;
@@ -1520,9 +1624,22 @@ or_xor_expr_list:
       strcpy($$, $3);
     }
     else{
+      std::string op = "|";
+      std::string arg_type1 = get_type($1);
+      if (arg_type1 != "int") {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($3);
+      if (arg_type2 != "int") {
+        type_err_op(op, arg_type2);
+      }
+
       std::string t = new_temp();
       gen("|", $1, $3, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "int";
     }
 
     // std::string t=new_temp();
@@ -1549,9 +1666,22 @@ xor_expr:
       strcpy($$, $1);
     }
     else{
+      std::string op = current_operator;
+      std::string arg_type1 = get_type($1);
+      if (arg_type1 != "int") {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($2);
+      if (arg_type2 != "int") {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "int";
     }
   }
 ;
@@ -1579,9 +1709,22 @@ xor_and_expr_list:
       strcpy($$, $3);
     }
     else{
+      std::string op = $2;
+      std::string arg_type1 = get_type($1);
+      if (arg_type1 != "int") {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($3);
+      if (arg_type2 != "int") {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "int";
     }
 
     // std::string t=new_temp();
@@ -1608,9 +1751,22 @@ and_expr:
       strcpy($$, $1);
     }
     else{
+      std::string op = current_operator;
+      std::string arg_type1 = get_type($1);
+      if (arg_type1 != "int") {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($2);
+      if (arg_type2 != "int") {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "int";
     }
   }
 ;
@@ -1638,9 +1794,22 @@ and_shift_expr_list:
       strcpy($$, $3);
     }
     else{
+      std::string op = $2;
+      std::string arg_type1 = get_type($1);
+      if (arg_type1 != "int") {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($3);
+      if (arg_type2 != "int") {
+        type_err_op(op, arg_type2);
+      }
+
       std::string t = new_temp();
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "int";
     }
 
     // std::string t=new_temp();
@@ -1665,9 +1834,22 @@ shift_expr:
       strcpy($$, $1);
     }
     else{
+      std::string op = current_operator;
+      std::string arg_type1 = get_type($1);
+      if (arg_type1 != "int") {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($2);
+      if (arg_type2 != "int") {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "int";
     }
   }
 ;
@@ -1708,9 +1890,22 @@ shift_arith_expr_list:
       strcpy($$, $3);
     }
     else{
+      std::string op = $2;
+      std::string arg_type1 = get_type($1);
+      if (arg_type1 != "int") {
+        type_err_op(op, arg_type1);
+      }
+
+      std::string arg_type2 = get_type($3);
+      if (arg_type2 != "int") {
+        type_err_op(op, arg_type2);
+      }
+      
       std::string t = new_temp();
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
+
+      temp_types[t] = "int";
     }
 
     // std::string t=new_temp();
@@ -1807,7 +2002,7 @@ plus_or_minus_term_list:
       strcpy($$, $3);
     }
     else{
-      std::string op = std::string($2);
+      std::string op = $2;
       std::string arg_type1 = get_type($1);
       if (!(arg_type1 == "int" || arg_type1 == "float")) {
         type_err_op(op, arg_type1);
@@ -1925,7 +2120,7 @@ star_or_slash_or_percent_or_doubleslash_factor_list:
       strcpy($$, $3);
     }
     else{
-      std::string op = std::string($2);
+      std::string op = $2;
       std::string arg_type1 = get_type($1);
       if (!(arg_type1 == "int" || arg_type1 == "float")) {
         type_err_op(op, arg_type1);
@@ -1953,17 +2148,15 @@ factor:
   plus_or_minus_or_tilde factor
   {
     parser_logfile << "plus_or_minus_or_tilde factor" << std::endl;
+    
     // node_map[$1]++;
     // std::string no=std::to_string(node_map[$1]);
     // std::string s=$1+no;
     // //emit_dot_node(s.c_str(), $1);
     // emit_dot_edge(s.c_str(), $2);
     // strcpy($$, s.c_str());
-    std::string t=new_temp();
-    gen($1, $2, "", t);
-    strcpy($$, t.c_str());
 
-    std::string op = std::string($1);
+    std::string op = $1;
     std::string arg_type = get_type($2);
     if (op == "+" || op == "-") {
       if (!(arg_type == "int" || arg_type == "float")) {
@@ -1976,6 +2169,10 @@ factor:
         type_err_op(op, arg_type);
       }
     }
+
+    std::string t = new_temp();
+    gen($1, $2, "", t);
+    strcpy($$, t.c_str());
 
     temp_types[t] = arg_type;
   }
@@ -2105,7 +2302,7 @@ atom_expr:
         }
       }
 
-      std::string t = new_temp();
+      std::string t = new_temp(); // TODO: type checking
       gen("*", index, std::to_string(entry.list_width), t);
       std::string t2 = new_temp(); // TODO: type checking
       gen("=", (std::string($1) + "[" + t + "]").c_str(), "", t2);
@@ -2536,12 +2733,19 @@ exprlist:
   expr_or_star_expr comma_expr_or_star_expr_list comma_opt
   {
     parser_logfile << "expr_or_star_expr comma_expr_or_star_expr_list comma_opt" << std::endl;
-    if($2[0]=='\0'){
+    // if($2[0]=='\0'){
+    //   strcpy($$, $1);
+    // }
+    // else{
+    //   emit_dot_edge($2, $1);
+    //   strcpy($$, $2);
+    // }
+    if($2[0] == '\0'){
       strcpy($$, $1);
     }
     else{
-      emit_dot_edge($2, $1);
-      strcpy($$, $2);
+      std::string temp = $1 + "," + $2;
+      strcpy($$, temp.c_str());
     }
   }
 ;
@@ -2555,15 +2759,22 @@ comma_expr_or_star_expr_list:
 | comma_expr_or_star_expr_list ',' expr_or_star_expr
   {
     parser_logfile << "| comma_expr_or_star_expr_list ',' expr_or_star_expr" << std::endl;
-    node_map[","]++;
-    std::string no=std::to_string(node_map[","]);
-    std::string s=","+no;
-    //emit_dot_node(s.c_str(), ",");
-    if($1[0]!='\0'){
-      emit_dot_edge(s.c_str(), $1);
+    // node_map[","]++;
+    // std::string no=std::to_string(node_map[","]);
+    // std::string s=","+no;
+    // //emit_dot_node(s.c_str(), ",");
+    // if($1[0]!='\0'){
+    //   emit_dot_edge(s.c_str(), $1);
+    // }
+    // emit_dot_edge(s.c_str(), $2);
+    // strcpy($$, s.c_str());
+    if($1[0] == '\0'){
+      strcpy($$, $3);
     }
-    emit_dot_edge(s.c_str(), $2);
-    strcpy($$, s.c_str());
+    else{
+      std::string temp = $1 + "," + $3;
+      strcpy($$, temp.c_str());
+    }
   }
 ;
 
@@ -2584,12 +2795,19 @@ testlist:
   test comma_test_list comma_opt
   {
     parser_logfile << "test comma_test_list comma_opt" << std::endl;
-    if($2[0]=='\0'){
+    // if($2[0]=='\0'){
+    //   strcpy($$, $1);
+    // }
+    // else if($2[0]!='\0'){
+    //   emit_dot_edge($2, $1);
+    //   strcpy($$, $2);
+    // }
+    if($2[0] == '\0'){
       strcpy($$, $1);
     }
-    else if($2[0]!='\0'){
-      emit_dot_edge($2, $1);
-      strcpy($$, $2);
+    else{
+      std::string temp = $1 + "," + $2;
+      strcpy($$, temp.c_str());
     }
   }
 ;
@@ -2603,15 +2821,20 @@ comma_test_list:
 | comma_test_list ',' test
   {
     parser_logfile << "| comma_test_list ',' test" << std::endl;
-    node_map[","]++;
-    std::string no=std::to_string(node_map[","]);
-    std::string s=","+no;
-    //emit_dot_node(s.c_str(), ",");
-    if($1[0]!='\0'){
-      emit_dot_edge(s.c_str(), $1);
+    // node_map[","]++;
+    // std::string no=std::to_string(node_map[","]);
+    // std::string s=","+no;
+    // //emit_dot_node(s.c_str(), ",");
+    // if($1[0]!='\0'){
+    //   emit_dot_edge(s.c_str(), $1);
+    // }
+    // emit_dot_edge(s.c_str(), $3);
+    // strcpy($$, s.c_str());
+    if($1[0] == '\0') strcpy($$, $3);
+    else{
+      std::string temp = $1 + "," + $3;
+      strcpy($$, temp.c_str());
     }
-    emit_dot_edge(s.c_str(), $3);
-    strcpy($$, s.c_str());
   }
 ;
 
@@ -2665,26 +2888,36 @@ parenthesis_arglist_opt_opt:
 | '(' arglist_opt ')'
   {
     parser_logfile << "'(' arglist_opt ')'" << std::endl;
-    node_map["()"]++;
-    std::string no=std::to_string(node_map["()"]);
-    std::string s="()"+no;
-    //emit_dot_node(s.c_str(), "()");
-    emit_dot_edge(s.c_str(), $2);
-    strcpy($$, s.c_str());
+    // node_map["()"]++;
+    // std::string no=std::to_string(node_map["()"]);
+    // std::string s="()"+no;
+    // //emit_dot_node(s.c_str(), "()");
+    // emit_dot_edge(s.c_str(), $2);
+    // strcpy($$, s.c_str());
+    std::string temp = "(" + $2 + ")";
+    strcpy($$, temp.c_str());
   }
 ;
 
 arglist:
-  argument comma_argument_list  comma_opt
+  argument comma_argument_list comma_opt
   {
     parser_logfile << "argument comma_argument_list  comma_opt" << std::endl;
-    if($2[0]=='\0'){
-      strcpy($$, $1);}
-    else
-      {
-        emit_dot_edge($2, $1);
-        strcpy($$, $2);
-      }
+    // if($2[0]=='\0'){
+    //   strcpy($$, $1);}
+    // else
+    //   {
+    //     emit_dot_edge($2, $1);
+    //     strcpy($$, $2);
+    //   }
+
+    if($2[0] == '\0'){
+      strcpy($$, $1);
+    }
+    else{
+      std::string temp = $1 + "," + $2;
+      strcpy($$, temp.c_str());
+    }
   }
 ;
 
@@ -2697,17 +2930,22 @@ comma_argument_list:
 | comma_argument_list ',' argument
   {
     parser_logfile << "| comma_argument_list ',' argument" << std::endl;
-    if($3[0]=='\0'){
-      strcpy($$, $1);
-    }
+    // if($3[0]=='\0'){
+    //   strcpy($$, $1);
+    // }
+    // else{
+    //   node_map[","]++;
+    //   std::string no=std::to_string(node_map[","]);
+    //   std::string s=","+no;
+    //   //emit_dot_node(s.c_str(), ",");
+    //   emit_dot_edge(s.c_str(), $1);
+    //   emit_dot_edge(s.c_str(), $3);
+    //   strcpy($$, s.c_str());
+    // }
+    if($1[0] == '\0') strcpy($$, $3);
     else{
-      node_map[","]++;
-      std::string no=std::to_string(node_map[","]);
-      std::string s=","+no;
-      //emit_dot_node(s.c_str(), ",");
-      emit_dot_edge(s.c_str(), $1);
-      emit_dot_edge(s.c_str(), $3);
-      strcpy($$, s.c_str());
+      std::string temp = $1 + "," + $3;
+      strcpy($$, temp.c_str());
     }
   }
 ;
@@ -3057,8 +3295,12 @@ void check_valid_type(const std::string &type) {
 }
 
 std::string get_type(const std::string &type) {
-  if (type == "None" || type == "True" || type == "False") {
-    return type;
+  if (type == "None") {
+    return "None";
+  }
+
+  if (type == "True" || type == "False") {
+    return "bool";
   }
   
   if (is_int_literal(type)) {
