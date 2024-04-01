@@ -2505,9 +2505,17 @@ atom_expr:
         for (const auto& t : tokens) {
             // std::cout << t << std::endl;
             gen("param", t, "", "");
-            symtable_entry sym_entry = lookup_var(t);
-            std::string curr_param_type = sym_entry.type;
-            int curr_param_size = get_param_size(curr_param_type, t);
+
+            int curr_param_size;
+            if (is_int_literal(t) || is_float_literal(t) || t[0] == '"') {
+              curr_param_size = get_size(get_type(t));
+            }
+            else {
+              symtable_entry sym_entry = lookup_var(t);
+              std::string curr_param_type = sym_entry.type;
+              curr_param_size = get_param_size(curr_param_type, t);
+            }
+
             stack_offset += curr_param_size;
         }
         gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
