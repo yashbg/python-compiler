@@ -1,6 +1,4 @@
-n: int = 5
-
-def bubbleSort(array: list[int]) -> None:
+def bubbleSort(array: list[int], n: int) -> None:
   i: int = 0
   for i in range(n):
     swapped: bool = False
@@ -15,7 +13,7 @@ def bubbleSort(array: list[int]) -> None:
       break
 
 
-def insertionSort(arr: list[int]) -> None:
+def insertionSort(arr: list[int], n: int) -> None:
   i: int = 0
   for i in range(1, n):
     key: int = arr[i] 
@@ -30,8 +28,8 @@ def main():
   data1: list[int] = [-2, 45, 0, 11, -9]
   data2: list[int] = [-2, 45, 0, 11, -9]
 
-  bubbleSort(data1)
-  insertionSort(data2)
+  bubbleSort(data1, 5)
+  insertionSort(data2, 5)
 
   print('Sorted array using bubble sort:')
   i: int = 0
