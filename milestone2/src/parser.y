@@ -2458,8 +2458,8 @@ atom_expr:
       if($2[0] != '.'){
         yyerror("Syntax error: 'self' cannot be indexed");
       }
-      std::string self_var = $2;
-      self_var = self_var.substr(1, self_var.length() - 1);
+      std::string self_var = $1;
+      strcat(self_var, $2);
       symtable_entry entry = lookup_attr(self_var);
       std::string t = new_temp(); //TODO  -- store size of x in self.x
       gen("", to_string(entry.size), "", t);
