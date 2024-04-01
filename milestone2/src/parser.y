@@ -2497,7 +2497,7 @@ atom_expr:
       if (is_class($1)) {
         // class constructor call
         // TODO
-
+        std::cout << $1 << std::endl;
         strcpy($$, $1);
       }
       else if (!($1 == "len" || $1 == "range" || $1 == "print")) {
@@ -2882,18 +2882,20 @@ trailer:
 | '.' NAME
   {
     parser_logfile << "'.' NAME" << std::endl;
-    node_map["."]++;
-    std::string no=std::to_string(node_map["."]);
-    std::string s="."+no;
-    //emit_dot_node(s.c_str(), ".");
-    strcpy($$, "NAME(");
+    // node_map["."]++;
+    // std::string no=std::to_string(node_map["."]);
+    // std::string s="."+no;
+    // //emit_dot_node(s.c_str(), ".");
+    // strcpy($$, "NAME(");
+    // strcat($$, $2);
+    // strcat($$, ")");
+    // node_map[$2]++;
+    // std::string temp = std::to_string(node_map[$2]);
+    // strcat($$, temp.c_str());
+    // emit_dot_edge(s.c_str(),$$);
+    // strcpy($$, s.c_str());
+    strcpy($$, $1);
     strcat($$, $2);
-    strcat($$, ")");
-    node_map[$2]++;
-    std::string temp = std::to_string(node_map[$2]);
-    strcat($$, temp.c_str());
-    emit_dot_edge(s.c_str(),$$);
-    strcpy($$, s.c_str());
   }
 ;
 
