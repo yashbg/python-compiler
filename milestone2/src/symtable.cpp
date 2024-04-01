@@ -55,6 +55,32 @@ symtable_entry lookup_var(const std::string &name) {
   return entry_itr->second;
 }
 
+void check_redecl(const std::string &name) {
+  if (func_scope) {
+    auto entry_itr = cur_func_symtable_ptr->var_entries.find(name);
+    if (entry_itr != cur_func_symtable_ptr->var_entries.end()) {
+      yyerror(("Name error: name '" + name + "' is redeclared").c_str());
+      return;
+    }
+  }
+
+  if (class_scope) {
+    auto entry_itr = cur_class_symtable_ptr->attr_entries.find(name);
+    if (entry_itr != cur_class_symtable_ptr->attr_entries.end()) {
+      yyerror(("Name error: name '" + name + "' is redeclared").c_str());
+      return;
+    }
+  }
+
+  auto entry_itr = gsymtable.var_entries.find(name);
+  if (entry_itr != gsymtable.var_entries.end()) {
+      yyerror(("Name error: name '" + name + "' is redeclared").c_str());
+      return;
+  }
+
+}
+
+
 void add_func(const std::string &name, const std::vector<std::pair<std::string, std::string>> &params, const std::string &return_type) {
   local_symtable *func_symtable_ptr = new local_symtable;
   for (auto &param : params) {

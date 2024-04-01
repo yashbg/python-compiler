@@ -166,6 +166,11 @@ funcdef:
   {
     add_func($2, func_params, func_return_type);
     func_params.clear();
+    symtable_entry entry;
+    entry.type = func_return_type;
+    entry.lineno = yylineno;
+    // TODO
+    insert_var($2,entry);
 
     cur_func_symtable_ptr = lookup_func($2);
     func_scope = true;
@@ -542,6 +547,7 @@ expr_stmt:
   {
     parser_logfile << "testlist_star_expr annassign" << std::endl;
 
+    check_redecl(get_sem_val($1));
     // emit_dot_edge($3, $1);
     // strcpy($$, $3);
 
@@ -2464,6 +2470,9 @@ atom_expr:
       // std::cout << "Function call" << std::endl;
       // std::cout << "atom: " << $1 << std::endl;
       // std::cout << "trailer: " << $2 << std::endl; 
+
+      std::string name = get_sem_val($1);
+      symtable_entry entry = lookup_var(name);
 
       std::string str = $2;
       std::string arglist = str.substr(1, str.length() - 2);
