@@ -2514,7 +2514,9 @@ atom_expr:
       }
       
       std::string t = new_temp();
-      gen("*", index, std::to_string(entry.list_width), t);
+      //if(entry.type.substr(0, 4) ==  "list") gen("*", index, std::to_string(entry.size), t);
+      //else 
+      gen("*", index, std::to_string(entry.size), t);
       std::string t2 = new_temp();
       gen("=", (std::string($1) + "[" + t + "]").c_str(), "", t2);
       strcpy($$, t2.c_str());
@@ -3875,6 +3877,7 @@ int get_param_size(std::string datatype, std::string var_name){
       return 4;
     }
     else{
+      std::cout << sym_entry.size << std::endl;
       return sym_entry.size;
     }
 }
