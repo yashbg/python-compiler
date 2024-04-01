@@ -2503,9 +2503,6 @@ atom_expr:
         // Print the split strings
         int stack_offset = 0;
         for (const auto& t : tokens) {
-            // std::cout << t << std::endl;
-            gen("param", t, "", "");
-
             int curr_param_size;
             if (is_int_literal(t) || is_float_literal(t) || t[0] == '"') {
               curr_param_size = get_size(get_type(t));
@@ -2514,10 +2511,19 @@ atom_expr:
               symtable_entry sym_entry = lookup_var(t);
               std::string curr_param_type = sym_entry.type;
               curr_param_size = get_param_size(curr_param_type, t);
+              if(curr_param_type.substr(0, 4) == "list"){
+                std::string alloc_bytes = "alloc " + std::to_string(sym_entry.size); 
+                std::string t1 = new_temp();
+                gen("=", alloc_bytes, "", t1);
+                generate_3AC_for_list_copying(t1, t);
+                gen("=", t1, "", t);
+                temp_types[t1] = "[" + curr_param_type + "]";
             }
-
-            stack_offset += curr_param_size;
+              stack_offset += curr_param_size;
+            }
+            gen("param", t, "", "");
         }
+        
         gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
         gen(std::to_string(tokens.size()), $1, ",", "call");
         gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
@@ -3706,6 +3712,7 @@ void generate_3AC_for_list_copying(std::string dest, std::string src){
     symtable_entry sym_entry = lookup_var(src);
     int len = sym_entry.list_len;
     int width = sym_entry.list_width;
+    if(sym_entry.type == "list[str]") width = 1, len = sym_entry.size;
     int curr_pos = 0;
     for(int i = 0; i < len; i++){
       gen("=", src + "[" + std::to_string(curr_pos) + "]", "", dest + "[" + std::to_string(curr_pos) + "]");
