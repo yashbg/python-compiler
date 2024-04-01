@@ -89,9 +89,6 @@ int main(int argc, char *argv[]) {
   }
 
   insert_var("__name__", {"str", "", 0, 0, 0, 0, 0});
-  insert_var("print", {"null", "", 0, 0, 0, 0, 0});
-  insert_var("len", {"int", "", 0, 0, 0, 0, 0});
-  insert_var("range", {"int", "", 0, 0, 0, 0, 0});
 
   // add_dot_header();
   yyparse();
@@ -131,7 +128,7 @@ void add_dot_footer() {
 }
 
 void add_csv_header(std::ofstream &csvfile) {
-  csvfile << "token,lexeme,type,lineno" << std::endl;
+  csvfile << "token,lexeme,type,ret_type,lineno" << std::endl;
 }
 
 void dump_symtables(const std::string &output_dir) {
@@ -139,7 +136,7 @@ void dump_symtables(const std::string &output_dir) {
   global_dumpfile.open(output_dir + "global.csv");
   add_csv_header(global_dumpfile);
   for (auto &entry : gsymtable.var_entries) {
-    global_dumpfile << "NAME," << entry.first << "," << entry.second.type << "," << entry.second.lineno << std::endl;
+    global_dumpfile << "NAME," << entry.first << "," << entry.second.type << ",," << entry.second.lineno << std::endl;
   }
 
   for (auto &symtable : gsymtable.func_symtable_ptrs) {
@@ -147,7 +144,9 @@ void dump_symtables(const std::string &output_dir) {
     func_dumpfile.open(output_dir + symtable.first + ".csv");
     add_csv_header(func_dumpfile);
     for (auto &entry : symtable.second->var_entries) {
-      func_dumpfile << "NAME," << entry.first << "," << entry.second.type << "," << entry.second.lineno << std::endl;
+      func_dumpfile << "NAME," << entry.first << "," << entry.second.type << ",," << entry.second.lineno << std::endl;
+
+      global_dumpfile << "NAME," << symtable.first << ",," << symtable.second->return_type << "," << entry.second.lineno << std::endl;
     }
   }
 }

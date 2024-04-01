@@ -104,6 +104,22 @@
   std::string strip_braces(const std::string &str);
   std::string get_curr_param_name(char* param_list);
   int get_param_size(std::string datatype, std::string param_name);
+
+  struct activation_record {
+    std::string func_name;
+    std::vector<std::string> params;
+    std::vector<std::string> locals;
+    int return_address;
+    int return_value;
+    int old_stack_pointer;
+    std::vector<int> saved_registers;
+  };
+
+  std::stack<activation_record> control_stack;
+
+  void push_activation_record(activation_record ar);
+  void pop_activation_record();
+
   void generate_3AC_for_list_copying(std::string dest, std::string src);
 %}
 
@@ -168,26 +184,24 @@ funcdef:
   {
     add_func($2, func_params, func_return_type);
     func_params.clear();
-    symtable_entry entry;
-    entry.type = func_return_type;
-    entry.lineno = yylineno;
-    // TODO
-    insert_var($2,entry);
 
-    cur_func_symtable_ptr = lookup_func($2);
-    func_scope = true;
-    gen("", ":", "", $2);
-    gen("", "", "", "beginfunc");
-    local_temp_count = 1;
-    local_symtable *func_symtable_ptr = lookup_func($2);
-    int num_params = func_symtable_ptr->param_types.size();
-    start_pos = 1;
-    for(int i = 0; i < num_params; i++){
-      std::string t = new_temp();
-      gen("=", "popparam", "", t);
-      std::string curr_param = get_curr_param_name($3);
-      gen("=", t, "", curr_param);
+    if (!($2 == "len" || $2 == "range" || $2 == "print")) {
+      cur_func_symtable_ptr = lookup_func($2);
+      func_scope = true;
+      gen("", ":", "", $2);
+      gen("", "", "", "beginfunc");
+      local_temp_count = 1;
+      local_symtable *func_symtable_ptr = lookup_func($2);
+      int num_params = func_symtable_ptr->param_types.size();
+      start_pos = 1;
+      for(int i = 0; i < num_params; i++){
+        std::string t = new_temp();
+        gen("=", "popparam", "", t);
+        std::string curr_param = get_curr_param_name($3);
+        gen("=", t, "", curr_param);
+      }
     }
+    // TODO: else
   }
   suite
   {
@@ -2473,51 +2487,40 @@ atom_expr:
       temp_types[t2] = list_type.substr(5, list_type.size() - 6);
     }
     else if ($2[0] == '(') {
-      // function call
-      // std::cout << "Function call" << std::endl;
-      // std::cout << "atom: " << $1 << std::endl;
-      // std::cout << "trailer: " << $2 << std::endl; 
+      // function or class constructor call
+      if (!($1 == "len" || $1 == "range" || $1 == "print")) {
+        std::string str = $2;
+        std::string arglist = str.substr(1, str.length() - 2);
+        std::stringstream ss(arglist);
+        std::vector<std::string> tokens;
+        std::string token;
 
-      std::string name = get_sem_val($1);
-      symtable_entry entry = lookup_var(name);
+        // Iterate through each token separated by ',' and store it in the vector
+        while (std::getline(ss, token, ',')) {
+            tokens.push_back(token);
+        }
 
-      std::string str = $2;
-      std::string arglist = str.substr(1, str.length() - 2);
-      std::stringstream ss(arglist);
-      std::vector<std::string> tokens;
-      std::string token;
+        // Print the split strings
+        int stack_offset = 0;
+        for (const auto& t : tokens) {
+            // std::cout << t << std::endl;
+            gen("param", t, "", "");
+            symtable_entry sym_entry = lookup_var(t);
+            std::string curr_param_type = sym_entry.type;
+            int curr_param_size = get_param_size(curr_param_type, t);
+            stack_offset += curr_param_size;
+        }
+        gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
+        gen(std::to_string(tokens.size()), $1, ",", "call");
+        gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
 
-      // Iterate through each token separated by ',' and store it in the vector
-      while (std::getline(ss, token, ',')) {
-          tokens.push_back(token);
+        std::string temp = new_temp(); // TODO: type checking
+        gen("popparam","" , "", temp);
+
+        check_func_args($1);
+        func_args.clear();
       }
-
-      // Print the split strings
-      int stack_offset = 0;
-      for (const auto& t : tokens) {
-          symtable_entry sym_entry = lookup_var(t);
-          std::string curr_param_type = sym_entry.type;
-          int curr_param_size = get_param_size(curr_param_type, t);
-          stack_offset += curr_param_size;
-          if(curr_param_type.substr(0, 4) == "list"){
-            std::string alloc_bytes = "alloc " + std::to_string(sym_entry.size); 
-            std::string t1 = new_temp();
-            gen("=", alloc_bytes, "", t1);
-            generate_3AC_for_list_copying(t1, t);
-            gen("=", t1, "", t);
-            temp_types[t1] = "[" + curr_param_type + "]";
-          }
-          gen(t, "", "", "param");
-      }
-      gen("+" + std::to_string(stack_offset),"" , "", "stackpointer");
-      gen(std::to_string(tokens.size()), $1, ",", "call");
-      gen("-" + std::to_string(stack_offset),"" , "", "stackpointer");
-
-      std::string temp = new_temp(); // TODO: type checking
-      gen("popparam","" , "", temp);
-
-      check_func_args($1);
-      func_args.clear();
+      // TODO: else
     }
     else {
       strcpy($$, $1);
@@ -2847,7 +2850,7 @@ trailer:
   }
 | '.' NAME
   {
-    parser_logfile << "'. NAME'" << std::endl;
+    parser_logfile << "'.' NAME" << std::endl;
     node_map["."]++;
     std::string no=std::to_string(node_map["."]);
     std::string s="."+no;
@@ -3643,6 +3646,10 @@ int calc_list_len(const std::string &str) {
 }
 
 void check_func_args(const std::string &name) {
+  if (name == "len" || name == "range" || name == "print") {
+    return; 
+  }
+
   local_symtable *func_symtable_ptr = lookup_func(name);
   int num_args = func_args.size();
 
@@ -3696,4 +3703,16 @@ void generate_3AC_for_list_copying(std::string dest, std::string src){
       gen("=", src + "[" + std::to_string(curr_pos) + "]", "", dest + "[" + std::to_string(curr_pos) + "]");
       curr_pos += width;
     }
+}
+
+void push_activation_record(activation_record ar){
+  control_stack.push(ar);
+}
+
+void pop_activation_record(){
+  if (control_stack.empty()) {
+        std::cerr << "Error: Attempting to pop an empty stack!" << std::endl;
+        return;
+    }
+  control_stack.pop();
 }
