@@ -190,6 +190,10 @@ funcdef:
       func_scope = true;
       gen("", ":", "", $2);
       gen("", "", "", "beginfunc");
+      if(class_scope == true){
+        std::string t = new_temp(); // TODO
+        gen("popparam", "", "", t);
+      }
       local_temp_count = 1;
       local_symtable *func_symtable_ptr = lookup_func($2);
       int num_params = func_symtable_ptr->param_types.size();
