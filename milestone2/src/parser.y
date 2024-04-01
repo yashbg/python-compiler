@@ -2490,13 +2490,14 @@ atom_expr:
       temp_types[t2] = list_type.substr(5, list_type.size() - 6);
     }
     else if ($2[0] == '(') {
-      // function or class constructor call
       if (is_class($1)) {
-        
+        // class constructor call
+        // TODO
 
-        strcpy($$, $1); // TODO
+        strcpy($$, $1);
       }
       else if (!($1 == "len" || $1 == "range" || $1 == "print")) {
+        // function call
         std::string str = $2;
         std::string arglist = str.substr(1, str.length() - 2);
         std::stringstream ss(arglist);
@@ -3550,6 +3551,10 @@ bool is_valid_type(const std::string &type) {
     return is_valid_type(type.substr(5, type.size() - 6));
   }
 
+  if (is_class(type)) {
+    return true;
+  }
+
   return type == "int" || type == "float" || type == "str" || type == "bool";
 }
 
@@ -3592,6 +3597,10 @@ std::string get_type(const std::string &str) {
 
   if (is_func(str)) {
     return get_ret_type(str);
+  }
+
+  if (is_class(str)) {
+    return str;
   }
 
   if (temp_types.find(str) != temp_types.end()) {
