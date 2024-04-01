@@ -26,6 +26,7 @@
   std::string s1, s2;
 
   bool func_scope = false;
+  bool class_scope = false;
   global_symtable gsymtable;
   local_symtable *cur_func_symtable_ptr = nullptr;
   class_symtable *cur_class_symtable_ptr = nullptr;
@@ -161,8 +162,8 @@ funcdef:
     add_func($2, func_params, func_return_type);
     func_params.clear();
 
+    cur_func_symtable_ptr = lookup_func($2);
     func_scope = true;
-    cur_func_symtable_ptr = gsymtable.func_symtable_ptrs[$2];
   }
   suite
   {
@@ -3034,7 +3035,14 @@ comma_test_list:
 ;
 
 classdef:
-  CLASS NAME parenthesis_arglist_opt_opt ':' suite
+  CLASS NAME parenthesis_arglist_opt_opt ':'
+  {
+    add_class($2);
+
+    cur_class_symtable_ptr = gsymtable.class_symtable_ptrs[$2];
+    class_scope = true;
+  }
+  suite
   {
     parser_logfile << "CLASS NAME parenthesis_arglist_opt_opt ':' suite" << std::endl;
     strcpy($$, "NAME(");
@@ -3065,12 +3073,14 @@ classdef:
     s2 = "CLASS"+std::to_string(node_map["CLASS"]);
     emit_dot_edge(s1.c_str(), s2.c_str());
 
-    s2 = $5;
+    s2 = $6;
     emit_dot_edge(s1.c_str(), s2.c_str());
 
     strcpy($$, $4);
     std::string temp = std::to_string(node_map[":"]);
     strcat($$, temp.c_str());
+
+    class_scope = false;
   }
 ;
 
