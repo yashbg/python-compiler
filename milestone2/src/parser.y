@@ -182,7 +182,7 @@ newline_or_stmt_list:
 funcdef:
   DEF NAME parameters arrow_test_opt ':'
   {
-    add_func($2, func_params, func_return_type);
+    add_func($2, func_params, func_return_type, yylineno);
     func_params.clear();
 
     if (!($2 == "len" || $2 == "range" || $2 == "print")) {
@@ -721,7 +721,6 @@ annassign:
         strcpy($$, t.c_str());
 
         temp_types[t] = var_type;
-        std::cout << var_type << " " << std::endl;
       }
       else{
         strcpy($$, $4);
@@ -3487,8 +3486,7 @@ std::string get_list_element_datatype(char* list_type){
 
 int get_list_size(char* list_datatype, char* list){
     std::string list_elem_type = get_list_element_datatype(list_datatype);
-    int element_number = get_list_element_count(list), list_size;
-    std::cout << list << std::endl; 
+    int element_number = get_list_element_count(list), list_size; 
     if(list_elem_type == "str"){
       list_size = strlen(list) - 2 - (element_number - 1) - 2 * element_number;
     }

@@ -18,6 +18,7 @@ struct local_symtable {
   std::vector<std::string> param_types;
   std::string return_type;
   std::unordered_map<std::string, symtable_entry> var_entries; // identifier -> symtable_entry
+  int lineno; // TODO
 };
 
 struct class_symtable {
@@ -37,7 +38,7 @@ symtable_entry lookup_var(const std::string &name);
 
 void check_redecl(const std::string &name);
 
-void add_func(const std::string &name, const std::vector<std::pair<std::string, std::string>> &params, const std::string &return_type);
+void add_func(const std::string &name, const std::vector<std::pair<std::string, std::string>> &params, const std::string &return_type, int lineno);
 local_symtable * lookup_func(const std::string &name);
 
 void add_class(const std::string &name);

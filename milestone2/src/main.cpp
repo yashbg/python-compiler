@@ -145,9 +145,9 @@ void dump_symtables(const std::string &output_dir) {
     add_csv_header(func_dumpfile);
     for (auto &entry : symtable.second->var_entries) {
       func_dumpfile << "NAME," << entry.first << "," << entry.second.type << ",," << entry.second.lineno << std::endl;
-
-      global_dumpfile << "NAME," << symtable.first << ",," << symtable.second->return_type << "," << entry.second.lineno << std::endl;
     }
+
+    global_dumpfile << "NAME," << symtable.first << ",," << symtable.second->return_type << "," << symtable.second->lineno << std::endl;
   }
 }
 

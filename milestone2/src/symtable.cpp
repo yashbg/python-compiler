@@ -81,7 +81,7 @@ void check_redecl(const std::string &name) {
 }
 
 
-void add_func(const std::string &name, const std::vector<std::pair<std::string, std::string>> &params, const std::string &return_type) {
+void add_func(const std::string &name, const std::vector<std::pair<std::string, std::string>> &params, const std::string &return_type, int lineno) {
   local_symtable *func_symtable_ptr = new local_symtable;
   for (auto &param : params) {
     func_symtable_ptr->param_types.push_back(param.second);
@@ -89,6 +89,7 @@ void add_func(const std::string &name, const std::vector<std::pair<std::string, 
   }
 
   func_symtable_ptr->return_type = return_type;
+  func_symtable_ptr->lineno = lineno;
 
   if (class_scope) {
     cur_class_symtable_ptr->method_symtable_ptrs[name] = func_symtable_ptr;
