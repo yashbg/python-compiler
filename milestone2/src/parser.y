@@ -242,6 +242,8 @@ parameters:
   '(' typedargslist_opt ')'
   {
     parser_logfile << "'(' typedargslist_opt ')'" << std::endl;
+    
+    //std::cout << "typedargslist_opt - " << $2 << std::endl;
     node_map["()"]++;
 
     // if($2[0] != '\0'){
@@ -2396,7 +2398,17 @@ atom_expr:
   atom trailer_list
   {
     parser_logfile << "atom trailer_list" << std::endl;
-
+    // handling multidimensional array access
+    int running_sum = 0;
+    bool found_first_index = false;
+    for(int i = 0; i < strlen($2); i++){
+      if($2[i] == '[') running_sum++;
+      else if($2[i] == ']') running_sum--;
+      if(running_sum == 0) found_first_index = true;
+      if(found_first_index && (running_sum > 0)){
+        yyerror(("Too many indices given for accessing list " + std::string($1)).c_str());
+      }
+    }
     // if($2[0] != '\0'){
     //   emit_dot_edge($1, $2);
     // }
@@ -2420,7 +2432,7 @@ atom_expr:
       }
       
       symtable_entry entry = lookup_var($1);
-
+      
       std::string list_idx_token = atom_token;
       if (list_idx_token != "NAME") {
         if (list_idx_token != "INTEGER") {
@@ -2433,7 +2445,7 @@ atom_expr:
           yyerror(("Type error: list indices must be integers, not " + index_type).c_str());
         }
       }
-
+      
       std::string t = new_temp();
       gen("*", index, std::to_string(entry.list_width), t);
       std::string t2 = new_temp();
@@ -2446,7 +2458,7 @@ atom_expr:
       temp_types[t2] = list_type.substr(5, list_type.size() - 6);
     }
     else if ($2[0] == '(') {
-      // function call
+      // function call or class instantiation
       check_func_args($1);
       func_args.clear();
     }
@@ -2465,12 +2477,17 @@ trailer_list:
 | trailer_list trailer  // TODO, might be needed for class objects
   {
     parser_logfile << "| trailer_list trailer" << std::endl;
-    if ($1[0] == '\0') {
-      strcpy($$, $2);
-    }
-    else {
-      emit_dot_edge($1, $2);
+    // if ($1[0] == '\0') {
+    //   strcpy($$, $2);
+    // }
+    // else {
+    //   emit_dot_edge($1, $2);
+    //   strcpy($$, $1);
+    // }
+    if($1[0] == '\0') strcpy($$, $2);
+    else{
       strcpy($$, $1);
+      strcat($$, $2);
     }
   }
 ;
@@ -2479,7 +2496,8 @@ atom:
   '(' testlist_comp_opt ')'
   {
     parser_logfile << "'(' testlist_comp_opt ')'" << std::endl;
-
+    
+    // std::cout << "testlist_comp_opt - " << $2 << std::endl;
     // node_map["()"]++;
     // std::string no=std::to_string(node_map["()"]);
     // std::string s="()"+no;
@@ -2745,7 +2763,7 @@ trailer:
   '(' arglist_opt ')'
   {
     parser_logfile << "'(' arglist_opt ')'" << std::endl;
-
+    // std::cout << "arglist_opt(trailer)- " << $2 << std::endl;
     // node_map["()"]++;
     // std::string no=std::to_string(node_map["()"]);
     // std::string s="()"+no;
@@ -2759,7 +2777,6 @@ trailer:
 | '[' subscriptlist ']'
   {
     parser_logfile << "'[' subscriptlist ']'" << std::endl;
-
     // node_map["[]"]++;
     // std::string no=std::to_string(node_map["[]"]);
     // std::string s="[]"+no;
@@ -3039,6 +3056,8 @@ parenthesis_arglist_opt_opt:
 | '(' arglist_opt ')'
   {
     parser_logfile << "'(' arglist_opt ')'" << std::endl;
+    
+    std::cout << "parenthesis_arglist_opt_opt - " << $2 << std::endl;
     // node_map["()"]++;
     // std::string no=std::to_string(node_map["()"]);
     // std::string s="()"+no;
