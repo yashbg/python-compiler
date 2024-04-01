@@ -53,6 +53,7 @@
   int list_len = 0;
   int local_temp_count = 1;
   int start_pos;
+  int curr_list_size;
 
   std::vector<std::string> func_args;
 
@@ -103,6 +104,7 @@
   std::string strip_braces(const std::string &str);
   std::string get_curr_param_name(char* param_list);
   int get_param_size(std::string datatype, std::string param_name);
+  void generate_3AC_for_list_copying(std::string dest, std::string src);
 %}
 
 %union { char tokenname[1024]; }
@@ -552,7 +554,11 @@ expr_stmt:
     // strcpy($$, $3);
 
     if (var_type.substr(0, 4) == "list") {
-      insert_var($1, {var_type, "", yylineno, list_len * get_size(var_type), list_len, get_size(var_type), offset}); // TODO
+      int list_size = list_len * get_size(var_type);
+      if(var_type == "list[str]"){
+        list_size = curr_list_size;
+      }
+      insert_var($1, {var_type, "", yylineno, list_size, list_len, get_size(var_type), offset}); // TODO
       list_len = 0;
     }
     else {
@@ -691,7 +697,7 @@ annassign:
         int element_number = get_list_element_count($4);
         int list_size = get_list_size($2, $4);
         std::string alloc_bytes = "alloc " + std::to_string(list_size);
-        
+        curr_list_size = list_size;
         std::string t = new_temp();
         gen("=", alloc_bytes, "", t);
         generate_3AC_for_list($2, $4);
@@ -701,6 +707,7 @@ annassign:
         strcpy($$, t.c_str());
 
         temp_types[t] = var_type;
+        std::cout << var_type << " " << std::endl;
       }
       else{
         strcpy($$, $4);
@@ -2488,12 +2495,19 @@ atom_expr:
       // Print the split strings
       int stack_offset = 0;
       for (const auto& t : tokens) {
-          // std::cout << t << std::endl;
-          gen(t, "", "", "param");
           symtable_entry sym_entry = lookup_var(t);
           std::string curr_param_type = sym_entry.type;
           int curr_param_size = get_param_size(curr_param_type, t);
           stack_offset += curr_param_size;
+          if(curr_param_type.substr(0, 4) == "list"){
+            std::string alloc_bytes = "alloc " + std::to_string(sym_entry.size); 
+            std::string t1 = new_temp();
+            gen("=", alloc_bytes, "", t1);
+            generate_3AC_for_list_copying(t1, t);
+            gen("=", t1, "", t);
+            temp_types[t1] = "[" + curr_param_type + "]";
+          }
+          gen(t, "", "", "param");
       }
       gen("+" + std::to_string(stack_offset),"" , "", "stackpointer");
       gen(std::to_string(tokens.size()), $1, ",", "call");
@@ -3463,8 +3477,9 @@ std::string get_list_element_datatype(char* list_type){
 int get_list_size(char* list_datatype, char* list){
     std::string list_elem_type = get_list_element_datatype(list_datatype);
     int element_number = get_list_element_count(list), list_size;
+    std::cout << list << std::endl; 
     if(list_elem_type == "str"){
-      list_size = strlen(list) - element_number - 1;
+      list_size = strlen(list) - 2 - (element_number - 1) - 2 * element_number;
     }
     else{
       list_size = get_size(list_elem_type) * element_number;
@@ -3485,7 +3500,7 @@ void generate_3AC_for_list(char* list_datatype, char* list){
     std::string temp =  "t" + std::to_string(temp_count - 1) + "[" + std::to_string(prev) + "]";
     gen("=", curr_elem, "", temp);
     if(list_elem_type == "str"){
-      prev = prev + curr_elem.size();
+      prev = prev + curr_elem.size() - 2;
     }
     else{
       prev = prev + get_size(list_elem_type);
@@ -3669,5 +3684,16 @@ int get_param_size(std::string datatype, std::string var_name){
     }
     else{
       return sym_entry.size;
+    }
+}
+
+void generate_3AC_for_list_copying(std::string dest, std::string src){
+    symtable_entry sym_entry = lookup_var(src);
+    int len = sym_entry.list_len;
+    int width = sym_entry.list_width;
+    int curr_pos = 0;
+    for(int i = 0; i < len; i++){
+      gen("=", src + "[" + std::to_string(curr_pos) + "]", "", dest + "[" + std::to_string(curr_pos) + "]");
+      curr_pos += width;
     }
 }
