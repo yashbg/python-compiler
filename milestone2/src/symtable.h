@@ -23,10 +23,11 @@ struct local_symtable {
 // TODO: add keywords
 struct global_symtable {
   std::unordered_map<std::string, symtable_entry> var_entries; // identifier -> symtable_entry
-  std::unordered_map<std::string, local_symtable *> func_symtable_ptrs; // identifier -> local_symtable *
+  std::unordered_map<std::string, local_symtable * > func_symtable_ptrs; // identifier -> local_symtable *
 };
 
 void insert_var(const std::string &name, const symtable_entry &entry);
 symtable_entry lookup_var(const std::string &name);
 
 void add_func(const std::string &name, const std::vector<std::pair<std::string, std::string>> &params, const std::string &return_type);
+local_symtable * lookup_func(const std::string &name);

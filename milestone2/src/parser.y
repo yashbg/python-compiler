@@ -49,6 +49,8 @@
   bool in_var_decl = false;
   int list_len = 0;
 
+  std::vector<std::string> func_args;
+
   bool is_valid_type(const std::string &type);
   void check_valid_type(const std::string &type);
   std::string get_type(const std::string &type);
@@ -60,6 +62,7 @@
 
   void type_err_op(const std::string &op, const std::string &arg);
   void check_type_equiv(const std::string &type1, const std::string &type2);
+  void check_func_args(const std::string &name);
 
   int is_digit(char c);
 
@@ -2494,6 +2497,10 @@ atom_expr:
       std::string list_type = get_type($1);
       temp_types[t2] = list_type.substr(5, list_type.size() - 6);
     }
+    else if ($2[0] == '(') {
+      check_func_args($1);
+      func_args.clear();
+    }
     else {
       strcpy($$, $1);
     }
@@ -2789,13 +2796,16 @@ trailer:
   '(' arglist_opt ')'
   {
     parser_logfile << "'(' arglist_opt ')'" << std::endl;
-    node_map["()"]++;
-    std::string no=std::to_string(node_map["()"]);
-    std::string s="()"+no;
-    //emit_dot_node(s.c_str(), "()");
-    if($2[0]!='\0'){
-      emit_dot_edge(s.c_str(), $2);}
-    strcpy($$, s.c_str());
+
+    // node_map["()"]++;
+    // std::string no=std::to_string(node_map["()"]);
+    // std::string s="()"+no;
+    // //emit_dot_node(s.c_str(), "()");
+    // if($2[0]!='\0'){
+    //   emit_dot_edge(s.c_str(), $2);}
+    // strcpy($$, s.c_str());
+
+    strcpy($$, ("(" + std::string($2) + ")").c_str());
   }
 | '[' subscriptlist ']'
   {
@@ -3085,7 +3095,7 @@ parenthesis_arglist_opt_opt:
 arglist:
   argument comma_argument_list comma_opt
   {
-    parser_logfile << "argument comma_argument_list  comma_opt" << std::endl;
+    parser_logfile << "argument comma_argument_list comma_opt" << std::endl;
     // if($2[0]=='\0'){
     //   strcpy($$, $1);}
     // else
@@ -3147,12 +3157,17 @@ argument:
   test comp_for_opt
   {
     parser_logfile << "test comp_for_opt" << std::endl;
-    if($2[0]=='\0'){
-      strcpy($$, $1);}
-    else{
-      emit_dot_edge($2, $1);
-      strcpy($$, $2);
-    }
+
+    // if($2[0]=='\0'){
+    //   strcpy($$, $1);}
+    // else{
+    //   emit_dot_edge($2, $1);
+    //   strcpy($$, $2);
+    // }
+
+    strcpy($$, $1);
+
+    func_args.push_back($1);
   }
 | test '=' test
   {
@@ -3583,4 +3598,24 @@ std::string get_list_literal_type(const std::string &str) {
 int calc_list_len(const std::string &str) {
   // not for lists of type list[str]
   return std::count(str.begin(), str.end(), ',') + 1;
+}
+
+void check_func_args(const std::string &name) {
+  local_symtable *func_symtable_ptr = lookup_func(name);
+  int num_args = func_args.size();
+
+  
+
+  int num_params = func_symtable_ptr->param_types.size();
+  if (num_args != num_params) {
+    yyerror(("Type error: " + name + "() takes " + std::to_string(num_params) + " positional arguments but " + std::to_string(num_args) + " were given").c_str());
+  }
+
+  for (int i = 0; i < num_params; i++) {
+    std::string arg_type = get_type(func_args[i]);
+    std::string param_type = func_symtable_ptr->param_types[i];
+    if (arg_type != param_type) {
+      yyerror(("Type mismatch in call to " + name + "(): " + param_type + " required but " + arg_type + " was passed").c_str());
+    }
+  }
 }

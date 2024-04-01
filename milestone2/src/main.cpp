@@ -168,7 +168,7 @@ void dump_3ac(const std::string &output_dir) {
                    << line_code[2] << std::endl;
     }
     else if((line_code[1] == ":") && (line_code[0].empty())){
-        ac3_dumpfile << line_code[3] << " "
+        ac3_dumpfile << line_code[3]
                      << line_code[1] << std::endl;
     }
     else if (line_code[0].empty() && line_code[2].empty()) {
