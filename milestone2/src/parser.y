@@ -2588,7 +2588,7 @@ atom_expr:
 
         strcpy($$, temp.c_str());
       }
-      else if (!($1 == "len" || $1 == "range" || $1 == "print")) {
+      else if (!(str == "len" || str == "range" || str == "print")) {
         // function call
         std::string str = $2;
         std::string arglist = str.substr(1, str.length() - 2);
