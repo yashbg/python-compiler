@@ -2575,7 +2575,7 @@ atom_expr:
         }
         
         gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
-        gen(std::to_string(tokens.size()), std::string($1) + ".__init__", ",", "call");
+        gen(std::to_string(1 + tokens.size()), std::string($1) + ".__init__", ",", "call");
         gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
 
         std::string temp = new_temp();
