@@ -2640,6 +2640,29 @@ atom_expr:
         strcpy($$, temp.c_str());
       }
       // TODO: else
+      else if ((str == "len" || str == "print")) {
+        std::string str = $2;
+        std::string arglist = str.substr(1, str.length() - 2);
+        std::stringstream ss(arglist);
+        std::vector<std::string> tokens;
+        std::string token;
+
+        // Iterate through each token separated by ',' and store it in the vector
+        while (std::getline(ss, token, ',')) {
+            tokens.push_back(token);
+        }
+
+        if(tokens.size() != 1){
+          yyerror("Syntax error: len() and print() take exactly one argument");
+        }
+
+        symtable_entry sym_entry = lookup_var(tokens[0]);
+        std::string size = std::to_string(sym_entry.size);
+        gen("param", tokens[0], "", "");
+        gen("stackpointer", "+", size, "");
+        gen("1", $1, ",", "call");
+        gen("stackpointer", "-", size, "");
+      }
     }
     else {
       strcpy($$, $1);
