@@ -31,15 +31,6 @@ def main():
   bubbleSort(data1, 5)
   insertionSort(data2, 5)
 
-  print('Sorted array using bubble sort:')
-  i: int = 0
-  for i in range(n):
-    print(data1[i])
-  
-  print('Sorted array using insertion sort:')
-  for i in range(n):
-    print(data2[i])
-
 
 if __name__ == "__main__":
   main()
