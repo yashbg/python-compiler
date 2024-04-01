@@ -50,6 +50,8 @@
   std::string atom_token;
   bool in_var_decl = false;
   int list_len = 0;
+  int local_temp_count = 1;
+  int start_pos;
 
   std::vector<std::string> func_args;
 
@@ -98,6 +100,7 @@
   void print_curr_3ac_instr(std::vector<std::string> &line_code);
   void generate_3AC_for_list(char* list_datatype, char* list);
   std::string strip_braces(const std::string &str);
+  std::string get_curr_param_name(char* param_list);
 %}
 
 %union { char tokenname[1024]; }
@@ -166,6 +169,16 @@ funcdef:
     func_scope = true;
     gen("", ":", "", $2);
     gen("", "", "", "beginfunc");
+    local_temp_count = 1;
+    local_symtable *func_symtable_ptr = lookup_func($2);
+    int num_params = func_symtable_ptr->param_types.size();
+    start_pos = 1;
+    for(int i = 0; i < num_params; i++){
+      std::string t = new_temp();
+      gen("=", "popparam", "", t);
+      std::string curr_param = get_curr_param_name($3);
+      gen("=", t, "", curr_param);
+    }
   }
   suite
   {
@@ -231,14 +244,18 @@ parameters:
     parser_logfile << "'(' typedargslist_opt ')'" << std::endl;
     node_map["()"]++;
 
-    if($2[0] != '\0'){
-      s1 = "()"+std::to_string(node_map["()"]);
-      emit_dot_edge(s1.c_str(), $2);
-    }
+    // if($2[0] != '\0'){
+    //   s1 = "()"+std::to_string(node_map["()"]);
+    //   emit_dot_edge(s1.c_str(), $2);
+    // }
 
-    strcpy($$, "()");
-    std::string temp = std::to_string(node_map["()"]);
-    strcat($$, temp.c_str());
+    // strcpy($$, "()");
+    // std::string temp = std::to_string(node_map["()"]);
+    // strcat($$, temp.c_str());
+    
+    strcpy($$, $1);
+    strcat($$, $2);
+    strcat($$, $3);
   }
 ;
 
@@ -259,33 +276,41 @@ typedargslist:
   tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list
   {
     parser_logfile << "tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list" << std::endl;
-    if($2[0] != '\0') {
-      s1 = $2;
-      s2 = $1;
-      emit_dot_edge(s1.c_str(), s2.c_str());
+    // if($2[0] != '\0') {
+    //   s1 = $2;
+    //   s2 = $1;
+    //   emit_dot_edge(s1.c_str(), s2.c_str());
+    // }
+ 
+    // if($3[0]!='\0')
+    // {
+    //   if($2[0] != '\0'){
+    //     s1 = $3;
+    //     s2 =$2;
+    //     emit_dot_edge($3, s2.c_str());
+    //     strcpy($$, $3);
+    //   }
+    //   else{
+    //     emit_dot_edge($3, $1);
+    //     strcpy($$, $3);
+    //   }
+    // }
+    // else
+    // {
+    //   if($2[0] != '\0'){
+    //     strcpy($$, $2);
+    //   }
+    //   else{
+    //     strcpy($$, $1);
+    //   }
+    // }
+    if($3[0] == '\0'){
+      strcpy($$, $1);
     }
-
-    if($3[0]!='\0')
-    {
-      if($2[0] != '\0'){
-        s1 = $3;
-        s2 =$2;
-        emit_dot_edge($3, s2.c_str());
-        strcpy($$, $3);
-      }
-      else{
-        emit_dot_edge($3, $1);
-        strcpy($$, $3);
-      }
-    }
-    else
-    {
-      if($2[0] != '\0'){
-        strcpy($$, $2);
-      }
-      else{
-        strcpy($$, $1);
-      }
+    else{
+      std::string temp = ",";
+      strcpy($$, $1);
+      strcat($$, $3);
     }
   }
 ;
@@ -293,24 +318,27 @@ typedargslist:
 tfpdef:
   NAME colon_test_opt
   {
-    node_map[$1]++;
-    s2 = "NAME(";
-    s2 += $1;
-    s2 += ")";
-    s2 += std::to_string(node_map[$1]);
-
+    // node_map[$1]++;
+    // s2 = "NAME(";
+    // s2 += $1;
+    // s2 += ")";
+    // s2 += std::to_string(node_map[$1]);
+ 
+    // if($2[0] != '\0'){
+    //   parser_logfile << "NAME colon_test_opt" << std::endl;
+    //   strcpy($$, ":");
+    //   std::string temp = std::to_string(node_map[":"]);
+    //   strcat($$, temp.c_str());
+ 
+    //   emit_dot_edge($2, s2.c_str());
+    // }
+    // else {
+    //   strcpy($$, s2.c_str());
+    // }
+    strcpy($$, $1);
     if($2[0] != '\0'){
-      parser_logfile << "NAME colon_test_opt" << std::endl;
-      strcpy($$, ":");
-      std::string temp = std::to_string(node_map[":"]);
-      strcat($$, temp.c_str());
-
-      emit_dot_edge($2, s2.c_str());
+      strcat($$, $2);
     }
-    else {
-      strcpy($$, s2.c_str());
-    }
-
     func_params.push_back({$1, func_param_type});
   }
 ;
@@ -356,44 +384,49 @@ comma_tfpdef_equal_test_opt_list:
 | comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt
   {
     parser_logfile << "| comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt" << std::endl;
-    if($4[0] != '\0'){
-      s1 = $4;
-      s2 = $3;
-      emit_dot_edge(s1.c_str(), $3);
+    // if($4[0] != '\0'){
+    //   s1 = $4;
+    //   s2 = $3;
+    //   emit_dot_edge(s1.c_str(), $3);
+    // }
+// 
+    // node_map[","]++;
+// 
+    // if($1[0]!='\0')
+    // {
+    //   if($4[0] != '\0'){
+    //     s2 =$4;
+    //     emit_dot_edge($1, s2.c_str());
+    //   }
+    //   else{
+    //     emit_dot_edge($1, $3);
+// 
+    //   }
+    //   s1 = ","+std::to_string(node_map[","]);
+    //   emit_dot_edge(s1.c_str(), $1);
+    //   strcpy($$, ",");
+    //   std::string temp = std::to_string(node_map[","]);
+    //   strcat($$, temp.c_str());
+    // }
+    // else{
+    //   s1 = "," + std::to_string(node_map[","]);
+    //   if($4[0] != '\0'){
+    //     s2 = $4;
+    //   }
+    //   else{
+    //     s2 = $3;
+    //   }
+    //   emit_dot_edge(s1.c_str(), s2.c_str());
+// 
+    //   strcpy($$, ",");
+    //   std::string temp = std::to_string(node_map[","]);
+    //   strcat($$, temp.c_str());
+    // }
+    if($1[0] != '\0'){
+      strcpy($$, $1);
     }
-
-    node_map[","]++;
-
-    if($1[0]!='\0')
-    {
-      if($4[0] != '\0'){
-        s2 =$4;
-        emit_dot_edge($1, s2.c_str());
-      }
-      else{
-        emit_dot_edge($1, $3);
-
-      }
-      s1 = ","+std::to_string(node_map[","]);
-      emit_dot_edge(s1.c_str(), $1);
-      strcpy($$, ",");
-      std::string temp = std::to_string(node_map[","]);
-      strcat($$, temp.c_str());
-    }
-    else{
-      s1 = "," + std::to_string(node_map[","]);
-      if($4[0] != '\0'){
-        s2 = $4;
-      }
-      else{
-        s2 = $3;
-      }
-      emit_dot_edge(s1.c_str(), s2.c_str());
-
-      strcpy($$, ",");
-      std::string temp = std::to_string(node_map[","]);
-      strcat($$, temp.c_str());
-    }
+    strcpy($$, $2);
+    strcat($$, $3);
   }
 ;
 
@@ -406,10 +439,12 @@ colon_test_opt:
 | ':' test
   {
     parser_logfile << "| ':' test" << std::endl;
-    node_map[":"]++;
-    s1 = ":"+std::to_string(node_map[":"]);
-    emit_dot_edge(s1.c_str(), $2);
-    strcpy($$, s1.c_str());
+    // node_map[":"]++;
+    // s1 = ":"+std::to_string(node_map[":"]);
+    // emit_dot_edge(s1.c_str(), $2);
+    // strcpy($$, s1.c_str());
+    strcpy($$, $1);
+    strcat($$, $2);
     func_param_type = $2;
   }
 ;
@@ -3324,6 +3359,12 @@ void gen(std::string s1, int new_ln) {
 }
 
 std::string new_temp() {
+  if(func_scope){
+    std::string temp = "t" + std::to_string(local_temp_count);
+    local_temp_count++;
+    current_temp = temp;
+    return temp;
+  }
   std::string temp = "t" + std::to_string(temp_count);
   temp_count++;
   current_temp = temp;
@@ -3535,4 +3576,20 @@ void check_func_args(const std::string &name) {
       yyerror(("Type mismatch in call to " + name + "(): " + param_type + " required but " + arg_type + " was passed").c_str());
     }
   }
+}
+
+std::string get_curr_param_name(char* param_list){
+  std::string curr_param_name; 
+  int i = start_pos;
+  while(i < strlen(param_list)){
+    if(param_list[i] == ':') break;
+    curr_param_name += param_list[i];
+    i++;
+  }
+  while(i < strlen(param_list)){
+    if(param_list[i] == ',') break;
+    i++;
+  }
+  start_pos = i + 1;
+  return curr_param_name;
 }
