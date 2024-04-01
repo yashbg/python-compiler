@@ -149,6 +149,26 @@ void dump_symtables(const std::string &output_dir) {
 
     global_dumpfile << "NAME," << symtable.first << ",," << symtable.second->return_type << "," << symtable.second->lineno << std::endl;
   }
+
+  for (auto &symtable : gsymtable.class_symtable_ptrs) {
+    std::ofstream class_dumpfile;
+    class_dumpfile.open(output_dir + symtable.first + ".csv");
+    add_csv_header(class_dumpfile);
+    for (auto &entry : symtable.second->attr_entries) {
+      class_dumpfile << "NAME," << entry.first << "," << entry.second.type << ",," << entry.second.lineno << std::endl;
+    }
+
+    for (auto &method_symtable : symtable.second->method_symtable_ptrs) {
+      std::ofstream method_dumpfile;
+      method_dumpfile.open(output_dir + symtable.first + "_" + method_symtable.first + ".csv");
+      add_csv_header(method_dumpfile);
+      for (auto &entry : method_symtable.second->var_entries) {
+        method_dumpfile << "NAME," << entry.first << "," << entry.second.type << ",," << entry.second.lineno << std::endl;
+      }
+
+      class_dumpfile << "NAME," << method_symtable.first << ",," << method_symtable.second->return_type << "," << method_symtable.second->lineno << std::endl;
+    }
+  }
 }
 
 void dump_3ac(const std::string &output_dir) {
