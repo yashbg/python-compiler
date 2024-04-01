@@ -164,6 +164,8 @@ funcdef:
 
     cur_func_symtable_ptr = lookup_func($2);
     func_scope = true;
+    gen("", ":", "", $2);
+    gen("", "", "", "beginfunc");
   }
   suite
   {
@@ -200,6 +202,7 @@ funcdef:
     strcat($$, temp.c_str());
 
     func_scope = false;
+    gen("", "", "", "endfunc");
   }
 ;
 
