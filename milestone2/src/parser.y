@@ -546,6 +546,7 @@ expr_stmt:
   {
     parser_logfile << "testlist_star_expr annassign" << std::endl;
 
+    check_redecl(get_sem_val($1));
     // emit_dot_edge($3, $1);
     // strcpy($$, $3);
 
