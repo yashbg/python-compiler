@@ -2496,9 +2496,71 @@ atom_expr:
     else if ($2[0] == '(') {
       if (is_class($1)) {
         // class constructor call
-        // TODO
-        std::cout << $1 << std::endl;
-        strcpy($$, $1);
+        std::string str = $2;
+        std::string arglist = str.substr(1, str.length() - 2);
+        std::stringstream ss(arglist);
+        std::vector<std::string> tokens;
+        std::string token;
+
+        // Iterate through each token separated by ',' and store it in the vector
+        while (std::getline(ss, token, ',')) {
+            tokens.push_back(token);
+        }
+
+        int stack_offset = 0;
+        for (const auto& t : tokens) {
+            int curr_param_size;
+            if (is_int_literal(t) || is_float_literal(t) || t[0] == '"') {
+              curr_param_size = get_size(get_type(t));
+            }
+            else {
+              symtable_entry sym_entry = lookup_var(t);
+              std::string curr_param_type = sym_entry.type;
+              curr_param_size = get_param_size(curr_param_type, t);
+            }
+            stack_offset += curr_param_size;
+        }
+        std::string t2 = new_temp(); //TODO : type checking
+        gen("=", std::to_string(stack_offset), "", t2);
+        gen("param", t2, "", "");
+        gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
+        gen("1", "allocmem", "," , "call");
+        gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
+
+        for (const auto& t : tokens) {
+            int curr_param_size;
+            if (is_int_literal(t) || is_float_literal(t) || t[0] == '"') {
+              
+            }
+            else {
+              symtable_entry sym_entry = lookup_var(t);
+              std::string curr_param_type = sym_entry.type;
+              curr_param_size = get_param_size(curr_param_type, t);
+              if(curr_param_type.substr(0, 4) == "list"){
+                std::string alloc_bytes = "alloc " + std::to_string(sym_entry.size); 
+                std::string t1 = new_temp();
+                gen("=", alloc_bytes, "", t1);
+                generate_3AC_for_list_copying(t1, t);
+                gen("=", t1, "", t);
+                temp_types[t1] = "[" + curr_param_type + "]";
+              }
+            }
+            gen("param", t, "", "");
+        }
+        
+        gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
+        gen(std::to_string(tokens.size()), std::string($1) + ".__init__", ",", "call");
+        gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
+
+        std::string temp = new_temp();
+        gen("popparam","" , "", temp);
+
+        temp_types[temp] = get_ret_type($1);
+
+        check_func_args($1);
+        func_args.clear();
+
+        strcpy($$, temp.c_str());
       }
       else if (!($1 == "len" || $1 == "range" || $1 == "print")) {
         // function call
