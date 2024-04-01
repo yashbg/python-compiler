@@ -90,13 +90,6 @@ int main(int argc, char *argv[]) {
 
   insert_var("__name__", {"str", "", 0, 0, 0, 0, 0});
 
-  // insert_var("print", {"null", "", 0, 0, 0, 0, 0});
-  // insert_var("len", {"int", "", 0, 0, 0, 0, 0});
-  // insert_var("range", {"int", "", 0, 0, 0, 0, 0});
-  add_func("print", {{"", "str"}}, "None"); // TODO
-  add_func("len", {{"", "list[int]"}}, "int"); // TODO
-  add_func("range", {{"", "str"}}, "None"); // TODO
-
   // add_dot_header();
   yyparse();
   // add_dot_footer();

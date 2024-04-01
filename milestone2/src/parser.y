@@ -183,20 +183,23 @@ funcdef:
     add_func($2, func_params, func_return_type);
     func_params.clear();
 
-    cur_func_symtable_ptr = lookup_func($2);
-    func_scope = true;
-    gen("", ":", "", $2);
-    gen("", "", "", "beginfunc");
-    local_temp_count = 1;
-    local_symtable *func_symtable_ptr = lookup_func($2);
-    int num_params = func_symtable_ptr->param_types.size();
-    start_pos = 1;
-    for(int i = 0; i < num_params; i++){
-      std::string t = new_temp();
-      gen("=", "popparam", "", t);
-      std::string curr_param = get_curr_param_name($3);
-      gen("=", t, "", curr_param);
+    if (!($2 == "len" || $2 == "range" || $2 == "print")) {
+      cur_func_symtable_ptr = lookup_func($2);
+      func_scope = true;
+      gen("", ":", "", $2);
+      gen("", "", "", "beginfunc");
+      local_temp_count = 1;
+      local_symtable *func_symtable_ptr = lookup_func($2);
+      int num_params = func_symtable_ptr->param_types.size();
+      start_pos = 1;
+      for(int i = 0; i < num_params; i++){
+        std::string t = new_temp();
+        gen("=", "popparam", "", t);
+        std::string curr_param = get_curr_param_name($3);
+        gen("=", t, "", curr_param);
+      }
     }
+    // TODO: else
   }
   suite
   {
@@ -2478,38 +2481,39 @@ atom_expr:
     }
     else if ($2[0] == '(') {
       // function or class constructor call
-      std::string str = $2;
-      std::string arglist = str.substr(1, str.length() - 2);
-      std::stringstream ss(arglist);
-      std::vector<std::string> tokens;
-      std::string token;
+      if (!($1 == "len" || $1 == "range" || $1 == "print")) {
+        std::string str = $2;
+        std::string arglist = str.substr(1, str.length() - 2);
+        std::stringstream ss(arglist);
+        std::vector<std::string> tokens;
+        std::string token;
 
-      // Iterate through each token separated by ',' and store it in the vector
-      while (std::getline(ss, token, ',')) {
-          tokens.push_back(token);
+        // Iterate through each token separated by ',' and store it in the vector
+        while (std::getline(ss, token, ',')) {
+            tokens.push_back(token);
+        }
+
+        // Print the split strings
+        int stack_offset = 0;
+        for (const auto& t : tokens) {
+            // std::cout << t << std::endl;
+            gen("param", t, "", "");
+            symtable_entry sym_entry = lookup_var(t);
+            std::string curr_param_type = sym_entry.type;
+            int curr_param_size = get_param_size(curr_param_type, t);
+            stack_offset += curr_param_size;
+        }
+        gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
+        gen(std::to_string(tokens.size()), $1, ",", "call");
+        gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
+
+        std::string temp = new_temp(); // TODO: type checking
+        gen("popparam","" , "", temp);
+
+        check_func_args($1);
+        func_args.clear();
       }
-
-      // Print the split strings
-      int stack_offset = 0;
-      for (const auto& t : tokens) {
-          // std::cout << t << std::endl;
-          gen("param", t, "", "");
-          symtable_entry sym_entry = lookup_var(t);
-          std::string curr_param_type = sym_entry.type;
-          int curr_param_size = get_param_size(curr_param_type, t);
-          stack_offset += curr_param_size;
-      }
-      gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
-      gen(std::to_string(tokens.size()), $1, ",", "call");
-      gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
-
-      std::string temp = new_temp(); // TODO: type checking
-      gen("popparam","" , "", temp);
-
-
-
-      check_func_args($1);
-      func_args.clear();
+      // TODO: else
     }
     else {
       strcpy($$, $1);
@@ -3634,6 +3638,10 @@ int calc_list_len(const std::string &str) {
 }
 
 void check_func_args(const std::string &name) {
+  if (name == "len" || name == "range" || name == "print") {
+    return; 
+  }
+
   local_symtable *func_symtable_ptr = lookup_func(name);
   int num_args = func_args.size();
 
