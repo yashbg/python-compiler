@@ -42,3 +42,4 @@ void add_func(const std::string &name, const std::vector<std::pair<std::string, 
 local_symtable * lookup_func(const std::string &name);
 
 void add_class(const std::string &name);
+class_symtable * lookup_class(const std::string &name);

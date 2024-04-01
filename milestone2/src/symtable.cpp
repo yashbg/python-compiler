@@ -120,3 +120,13 @@ void add_class(const std::string &name) {
   class_symtable *class_symtable_ptr = new class_symtable;
   gsymtable.class_symtable_ptrs[name] = class_symtable_ptr;
 }
+
+class_symtable * lookup_class(const std::string &name) {
+  auto class_symtable_itr = gsymtable.class_symtable_ptrs.find(name);
+  if (class_symtable_itr != gsymtable.class_symtable_ptrs.end()) {
+    return class_symtable_itr->second;
+  }
+
+  yyerror(("Name error: name '" + name + "' is not defined").c_str());
+  return class_symtable_itr->second;
+}
