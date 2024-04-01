@@ -190,6 +190,11 @@ funcdef:
   DEF NAME parameters arrow_test_opt ':'
   {
     add_func($2, func_params, func_return_type, yylineno);
+
+    if (class_scope) {
+      insert_attr(func_params[0].first, {class_name, "", yylineno, 0, 0, 0, offset}); // TODO
+    }
+
     func_params.clear();
 
     if (!($2 == "len" || $2 == "range" || $2 == "print")) {
@@ -2468,7 +2473,7 @@ atom_expr:
         yyerror("Syntax error: 'self' cannot be indexed");
       }
 
-      symtable_entry entry = lookup_attr($1, std::string($2).substr(1));
+      symtable_entry entry = lookup_attr(class_name, std::string($2).substr(1));
       std::string t = new_temp(); //TODO  -- store size of x in self.x
       gen("", std::to_string(entry.size), "", t);
       std::string t2 = new_temp(); // TODO -- store address of x in self.x
@@ -3808,7 +3813,7 @@ int calc_list_len(const std::string &str) {
 
 void check_func_args(const std::string &name) {
   if (name == "len" || name == "range" || name == "print") {
-    return; 
+    return;
   }
 
   local_symtable *func_symtable_ptr = lookup_func(name);
