@@ -23,11 +23,6 @@ void insert_var(const std::string &name, const symtable_entry &entry) {
     return;
   }
 
-  if (class_scope) {
-    cur_class_symtable_ptr->attr_entries[name] = entry;
-    return;
-  }
-
   gsymtable.var_entries[name] = entry;
 }
 
@@ -39,15 +34,22 @@ symtable_entry lookup_var(const std::string &name) {
     }
   }
 
-  if (class_scope) {
-    auto entry_itr = cur_class_symtable_ptr->attr_entries.find(name);
-    if (entry_itr != cur_class_symtable_ptr->attr_entries.end()) {
-      return entry_itr->second;
-    }
-  }
-
   auto entry_itr = gsymtable.var_entries.find(name);
   if (entry_itr != gsymtable.var_entries.end()) {
+    return entry_itr->second;
+  }
+
+  yyerror(("Name error: name '" + name + "' is not defined").c_str());
+  return entry_itr->second;
+}
+
+void insert_attr(const std::string &name, const symtable_entry &entry) {
+  cur_class_symtable_ptr->attr_entries[name] = entry;
+}
+
+symtable_entry lookup_attr(const std::string &name) {
+  auto entry_itr = cur_class_symtable_ptr->attr_entries.find(name);
+  if (entry_itr != cur_class_symtable_ptr->attr_entries.end()) {
     return entry_itr->second;
   }
 
