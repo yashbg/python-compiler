@@ -20,10 +20,16 @@ struct local_symtable {
   std::unordered_map<std::string, symtable_entry> var_entries; // identifier -> symtable_entry
 };
 
+struct class_symtable {
+  std::unordered_map<std::string, symtable_entry> attr_entries; // identifier -> symtable_entry
+  std::unordered_map<std::string, local_symtable *> method_symtable_ptrs; // identifier -> local_symtable *
+};
+
 // TODO: add keywords
 struct global_symtable {
   std::unordered_map<std::string, symtable_entry> var_entries; // identifier -> symtable_entry
-  std::unordered_map<std::string, local_symtable * > func_symtable_ptrs; // identifier -> local_symtable *
+  std::unordered_map<std::string, local_symtable *> func_symtable_ptrs; // identifier -> local_symtable *
+  std::unordered_map<std::string, class_symtable *> class_symtable_ptrs; // identifier -> class_symtable *
 };
 
 void insert_var(const std::string &name, const symtable_entry &entry);

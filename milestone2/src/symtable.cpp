@@ -6,9 +6,10 @@
 
 extern int yylineno;
 
-extern bool global_scope;
+extern bool func_scope;
 extern global_symtable gsymtable;
-extern local_symtable *cur_symtable_ptr;
+extern local_symtable *cur_func_symtable_ptr;
+extern class_symtable *cur_class_symtable_ptr;
 
 extern void yyerror(const char *);
 
@@ -16,16 +17,16 @@ extern int get_size(const std::string &type);
 
 void insert_var(const std::string &name, const symtable_entry &entry) {
   // TODO: handle redeclarations
-  if (global_scope) {
+  if (!func_scope) {
     gsymtable.var_entries[name] = entry;
     return;
   }
 
-  cur_symtable_ptr->var_entries[name] = entry;
+  cur_func_symtable_ptr->var_entries[name] = entry;
 }
 
 symtable_entry lookup_var(const std::string &name) {
-  if (global_scope) {
+  if (!func_scope) {
     auto entry_itr = gsymtable.var_entries.find(name);
     if (entry_itr == gsymtable.var_entries.end()) {
       yyerror(("Name error: name '" + name + "' is not defined").c_str());
@@ -35,8 +36,8 @@ symtable_entry lookup_var(const std::string &name) {
   }
 
   // name resolution
-  auto entry_itr = cur_symtable_ptr->var_entries.find(name);
-  if (entry_itr == cur_symtable_ptr->var_entries.end()) {
+  auto entry_itr = cur_func_symtable_ptr->var_entries.find(name);
+  if (entry_itr == cur_func_symtable_ptr->var_entries.end()) {
     auto entry_itr = gsymtable.var_entries.find(name);
     if (entry_itr == gsymtable.var_entries.end()) {
       yyerror(("Name error: name '" + name + "' is not defined").c_str());

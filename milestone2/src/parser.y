@@ -25,9 +25,10 @@
   int comma_number = 1;
   std::string s1, s2;
 
-  bool global_scope = true;
+  bool func_scope = false;
   global_symtable gsymtable;
-  local_symtable *cur_symtable_ptr = nullptr;
+  local_symtable *cur_func_symtable_ptr = nullptr;
+  class_symtable *cur_class_symtable_ptr = nullptr;
 
   std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
   long int temp_count = 1; // counter for temporary variables
@@ -160,8 +161,8 @@ funcdef:
     add_func($2, func_params, func_return_type);
     func_params.clear();
 
-    global_scope = false;
-    cur_symtable_ptr = gsymtable.func_symtable_ptrs[$2];
+    func_scope = true;
+    cur_func_symtable_ptr = gsymtable.func_symtable_ptrs[$2];
   }
   suite
   {
@@ -197,7 +198,7 @@ funcdef:
     std::string temp = std::to_string(node_map[":"]);
     strcat($$, temp.c_str());
 
-    global_scope = true;
+    func_scope = false;
   }
 ;
 
