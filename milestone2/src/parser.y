@@ -192,12 +192,17 @@ funcdef:
     if (!($2 == "len" || $2 == "range" || $2 == "print")) {
       cur_func_symtable_ptr = lookup_func($2);
       func_scope = true;
+      if(class_scope == true){
+        std::string t = class_name + "." + $2;
+        gen("", ":", "", t);
+      }
+      else
       gen("", ":", "", $2);
       gen("", "", "", "beginfunc");
-      if(class_scope == true){
-        std::string t = new_temp(); // TODO
-        gen("popparam", "", "", t);
-      }
+      // if(class_scope == true){
+      //   std::string t = new_temp(); // TODO
+      //   gen("popparam", "", "", t);
+      // }
       local_temp_count = 1;
       local_symtable *func_symtable_ptr = lookup_func($2);
       int num_params = func_symtable_ptr->param_types.size();
