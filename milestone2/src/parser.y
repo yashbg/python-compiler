@@ -165,6 +165,11 @@ funcdef:
   {
     add_func($2, func_params, func_return_type);
     func_params.clear();
+    symtable_entry entry;
+    entry.type = func_return_type;
+    entry.lineno = yylineno;
+    // TODO
+    insert_var($2,entry);
 
     cur_func_symtable_ptr = lookup_func($2);
     func_scope = true;
@@ -2464,6 +2469,9 @@ atom_expr:
       // std::cout << "atom: " << $1 << std::endl;
       // std::cout << "trailer: " << $2 << std::endl; 
 
+      std::string name = get_sem_val($1);
+      symtable_entry entry = lookup_var(name);
+
       std::string str = $2;
       std::string arglist = str.substr(1, str.length() - 2);
       std::stringstream ss(arglist);
@@ -2478,11 +2486,11 @@ atom_expr:
       // Print the split strings
       for (const auto& t : tokens) {
           // std::cout << t << std::endl;
-          gen(t, "", "", "param");
+          gen("param", t, "", "");
       }
-      gen("+xxx","" , "", "stackpointer");
+      gen("stackpointer", "+xxx","" , "");
       gen(std::to_string(tokens.size()), $1, ",", "call");
-      gen("-xxx","" , "", "stackpointer");
+      gen("stackpointer", "-xxx","" , "");
 
       std::string temp = new_temp(); // TODO: type checking
       gen("popparam","" , "", temp );
