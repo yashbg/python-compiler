@@ -274,7 +274,6 @@ parameters:
   {
     parser_logfile << "'(' typedargslist_opt ')'" << std::endl;
     
-    //std::cout << "typedargslist_opt - " << $2 << std::endl;
     node_map["()"]++;
 
     // if($2[0] != '\0'){
@@ -2497,7 +2496,7 @@ atom_expr:
       if (is_class($1)) {
         // class constructor call
         // TODO
-        std::cout << $1 << std::endl;
+
         strcpy($$, $1);
       }
       else if (!($1 == "len" || $1 == "range" || $1 == "print")) {
@@ -2589,7 +2588,6 @@ atom:
   {
     parser_logfile << "'(' testlist_comp_opt ')'" << std::endl;
     
-    // std::cout << "testlist_comp_opt - " << $2 << std::endl;
     // node_map["()"]++;
     // std::string no=std::to_string(node_map["()"]);
     // std::string s="()"+no;
@@ -2854,9 +2852,7 @@ comp_for_OR_comma_test_or_star_expr_list_comma_opt:
 trailer:
   '(' arglist_opt ')'
   {
-    // std::cout << $2 << std::endl;
     parser_logfile << "'(' arglist_opt ')'" << std::endl;
-    // std::cout << "arglist_opt(trailer)- " << $2 << std::endl;
     // node_map["()"]++;
     // std::string no=std::to_string(node_map["()"]);
     // std::string s="()"+no;
@@ -3152,7 +3148,6 @@ parenthesis_arglist_opt_opt:
   {
     parser_logfile << "'(' arglist_opt ')'" << std::endl;
     
-    // std::cout << "parenthesis_arglist_opt_opt - " << $2 << std::endl;
     // node_map["()"]++;
     // std::string no=std::to_string(node_map["()"]);
     // std::string s="()"+no;

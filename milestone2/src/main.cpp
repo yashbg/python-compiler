@@ -79,6 +79,8 @@ int main(int argc, char *argv[]) {
 
   outfile.open("graph.dot");
 
+  std::filesystem::create_directories(output_dir);
+
   lexer_logfile = fopen((output_dir + "lexer.log").c_str(), "w");
   parser_logfile.open(output_dir + "parser.log");
 
@@ -93,8 +95,6 @@ int main(int argc, char *argv[]) {
   // add_dot_header();
   yyparse();
   // add_dot_footer();
-
-  std::filesystem::create_directories(output_dir);
 
   // if (verbose) {
   //   std::cout << "Creating AST..." << std::endl;
