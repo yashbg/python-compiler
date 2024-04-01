@@ -103,6 +103,22 @@
   std::string strip_braces(const std::string &str);
   std::string get_curr_param_name(char* param_list);
   int get_param_size(std::string datatype, std::string param_name);
+
+  struct activation_record {
+    std::string func_name;
+    std::vector<std::string> params;
+    std::vector<std::string> locals;
+    int return_address;
+    int return_value;
+    int old_stack_pointer;
+    std::vector<int> saved_registers;
+  };
+
+  std::stack<activation_record> control_stack;
+
+  void push_activation_record(activation_record ar);
+  void pop_activation_record();
+
 %}
 
 %union { char tokenname[1024]; }
@@ -2477,15 +2493,15 @@ atom_expr:
       int stack_offset = 0;
       for (const auto& t : tokens) {
           // std::cout << t << std::endl;
-          gen(t, "", "", "param");
+          gen("param", t, "", "");
           symtable_entry sym_entry = lookup_var(t);
           std::string curr_param_type = sym_entry.type;
           int curr_param_size = get_param_size(curr_param_type, t);
           stack_offset += curr_param_size;
       }
-      gen("+" + std::to_string(stack_offset),"" , "", "stackpointer");
+      gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
       gen(std::to_string(tokens.size()), $1, ",", "call");
-      gen("-" + std::to_string(stack_offset),"" , "", "stackpointer");
+      gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
 
       std::string temp = new_temp(); // TODO: type checking
       gen("popparam","" , "", temp);
@@ -3660,4 +3676,16 @@ int get_param_size(std::string datatype, std::string var_name){
     else{
       return sym_entry.size;
     }
+}
+
+void push_activation_record(activation_record ar){
+  control_stack.push(ar);
+}
+
+void pop_activation_record(){
+  if (control_stack.empty()) {
+        std::cerr << "Error: Attempting to pop an empty stack!" << std::endl;
+        return;
+    }
+  control_stack.pop();
 }
