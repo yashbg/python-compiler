@@ -2498,6 +2498,7 @@ atom_expr:
       temp_types[t2] = list_type.substr(5, list_type.size() - 6);
     }
     else if ($2[0] == '(') {
+      // function call
       check_func_args($1);
       func_args.clear();
     }
@@ -3603,8 +3604,6 @@ int calc_list_len(const std::string &str) {
 void check_func_args(const std::string &name) {
   local_symtable *func_symtable_ptr = lookup_func(name);
   int num_args = func_args.size();
-
-  
 
   int num_params = func_symtable_ptr->param_types.size();
   if (num_args != num_params) {
