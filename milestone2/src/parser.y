@@ -2448,7 +2448,28 @@ atom_expr:
     //   emit_dot_edge($1, $2);
     // }
     // strcpy($$, $1);
-
+    if($1 == "self"){
+      if(class_scope == false){
+        yyerror("Syntax error: 'self' is only valid inside a class method");
+      }
+      if(func_scope == false){
+        yyerror("Syntax error: 'self' is only valid inside a class method");
+      }
+      if($2[0] != '.'){
+        yyerror("Syntax error: 'self' cannot be indexed");
+      }
+      std::string self_var = $2;
+      self_var = self_var.substr(1, self_var.length() - 1);
+      symtable_entry entry = lookup_attr(self_var);
+      std::string t = new_temp(); //TODO  -- store size of x in self.x
+      gen("", to_string(entry.size), "", t);
+      std::string t2 = new_temp(); // TODO -- store address of x in self.x
+      gen("+", "t1", t, t2);
+      std::string t3 = "*";
+      strcat(t3, t2.c_str());  // t3 = *(address of self.x)
+      strcpy($$, t3.c_str());
+    }
+    else
     if ($2[0] == '\0') {
       // no trailer
       strcpy($$, $1);
