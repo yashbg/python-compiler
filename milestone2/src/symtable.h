@@ -37,7 +37,7 @@ void insert_var(const std::string &name, const symtable_entry &entry);
 symtable_entry lookup_var(const std::string &name);
 
 void insert_attr(const std::string &name, const symtable_entry &entry);
-symtable_entry lookup_attr(const std::string &name);
+symtable_entry lookup_attr(const std::string &class_name, const std::string &attr_name);
 
 void check_redecl(const std::string &name);
 
@@ -46,3 +46,4 @@ local_symtable * lookup_func(const std::string &name);
 
 void add_class(const std::string &name);
 class_symtable * lookup_class(const std::string &name);
+local_symtable * lookup_method(const std::string &class_name, const std::string &method_name);

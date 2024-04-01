@@ -69,6 +69,7 @@
   void type_err_op(const std::string &op, const std::string &arg);
   void check_type_equiv(const std::string &type1, const std::string &type2);
   void check_func_args(const std::string &name);
+  void check_method_args(const std::string &class_name, const std::string &method_name);
 
   int is_digit(char c);
 
@@ -2466,8 +2467,8 @@ atom_expr:
       if($2[0] != '.'){
         yyerror("Syntax error: 'self' cannot be indexed");
       }
-      std::string self_var = std::string($1) + $2;
-      symtable_entry entry = lookup_attr(self_var);
+
+      symtable_entry entry = lookup_attr($1, std::string($2).substr(1));
       std::string t = new_temp(); //TODO  -- store size of x in self.x
       gen("", std::to_string(entry.size), "", t);
       std::string t2 = new_temp(); // TODO -- store address of x in self.x
@@ -2580,9 +2581,9 @@ atom_expr:
         std::string temp = new_temp();
         gen("popparam","" , "", temp);
 
-        temp_types[temp] = get_ret_type($1);
+        temp_types[temp] = $1;
 
-        check_func_args($1);
+        // check_method_args($1, "__init__"); // TODO
         func_args.clear();
 
         strcpy($$, temp.c_str());
@@ -3792,6 +3793,24 @@ void check_func_args(const std::string &name) {
     std::string param_type = func_symtable_ptr->param_types[i];
     if (arg_type != param_type) {
       yyerror(("Type mismatch in call to " + name + "(): " + param_type + " required but " + arg_type + " was passed").c_str());
+    }
+  }
+}
+
+void check_method_args(const std::string &class_name, const std::string &method_name) {
+  local_symtable *func_symtable_ptr = lookup_method(class_name, method_name);
+  int num_args = func_args.size();
+
+  int num_params = func_symtable_ptr->param_types.size();
+  if (num_args != num_params) {
+    yyerror(("Type error: " + class_name + "." + method_name + "() takes " + std::to_string(num_params) + " positional arguments but " + std::to_string(num_args) + " were given").c_str());
+  }
+
+  for (int i = 0; i < num_params; i++) {
+    std::string arg_type = get_type(func_args[i]);
+    std::string param_type = func_symtable_ptr->param_types[i];
+    if (arg_type != param_type) {
+      yyerror(("Type mismatch in call to " + class_name + "." + method_name + "(): " + param_type + " required but " + arg_type + " was passed").c_str());
     }
   }
 }

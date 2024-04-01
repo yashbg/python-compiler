@@ -47,13 +47,14 @@ void insert_attr(const std::string &name, const symtable_entry &entry) {
   cur_class_symtable_ptr->attr_entries[name] = entry;
 }
 
-symtable_entry lookup_attr(const std::string &name) {
-  auto entry_itr = cur_class_symtable_ptr->attr_entries.find(name);
-  if (entry_itr != cur_class_symtable_ptr->attr_entries.end()) {
+symtable_entry lookup_attr(const std::string &class_name, const std::string &attr_name) {
+  class_symtable *class_symtable_ptr = lookup_class(class_name);
+  auto entry_itr = class_symtable_ptr->attr_entries.find(attr_name);
+  if (entry_itr != class_symtable_ptr->attr_entries.end()) {
     return entry_itr->second;
   }
 
-  yyerror(("Name error: name '" + name + "' is not defined").c_str());
+  yyerror(("Attribute error: '" + class_name + "' object has no attribute '" + attr_name + "'").c_str());
   return entry_itr->second;
 }
 
@@ -81,7 +82,6 @@ void check_redecl(const std::string &name) {
   }
 
 }
-
 
 void add_func(const std::string &name, const std::vector<std::pair<std::string, std::string>> &params, const std::string &return_type, int lineno) {
   local_symtable *func_symtable_ptr = new local_symtable;
@@ -131,4 +131,15 @@ class_symtable * lookup_class(const std::string &name) {
 
   yyerror(("Name error: name '" + name + "' is not defined").c_str());
   return class_symtable_itr->second;
+}
+
+local_symtable * lookup_method(const std::string &class_name, const std::string &method_name) {
+  class_symtable *class_symtable_ptr = lookup_class(class_name);
+  auto method_symtable_itr = class_symtable_ptr->method_symtable_ptrs.find(method_name);
+  if (method_symtable_itr != class_symtable_ptr->method_symtable_ptrs.end()) {
+    return method_symtable_itr->second;
+  }
+
+  yyerror(("Attribute error: '" + class_name + "' object has no method '" + method_name + "()'").c_str());
+  return method_symtable_itr->second;
 }
