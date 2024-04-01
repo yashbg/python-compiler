@@ -102,6 +102,7 @@
   void generate_3AC_for_list(char* list_datatype, char* list);
   std::string strip_braces(const std::string &str);
   std::string get_curr_param_name(char* param_list);
+  int get_param_size(std::string datatype, std::string param_name);
 %}
 
 %union { char tokenname[1024]; }
@@ -2428,7 +2429,7 @@ atom_expr:
     else if ($2[0] == '[') {
       // array access
       std::string index = strip_braces($2);
-      if (is_valid_type($1)) {
+      if (is_valid_type($1)) { 
         yyerror("Type error: types are not subscriptable");
       }
       
@@ -2476,16 +2477,21 @@ atom_expr:
       }
 
       // Print the split strings
+      int stack_offset = 0;
       for (const auto& t : tokens) {
           // std::cout << t << std::endl;
           gen(t, "", "", "param");
+          symtable_entry sym_entry = lookup_var(t);
+          std::string curr_param_type = sym_entry.type;
+          int curr_param_size = get_param_size(curr_param_type, t);
+          stack_offset += curr_param_size;
       }
-      gen("+xxx","" , "", "stackpointer");
+      gen("+" + std::to_string(stack_offset),"" , "", "stackpointer");
       gen(std::to_string(tokens.size()), $1, ",", "call");
-      gen("-xxx","" , "", "stackpointer");
+      gen("-" + std::to_string(stack_offset),"" , "", "stackpointer");
 
       std::string temp = new_temp(); // TODO: type checking
-      gen("popparam","" , "", temp );
+      gen("popparam","" , "", temp);
 
       check_func_args($1);
       func_args.clear();
@@ -3086,7 +3092,7 @@ parenthesis_arglist_opt_opt:
   {
     parser_logfile << "'(' arglist_opt ')'" << std::endl;
     
-    std::cout << "parenthesis_arglist_opt_opt - " << $2 << std::endl;
+    // std::cout << "parenthesis_arglist_opt_opt - " << $2 << std::endl;
     // node_map["()"]++;
     // std::string no=std::to_string(node_map["()"]);
     // std::string s="()"+no;
@@ -3644,4 +3650,15 @@ std::string get_curr_param_name(char* param_list){
   }
   start_pos = i + 1;
   return curr_param_name;
+}
+
+int get_param_size(std::string datatype, std::string var_name){
+    symtable_entry sym_entry = lookup_var(var_name);
+    std::string temp = datatype.substr(0, 4);
+    if(temp == "list"){
+      return 4;
+    }
+    else{
+      return sym_entry.size;
+    }
 }
