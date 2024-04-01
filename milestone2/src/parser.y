@@ -3872,7 +3872,7 @@ void check_method_args(const std::string &class_name, const std::string &method_
 std::string get_curr_param_name(char* param_list){
   std::string curr_param_name; 
   int i = start_pos;
-  while(i < strlen(param_list)){
+  while(i < strlen(param_list) - 1){
     if(param_list[i] == ':') break;
     curr_param_name += param_list[i];
     i++;
