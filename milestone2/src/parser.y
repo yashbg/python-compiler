@@ -93,6 +93,7 @@
   std::stack<std::string> loop_stack;
   std::stack<std::string> loop_stack_false;
   std::stack<std::vector<std::string>> code_stack;
+  std::string class_name;
 
   std::string get_sem_val(char *c_str); // get semantic value from AST node
   int get_size(const std::string &type); // returns width for lists
@@ -120,6 +121,7 @@
   };
 
   std::stack<activation_record> control_stack;
+
 
   void push_activation_record(activation_record ar);
   void pop_activation_record();
@@ -3181,6 +3183,7 @@ classdef:
 
     cur_class_symtable_ptr = gsymtable.class_symtable_ptrs[$2];
     class_scope = true;
+    class_name = $2;
   }
   suite
   {
