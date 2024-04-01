@@ -11,6 +11,7 @@
   #include <fstream>
   #include <stack>
   #include <algorithm>
+  #include <sstream>
   #include "symtable.h"
 
   extern int yylex();
@@ -2447,6 +2448,33 @@ atom_expr:
     }
     else if ($2[0] == '(') {
       // function call
+      // std::cout << "Function call" << std::endl;
+      // std::cout << "atom: " << $1 << std::endl;
+      // std::cout << "trailer: " << $2 << std::endl; 
+
+      std::string str = $2;
+      std::string arglist = str.substr(1, str.length() - 2);
+      std::stringstream ss(arglist);
+      std::vector<std::string> tokens;
+      std::string token;
+
+      // Iterate through each token separated by ',' and store it in the vector
+      while (std::getline(ss, token, ',')) {
+          tokens.push_back(token);
+      }
+
+      // Print the split strings
+      for (const auto& t : tokens) {
+          // std::cout << t << std::endl;
+          gen(t, "", "", "param");
+      }
+      gen("+xxx","" , "", "stackpointer");
+      gen(std::to_string(tokens.size()), $1, ",", "call");
+      gen("-xxx","" , "", "stackpointer");
+
+      std::string temp = new_temp(); // TODO: type checking
+      gen("popparam","" , "", temp );
+
       check_func_args($1);
       func_args.clear();
     }
@@ -2744,6 +2772,7 @@ comp_for_OR_comma_test_or_star_expr_list_comma_opt:
 trailer:
   '(' arglist_opt ')'
   {
+    // std::cout << $2 << std::endl;
     parser_logfile << "'(' arglist_opt ')'" << std::endl;
 
     // node_map["()"]++;
