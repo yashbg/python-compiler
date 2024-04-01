@@ -104,6 +104,10 @@
   std::string strip_braces(const std::string &str);
   std::string get_curr_param_name(char* param_list);
   int get_param_size(std::string datatype, std::string param_name);
+  bool is_func(const std::string &name);
+  std::string get_ret_type(const std::string &name);
+
+  bool is_class(const std::string &name);
 
   struct activation_record {
     std::string func_name;
@@ -195,7 +199,7 @@ funcdef:
       int num_params = func_symtable_ptr->param_types.size();
       start_pos = 1;
       for(int i = 0; i < num_params; i++){
-        std::string t = new_temp();
+        std::string t = new_temp(); // TODO: type checking
         gen("=", "popparam", "", t);
         std::string curr_param = get_curr_param_name($3);
         gen("=", t, "", curr_param);
@@ -2487,7 +2491,12 @@ atom_expr:
     }
     else if ($2[0] == '(') {
       // function or class constructor call
-      if (!($1 == "len" || $1 == "range" || $1 == "print")) {
+      if (is_class($1)) {
+        
+
+        strcpy($$, $1); // TODO
+      }
+      else if (!($1 == "len" || $1 == "range" || $1 == "print")) {
         std::string str = $2;
         std::string arglist = str.substr(1, str.length() - 2);
         std::stringstream ss(arglist);
@@ -2527,11 +2536,15 @@ atom_expr:
         gen(std::to_string(tokens.size()), $1, ",", "call");
         gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
 
-        std::string temp = new_temp(); // TODO: type checking
+        std::string temp = new_temp();
         gen("popparam","" , "", temp);
+
+        temp_types[temp] = get_ret_type($1);
 
         check_func_args($1);
         func_args.clear();
+
+        strcpy($$, temp.c_str());
       }
       // TODO: else
     }
@@ -3569,16 +3582,20 @@ std::string get_type(const std::string &str) {
     return str;
   }
 
-  if (temp_types.find(str) != temp_types.end()) {
-    return temp_types[str];
-  }
-
   if (str[0] == '[') {
     return get_list_literal_type(str);
   }
 
   if (str[0] == '"') {
     return "str";
+  }
+
+  if (is_func(str)) {
+    return get_ret_type(str);
+  }
+
+  if (temp_types.find(str) != temp_types.end()) {
+    return temp_types[str];
   }
 
   return lookup_var(str).type;
@@ -3704,6 +3721,30 @@ int get_param_size(std::string datatype, std::string var_name){
     else{
       return sym_entry.size;
     }
+}
+
+bool is_func(const std::string &name) {
+  if (class_scope) {
+    auto func_symtable_itr = cur_class_symtable_ptr->method_symtable_ptrs.find(name);
+    if (func_symtable_itr != cur_class_symtable_ptr->method_symtable_ptrs.end()) {
+      return true;
+    }
+  }
+
+  auto func_symtable_itr = gsymtable.func_symtable_ptrs.find(name);
+  if (func_symtable_itr != gsymtable.func_symtable_ptrs.end()) {
+    return true;
+  }
+
+  return false;
+}
+
+std::string get_ret_type(const std::string &name) {
+  return lookup_func(name)->return_type;
+}
+
+bool is_class(const std::string &name) {
+  return gsymtable.class_symtable_ptrs.find(name) != gsymtable.class_symtable_ptrs.end();
 }
 
 void generate_3AC_for_list_copying(std::string dest, std::string src){
