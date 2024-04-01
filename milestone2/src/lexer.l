@@ -169,12 +169,6 @@ class                     {
                             return CLASS;
                           }
 
-is                        {
-                            store_token();
-                            fprintf(lexer_logfile, "%s\n", "IS");
-                            return IS;
-                          }
-
 return                    {
                             store_token();
                             fprintf(lexer_logfile, "%s\n", "RETURN");
