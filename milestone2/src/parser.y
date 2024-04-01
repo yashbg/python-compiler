@@ -2659,9 +2659,9 @@ atom_expr:
         symtable_entry sym_entry = lookup_var(tokens[0]);
         std::string size = std::to_string(sym_entry.size);
         gen("param", tokens[0], "", "");
-        gen("stackpointer", "+", size, "");
+        gen("stackpointer", "+"+size, "", "");
         gen("1", $1, ",", "call");
-        gen("stackpointer", "-", size, "");
+        gen("stackpointer", "-"+size, "", "");
       }
     }
     else {
