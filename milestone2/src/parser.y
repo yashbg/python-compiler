@@ -877,13 +877,17 @@ return_stmt:
   RETURN testlist_opt
   {
     parser_logfile << "RETURN testlist_opt" << std::endl;
-    node_map["RETURN"]++;
-    std::string no=std::to_string(node_map["RETURN"]);
-    std::string s="RETURN"+no;
-    //emit_dot_node(s.c_str(), "RETURN");
-    if($2[0]!='\0'){
-      emit_dot_edge(s.c_str(), $2);}
-    strcpy($$, s.c_str());
+    // node_map["RETURN"]++;
+    // std::string no=std::to_string(node_map["RETURN"]);
+    // std::string s="RETURN"+no;
+    // //emit_dot_node(s.c_str(), "RETURN");
+    // if($2[0]!='\0'){
+    //   emit_dot_edge(s.c_str(), $2);}
+    // strcpy($$, s.c_str());
+    if($2[0] != '\0'){
+      gen("push", $2, "", "");
+    }
+    gen("return", "", "", "");
   }
 ;
 
