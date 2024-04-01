@@ -2555,6 +2555,7 @@ atom_expr:
     }
     else {
       strcpy($$, $1);
+      strcat($$, $2);
     }
   }
 ;
