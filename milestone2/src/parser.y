@@ -190,6 +190,11 @@ funcdef:
   DEF NAME parameters arrow_test_opt ':'
   {
     add_func($2, func_params, func_return_type, yylineno);
+
+    if (class_scope) {
+      insert_attr(func_params[0].first, {class_name, "", yylineno, 0, 0, 0, offset}); // TODO
+    }
+
     func_params.clear();
 
     if (!($2 == "len" || $2 == "range" || $2 == "print")) {
@@ -2468,7 +2473,7 @@ atom_expr:
         yyerror("Syntax error: 'self' cannot be indexed");
       }
 
-      symtable_entry entry = lookup_attr($1, std::string($2).substr(1));
+      symtable_entry entry = lookup_attr(class_name, std::string($2).substr(1));
       std::string t = new_temp(); //TODO  -- store size of x in self.x
       gen("", std::to_string(entry.size), "", t);
       std::string t2 = new_temp(); // TODO -- store address of x in self.x
@@ -2640,6 +2645,37 @@ atom_expr:
         strcpy($$, temp.c_str());
       }
       // TODO: else
+      else if ((str == "len" || str == "print")) {
+        std::string str2 = $2;
+        std::string arglist = str2.substr(1, str2.length() - 2);
+        std::stringstream ss(arglist);
+        std::vector<std::string> tokens;
+        std::string token;
+
+        // Iterate through each token separated by ',' and store it in the vector
+        while (std::getline(ss, token, ',')) {
+            tokens.push_back(token);
+        }
+
+        if(tokens.size() != 1){
+          yyerror("Syntax error: len() and print() take exactly one argument");
+        }
+
+        symtable_entry sym_entry = lookup_var(tokens[0]);
+        std::string size = std::to_string(sym_entry.size);
+        if(str == "print"){
+        gen("param", tokens[0], "", "");
+        gen("stackpointer", "+"+size, "", "");
+        gen("1", $1, ",", "call");
+        gen("stackpointer", "-"+size, "", "");
+        }
+        else if(str == "len"){
+          std::string t = new_temp();
+          temp_types[t] = "int";
+          gen("=", size, "", t);
+          strcpy($$, t.c_str());
+        }
+      }
     }
     else {
       strcpy($$, $1);
@@ -3777,7 +3813,7 @@ int calc_list_len(const std::string &str) {
 
 void check_func_args(const std::string &name) {
   if (name == "len" || name == "range" || name == "print") {
-    return; 
+    return;
   }
 
   local_symtable *func_symtable_ptr = lookup_func(name);
