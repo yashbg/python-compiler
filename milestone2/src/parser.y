@@ -2641,8 +2641,8 @@ atom_expr:
       }
       // TODO: else
       else if ((str == "len" || str == "print")) {
-        std::string str = $2;
-        std::string arglist = str.substr(1, str.length() - 2);
+        std::string str2 = $2;
+        std::string arglist = str2.substr(1, str2.length() - 2);
         std::stringstream ss(arglist);
         std::vector<std::string> tokens;
         std::string token;
@@ -2658,10 +2658,18 @@ atom_expr:
 
         symtable_entry sym_entry = lookup_var(tokens[0]);
         std::string size = std::to_string(sym_entry.size);
+        if(str == "print"){
         gen("param", tokens[0], "", "");
         gen("stackpointer", "+"+size, "", "");
         gen("1", $1, ",", "call");
         gen("stackpointer", "-"+size, "", "");
+        }
+        else if(str == "len"){
+          std::string t = new_temp();
+          temp_types[t] = "int";
+          gen("=", size, "", t);
+          strcpy($$, t.c_str());
+        }
       }
     }
     else {
