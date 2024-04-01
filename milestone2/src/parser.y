@@ -165,11 +165,6 @@ funcdef:
   {
     add_func($2, func_params, func_return_type);
     func_params.clear();
-    symtable_entry entry;
-    entry.type = func_return_type;
-    entry.lineno = yylineno;
-    // TODO
-    insert_var($2,entry);
 
     cur_func_symtable_ptr = lookup_func($2);
     func_scope = true;
@@ -2465,14 +2460,7 @@ atom_expr:
       temp_types[t2] = list_type.substr(5, list_type.size() - 6);
     }
     else if ($2[0] == '(') {
-      // function call
-      // std::cout << "Function call" << std::endl;
-      // std::cout << "atom: " << $1 << std::endl;
-      // std::cout << "trailer: " << $2 << std::endl; 
-
-      std::string name = get_sem_val($1);
-      symtable_entry entry = lookup_var(name);
-
+      // function or class constructor call
       std::string str = $2;
       std::string arglist = str.substr(1, str.length() - 2);
       std::stringstream ss(arglist);
@@ -2495,6 +2483,8 @@ atom_expr:
 
       std::string temp = new_temp(); // TODO: type checking
       gen("popparam","" , "", temp );
+
+
 
       check_func_args($1);
       func_args.clear();
@@ -2827,7 +2817,7 @@ trailer:
   }
 | '.' NAME
   {
-    parser_logfile << "'. NAME'" << std::endl;
+    parser_logfile << "'.' NAME" << std::endl;
     node_map["."]++;
     std::string no=std::to_string(node_map["."]);
     std::string s="."+no;
