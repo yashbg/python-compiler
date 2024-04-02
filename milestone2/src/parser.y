@@ -590,17 +590,35 @@ expr_stmt:
     // emit_dot_edge($3, $1);
     // strcpy($$, $3);
 
-    if (var_type.substr(0, 4) == "list") {
-      int list_size = list_len * get_size(var_type);
-      if(var_type == "list[str]"){
-        list_size = curr_list_size;
+    if (std::string($1).substr(0, 4) == "self") {
+      if (var_type.substr(0, 4) == "list") {
+        int list_size = list_len * get_size(var_type);
+        if(var_type == "list[str]"){
+          list_size = curr_list_size;
+        }
+
+        insert_attr(std::string($1).substr(5), {var_type, "", yylineno, list_size, list_len, get_size(var_type), offset}); // TODO
+        list_len = 0;
       }
-      insert_var($1, {var_type, "", yylineno, list_size, list_len, get_size(var_type), offset}); // TODO
-      list_len = 0;
+      else {
+        insert_attr(std::string($1).substr(5), {var_type, "", yylineno, get_size(var_type), 0, 0, offset}); // TODO
+      }
     }
     else {
-      insert_var($1, {var_type, "", yylineno, get_size(var_type), 0, 0, offset}); // TODO
+      if (var_type.substr(0, 4) == "list") {
+        int list_size = list_len * get_size(var_type);
+        if(var_type == "list[str]"){
+          list_size = curr_list_size;
+        }
+
+        insert_var($1, {var_type, "", yylineno, list_size, list_len, get_size(var_type), offset}); // TODO
+        list_len = 0;
+      }
+      else {
+        insert_var($1, {var_type, "", yylineno, get_size(var_type), 0, 0, offset}); // TODO
+      }
     }
+
 
     if($3[0] != ':') {
       gen("=", $3, "", $1);
@@ -2663,8 +2681,8 @@ atom_expr:
 
         strcpy($$, temp.c_str());
       }
-      // TODO: else
       else if ((str == "len" || str == "print")) {
+        // TODO: handle len variable (when $2 is not "()")
         std::string str2 = $2;
         std::string arglist = str2.substr(1, str2.length() - 2);
         std::stringstream ss(arglist);
@@ -2694,6 +2712,29 @@ atom_expr:
           gen("=", size, "", t);
           strcpy($$, t.c_str());
         }
+      }
+      // TODO: else
+    }
+    else if ($2[0] == '.') {
+      if(std::string($2).find('(') != std::string::npos) {
+        // method call
+
+        strcpy($$, (std::string($1) + $2).c_str());
+      }
+      else {
+        // attribute access
+        symtable_entry obj_entry = lookup_var($1);
+        std::string class_name = obj_entry.type;
+
+        std::string attr = std::string($2).substr(1);
+        symtable_entry attr_entry = lookup_attr(class_name, attr);
+
+        std::string t = new_temp();
+        gen("=", std::string($1) + $2, "", t);
+
+        temp_types[t] = attr_entry.type;
+
+        strcpy($$, t.c_str());
       }
     }
     else {
@@ -3754,6 +3795,17 @@ std::string get_type(const std::string &str) {
     return temp_types[str];
   }
 
+  int dot = str.find('.');
+  if (dot != std::string::npos) {
+    std::string attr = str.substr(dot + 1);
+    if (str.substr(0, 4) == "self") {
+      return lookup_attr(class_name, attr).type;
+    }
+
+    std::string class_name = lookup_var(str.substr(0, dot)).type;
+    return lookup_attr(class_name, attr).type;
+  }
+
   return lookup_var(str).type;
 }
 
@@ -3857,7 +3909,6 @@ void check_method_args(const std::string &class_name, const std::string &method_
   int num_args = func_args.size();
   
   int num_params = func_symtable_ptr->param_types.size();
-  // std::cout << num_args << " " << num_params << std::endl;
   if (num_args + 1 != num_params) {
     yyerror(("Type error: " + class_name + "." + method_name + "() takes " + std::to_string(num_params - 1) + " positional arguments but " + std::to_string(num_args) + " were given").c_str());
   }
@@ -3894,7 +3945,6 @@ int get_param_size(std::string datatype, std::string var_name){
       return 4;
     }
     else{
-      std::cout << sym_entry.size << std::endl;
       return sym_entry.size;
     }
 }

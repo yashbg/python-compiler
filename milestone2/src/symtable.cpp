@@ -54,7 +54,7 @@ symtable_entry lookup_attr(const std::string &class_name, const std::string &att
     return entry_itr->second;
   }
 
-  yyerror(("Attribute error: '" + class_name + "' object has no attribute '" + attr_name + "'").c_str());
+  yyerror(("Attribute error: '" + class_name + "' class has no attribute '" + attr_name + "'").c_str());
   return entry_itr->second;
 }
 
