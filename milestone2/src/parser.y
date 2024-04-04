@@ -110,7 +110,7 @@
   std::string get_curr_param_name(char* param_list);
   int get_param_size(std::string datatype, std::string param_name);
   bool is_func(const std::string &name);
-  std::string get_ret_type(const std::string &name);
+  std::string get_func_ret_type(const std::string &name);
 
   bool is_class(const std::string &name);
 
@@ -2674,7 +2674,7 @@ atom_expr:
         std::string temp = new_temp();
         gen("popparam","" , "", temp);
 
-        temp_types[temp] = get_ret_type($1);
+        temp_types[temp] = get_func_ret_type($1);
 
         check_func_args($1);
         func_args.clear();
@@ -2716,25 +2716,79 @@ atom_expr:
       // TODO: else
     }
     else if ($2[0] == '.') {
-      if(std::string($2).find('(') != std::string::npos) {
+      int paren = std::string($2).find('(');
+      if (paren != std::string::npos) {
         // method call
+        std::string method = std::string($2).substr(1, paren - 1);
 
-        strcpy($$, (std::string($1) + $2).c_str());
+        std::string str = $2;
+        std::string arglist = str.substr(paren + 1, str.length() - paren - 2);
+        std::stringstream ss(arglist);
+        std::vector<std::string> tokens;
+        std::string token;
+
+        // Iterate through each token separated by ',' and store it in the vector
+        while (std::getline(ss, token, ',')) {
+            tokens.push_back(token);
+        }
+
+        // Print the split strings
+        int stack_offset = 0;
+        for (const auto& t : tokens) {
+            int curr_param_size;
+            if (is_int_literal(t) || is_float_literal(t) || t[0] == '"') {
+              curr_param_size = get_size(get_type(t));
+            }
+            else {
+              symtable_entry sym_entry = lookup_var(t);
+              std::string curr_param_type = sym_entry.type;
+              curr_param_size = get_param_size(curr_param_type, t);
+              if(curr_param_type.substr(0, 4) == "list"){
+                std::string alloc_bytes = "alloc " + std::to_string(sym_entry.size); 
+                std::string t1 = new_temp();
+                gen("=", alloc_bytes, "", t1);
+                generate_3AC_for_list_copying(t1, t);
+                gen("=", t1, "", t);
+                temp_types[t1] = "[" + curr_param_type + "]";
+              }
+
+              stack_offset += curr_param_size;
+            }
+
+            gen("param", t, "", "");
+        }
+        
+        gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
+        gen(std::to_string(tokens.size()), std::string($1) + "." + method, ",", "call");
+        gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
+
+        std::string temp = new_temp();
+        gen("popparam","" , "", temp);
+
+        std::string class_name = lookup_var($1).type;
+        temp_types[temp] = get_type(std::string($1) + $2);
+
+        check_method_args(class_name, method);
+        func_args.clear();
+
+        strcpy($$, temp.c_str());
       }
       else {
-        // attribute access
-        symtable_entry obj_entry = lookup_var($1);
-        std::string class_name = obj_entry.type;
+        // object attribute access
+        // symtable_entry obj_entry = lookup_var($1);
+        // std::string class_name = obj_entry.type;
 
-        std::string attr = std::string($2).substr(1);
-        symtable_entry attr_entry = lookup_attr(class_name, attr);
+        // std::string attr = std::string($2).substr(1);
+        // symtable_entry attr_entry = lookup_attr(class_name, attr);
 
-        std::string t = new_temp();
-        gen("=", std::string($1) + $2, "", t);
+        // std::string t = new_temp();
+        // gen("=", std::string($1) + $2, "", t);
 
-        temp_types[t] = attr_entry.type;
+        // temp_types[t] = attr_entry.type;
 
-        strcpy($$, t.c_str());
+        // strcpy($$, t.c_str());
+
+        strcpy($$, (std::string($1) + $2).c_str());
       }
     }
     else {
@@ -3784,7 +3838,7 @@ std::string get_type(const std::string &str) {
   }
 
   if (is_func(str)) {
-    return get_ret_type(str);
+    return get_func_ret_type(str);
   }
 
   if (is_class(str)) {
@@ -3797,6 +3851,17 @@ std::string get_type(const std::string &str) {
 
   int dot = str.find('.');
   if (dot != std::string::npos) {
+    int paren = str.find('(');
+    if(paren != std::string::npos) {
+      std::string method = str.substr(dot + 1, paren - dot - 1);
+      if (str.substr(0, 4) == "self") {
+        return lookup_method(class_name, method)->return_type;
+      }
+
+      std::string class_name = lookup_var(str.substr(0, dot)).type;
+      return lookup_method(class_name, method)->return_type;
+    }
+
     std::string attr = str.substr(dot + 1);
     if (str.substr(0, 4) == "self") {
       return lookup_attr(class_name, attr).type;
@@ -3942,6 +4007,7 @@ int get_param_size(std::string datatype, std::string var_name){
     symtable_entry sym_entry = lookup_var(var_name);
     std::string temp = datatype.substr(0, 4);
     if(temp == "list"){
+      // TODO
       return 4;
     }
     else{
@@ -3965,7 +4031,7 @@ bool is_func(const std::string &name) {
   return false;
 }
 
-std::string get_ret_type(const std::string &name) {
+std::string get_func_ret_type(const std::string &name) {
   return lookup_func(name)->return_type;
 }
 
