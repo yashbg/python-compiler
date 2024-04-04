@@ -760,10 +760,14 @@ annassign:
       if(temp == "list"){
         int element_number = get_list_element_count($4);
         int list_size = get_list_size($2, $4);
-        std::string alloc_bytes = "alloc " + std::to_string(list_size);
         curr_list_size = list_size;
+               
+        gen("push", std::to_string(list_size), "", "");
+        gen("stackpointer", "+4","" , "");
+        gen("1", "allocmem", "," , "call");
+        gen("stackpointer", "-4","" , "");
         std::string t = new_temp();
-        gen("=", alloc_bytes, "", t);
+        gen("popparam", "", "", t);
         generate_3AC_for_list($2, $4);
 
         list_len = calc_list_len($4);
@@ -2611,9 +2615,12 @@ atom_expr:
               std::string curr_param_type = sym_entry.type;
               curr_param_size = get_param_size(curr_param_type, t);
               if(curr_param_type.substr(0, 4) == "list"){
-                std::string alloc_bytes = "alloc " + std::to_string(sym_entry.size); 
+                gen("push", std::to_string(sym_entry.size), "", "");
+                gen("stackpointer", "+4","" , "");
+                gen("1", "allocmem", "," , "call");
+                gen("stackpointer", "-4","" , "");
                 std::string t1 = new_temp();
-                gen("=", alloc_bytes, "", t1);
+                gen("popparam", "", "", t1);
                 generate_3AC_for_list_copying(t1, t);
                 gen("=", t1, "", t);
                 temp_types[t1] = "[" + curr_param_type + "]";
@@ -2660,10 +2667,13 @@ atom_expr:
               symtable_entry sym_entry = lookup_var(t);
               std::string curr_param_type = sym_entry.type;
               curr_param_size = get_param_size(curr_param_type, t);
-              if(curr_param_type.substr(0, 4) == "list"){
-                std::string alloc_bytes = "alloc " + std::to_string(sym_entry.size); 
+              if(curr_param_type.substr(0, 4) == "list"){                
+                gen("push", std::to_string(sym_entry.size), "", "");
+                gen("stackpointer", "+4","" , "");
+                gen("1", "allocmem", "," , "call");
+                gen("stackpointer", "-4","" , "");
                 std::string t1 = new_temp();
-                gen("=", alloc_bytes, "", t1);
+                gen("popparam", "", "", t1);
                 generate_3AC_for_list_copying(t1, t);
                 gen("=", t1, "", t);
                 temp_types[t1] = "[" + curr_param_type + "]";
@@ -2751,10 +2761,13 @@ atom_expr:
               symtable_entry sym_entry = lookup_var(t);
               std::string curr_param_type = sym_entry.type;
               curr_param_size = get_param_size(curr_param_type, t);
-              if(curr_param_type.substr(0, 4) == "list"){
-                std::string alloc_bytes = "alloc " + std::to_string(sym_entry.size); 
+              if(curr_param_type.substr(0, 4) == "list"){ 
+                gen("push", std::to_string(sym_entry.size), "", "");
+                gen("stackpointer", "+4","" , "");
+                gen("1", "allocmem", "," , "call");
+                gen("stackpointer", "-4","" , "");
                 std::string t1 = new_temp();
-                gen("=", alloc_bytes, "", t1);
+                gen("popparam", "", "", t1);
                 generate_3AC_for_list_copying(t1, t);
                 gen("=", t1, "", t);
                 temp_types[t1] = "[" + curr_param_type + "]";
