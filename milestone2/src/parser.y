@@ -192,42 +192,35 @@ newline_or_stmt_list:
 funcdef:
   DEF NAME parameters arrow_test_opt ':'
   {
-    std::string func_name = $2;
-    if(func_name == "main") func_return_type = "None";
     add_func($2, func_params, func_return_type, yylineno);
+    cur_func_symtable_ptr = lookup_func($2);
+    func_scope = true;
 
     if (class_scope) {
-      insert_attr(func_params[0].first, {class_name, "", yylineno, 0, 0, 0, offset}); // TODO
+      // add self to method symbol table
+      insert_var(func_params[0].first, {class_name, "", yylineno, 0, 0, 0, offset}); // TODO
     }
 
-    func_params.clear();
-
     if (!($2 == "len" || $2 == "range" || $2 == "print")) {
-      cur_func_symtable_ptr = lookup_func($2);
-      func_scope = true;
       if(class_scope == true){
         std::string t = class_name + "." + $2;
         gen("", ":", "", t);
       }
-      else
-      gen("", ":", "", $2);
+      else {
+        gen("", ":", "", $2);
+      }
+
       gen("", "", "", "beginfunc");
-      // if(class_scope == true){
-      //   std::string t = new_temp(); // TODO
-      //   gen("popparam", "", "", t);
-      // }
+      
       local_temp_count = 1;
-      local_symtable *func_symtable_ptr = lookup_func($2);
-      int num_params = func_symtable_ptr->param_types.size();
-      start_pos = 1;
-      for(int i = 0; i < num_params; i++){
-        std::string t = new_temp(); // TODO: type checking
-        gen("=", "popparam", "", t);
-        std::string curr_param = get_curr_param_name($3);
-        gen("=", t, "", curr_param);
+      
+      for(int i = 0; i < func_params.size(); i++){
+        gen("=", "popparam", "", func_params[i].first);
       }
     }
     // TODO: else
+    
+    func_params.clear();
   }
   suite
   {
