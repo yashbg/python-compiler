@@ -2582,7 +2582,7 @@ atom_expr:
         gen("popparam", "", "", tempstr);
 
         // pass new object as first argument
-        gen("param", tempstr, "", "");
+        gen("param&", tempstr, "", "");
 
         for (const auto& arg : func_args) {
           std::string arg_type = get_type(arg);
@@ -2685,7 +2685,7 @@ atom_expr:
         check_method_args(class_name, method);
 
         // pass object as first argument
-        gen("param", $1, "", "");
+        gen("param&", $1, "", "");
 
         int stack_offset = 0; // TODO
         for (const auto& arg : func_args) {
