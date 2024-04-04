@@ -2770,11 +2770,13 @@ atom_expr:
         gen(std::to_string(tokens.size()), std::string($1) + "." + method, ",", "call");
         gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
 
-        std::string temp = new_temp();
-        gen("popparam","" , "", temp);
-
+        std::string temp, method_ret_type = get_type(std::string($1) + $2);
+        if(method_ret_type != "None"){
+          temp = new_temp();
+          gen("popparam","" , "", temp);
+          temp_types[temp] = get_type(std::string($1) + $2);
+        }
         std::string class_name = lookup_var($1).type;
-        temp_types[temp] = get_type(std::string($1) + $2);
 
         check_method_args(class_name, method);
         func_args.clear();
