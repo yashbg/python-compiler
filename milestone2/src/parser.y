@@ -192,6 +192,8 @@ newline_or_stmt_list:
 funcdef:
   DEF NAME parameters arrow_test_opt ':'
   {
+    std::string func_name = $2;
+    if(func_name == "main") func_return_type = "None";
     add_func($2, func_params, func_return_type, yylineno);
 
     if (class_scope) {
@@ -2675,11 +2677,13 @@ atom_expr:
         gen(std::to_string(tokens.size()), $1, ",", "call");
         gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
 
-        std::string temp = new_temp();
-        gen("popparam","" , "", temp);
-
-        temp_types[temp] = get_func_ret_type($1);
-
+        std::string temp, func_ret_type = get_func_ret_type($1);
+        if(func_ret_type != "None"){
+          temp = new_temp();
+          gen("popparam","" , "", temp);
+          temp_types[temp] = func_ret_type;
+        }
+        
         check_func_args($1);
         func_args.clear();
 
