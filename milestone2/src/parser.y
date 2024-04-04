@@ -2571,61 +2571,38 @@ atom_expr:
     else if ($2[0] == '(') {
       if (is_class($1)) {
         // class constructor call
-        std::string str = $2;
-        std::string arglist = str.substr(1, str.length() - 2);
-        std::stringstream ss(arglist);
-        std::vector<std::string> tokens;
-        std::string token;
-
-        // Iterate through each token separated by ',' and store it in the vector
-        while (std::getline(ss, token, ',')) {
-            tokens.push_back(token);
-        }
+        check_method_args($1, "__init__"); // TODO
 
         int stack_offset = 0;
-        for (const auto& t : tokens) {
-            int curr_param_size;
-            if (is_int_literal(t) || is_float_literal(t) || t[0] == '"') {
-              curr_param_size = get_size(get_type(t));
-            }
-            else {
-              symtable_entry sym_entry = lookup_var(t);
-              std::string curr_param_type = sym_entry.type;
-              curr_param_size = get_param_size(curr_param_type, t);
-            }
-            stack_offset += curr_param_size;
+        for (const auto& arg : func_args) {
+          stack_offset += get_size(get_type(arg));
         }
+        
+        // create new object
         std::string t2 = new_temp(); //TODO : type checking
         gen("=", std::to_string(stack_offset), "", t2);
         gen("param", t2, "", "");
         gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
         gen("1", "allocmem", "," , "call");
         gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
-
         std::string tempstr = new_temp();
         gen("popparam", "", "", tempstr);
+
+        // pass new object as first argument
         gen("param", tempstr, "", "");
-        for (const auto& t : tokens) {
-            int curr_param_size;
-            if (is_int_literal(t) || is_float_literal(t) || t[0] == '"') {
-              gen("param", t, "", "");
-            }
-            else {
-              symtable_entry sym_entry = lookup_var(t);
-              std::string curr_param_type = sym_entry.type;
-              curr_param_size = get_param_size(curr_param_type, t);
-              if(!(curr_param_type == "int" || curr_param_type == "bool" ||
-                curr_param_type == "float" || curr_param_type == "str")){
-                gen("param&", t, "", "");
-              }
-              else{
-                gen("param", t, "", "");
-              }
-            }
+        
+        for (const auto& arg : func_args) {
+          std::string arg_type = get_type(arg);
+          if (arg_type == "int" || arg_type == "bool" || arg_type == "float" || arg_type == "str") {
+            gen("param", arg, "", "");
+          }
+          else {
+            gen("param&", arg, "", "");
+          }
         }
         
         gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
-        gen(std::to_string(1 + tokens.size()), std::string($1) + ".__init__", ",", "call");
+        gen(std::to_string(1 + func_args.size()), std::string($1) + ".__init__", ",", "call");
         gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
 
         std::string temp = new_temp();
@@ -2633,7 +2610,6 @@ atom_expr:
 
         temp_types[temp] = $1;
 
-        check_method_args($1, "__init__"); // TODO
         func_args.clear();
 
         strcpy($$, temp.c_str());
