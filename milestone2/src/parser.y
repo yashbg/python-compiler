@@ -2571,7 +2571,7 @@ atom_expr:
     else if ($2[0] == '(') {
       if (is_class($1)) {
         // class constructor call
-        check_method_args($1, "__init__"); // TODO
+        check_method_args($1, "__init__");
 
         int stack_offset = 0;
         for (const auto& arg : func_args) {
@@ -2590,7 +2590,7 @@ atom_expr:
 
         // pass new object as first argument
         gen("param", tempstr, "", "");
-        
+
         for (const auto& arg : func_args) {
           std::string arg_type = get_type(arg);
           if (arg_type == "int" || arg_type == "bool" || arg_type == "float" || arg_type == "str") {
@@ -2616,55 +2616,38 @@ atom_expr:
       }
       else if (!(str == "len" || str == "range" || str == "print")) {
         // function call
-        std::string str = $2;
-        std::string arglist = str.substr(1, str.length() - 2);
-        std::stringstream ss(arglist);
-        std::vector<std::string> tokens;
-        std::string token;
-
-        // Iterate through each token separated by ',' and store it in the vector
-        while (std::getline(ss, token, ',')) {
-            tokens.push_back(token);
-        }
+        check_func_args($1);
 
         // Print the split strings
         int stack_offset = 0;
-        for (const auto& t : tokens) {
-            int curr_param_size;
-            if (is_int_literal(t) || is_float_literal(t) || t[0] == '"') {
-              curr_param_size = get_size(get_type(t));
-              gen("param", t, "", "");
-            }
-            else {
-              symtable_entry sym_entry = lookup_var(t);
-              std::string curr_param_type = sym_entry.type;
-              curr_param_size = get_param_size(curr_param_type, t);
-              if(!(curr_param_type == "int" || curr_param_type == "str" ||
-                 curr_param_type == "bool" || curr_param_type == "float")){                
-                gen("param&", t, "", "");
-              }
-              else{
-                gen("param", t, "", "");
-              }
-              stack_offset += curr_param_size;
-            }
+        for (const auto& arg : func_args) {
+          std::string arg_type = get_type(arg);
+          stack_offset += get_size(arg_type);
+          if (arg_type == "int" || arg_type == "bool" || arg_type == "float" || arg_type == "str") {
+            gen("param", arg, "", "");
+          }
+          else {
+            gen("param&", arg, "", "");
+          }
         }
         
         gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
-        gen(std::to_string(tokens.size()), $1, ",", "call");
+        gen(std::to_string(func_args.size()), $1, ",", "call");
         gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
 
-        std::string temp, func_ret_type = get_func_ret_type($1);
-        if(func_ret_type != "None"){
-          temp = new_temp();
+        std::string ret_type = get_func_ret_type($1);
+        if (ret_type != "None") {
+          std::string temp = new_temp();
           gen("popparam","" , "", temp);
-          temp_types[temp] = func_ret_type;
+          temp_types[temp] = ret_type;
+
+          strcpy($$, temp.c_str());
+        }
+        else {
+          strcpy($$, "None");
         }
         
-        check_func_args($1);
         func_args.clear();
-
-        strcpy($$, temp.c_str());
       }
       else if ((str == "len" || str == "print")) {
         // TODO: handle len variable (when $2 is not "()")
