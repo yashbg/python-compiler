@@ -3791,7 +3791,7 @@ void generate_3AC_for_list(char* list_datatype, char* list){
       curr_elem += list[i];
       i++;
     }
-    std::string temp =  "t" + std::to_string(temp_count - 1) + "[" + std::to_string(prev) + "]";
+    std::string temp =  "t" + std::to_string(local_temp_count - 1) + "[" + std::to_string(prev) + "]";
     gen("=", curr_elem, "", temp);
     if(list_elem_type == "str"){
       prev = prev + curr_elem.size() - 2;
