@@ -192,6 +192,10 @@ newline_or_stmt_list:
 funcdef:
   DEF NAME parameters arrow_test_opt ':'
   {
+    if (class_scope && std::string($2) == "__init__") {
+      func_return_type = "None";
+    }
+    
     add_func($2, func_params, func_return_type, yylineno);
     cur_func_symtable_ptr = lookup_func($2);
     func_scope = true;
