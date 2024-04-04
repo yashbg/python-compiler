@@ -2608,25 +2608,20 @@ atom_expr:
         for (const auto& t : tokens) {
             int curr_param_size;
             if (is_int_literal(t) || is_float_literal(t) || t[0] == '"') {
-              
+              gen("param", t, "", "");
             }
             else {
               symtable_entry sym_entry = lookup_var(t);
               std::string curr_param_type = sym_entry.type;
               curr_param_size = get_param_size(curr_param_type, t);
-              if(curr_param_type.substr(0, 4) == "list"){
-                gen("push", std::to_string(sym_entry.size), "", "");
-                gen("stackpointer", "+4","" , "");
-                gen("1", "allocmem", "," , "call");
-                gen("stackpointer", "-4","" , "");
-                std::string t1 = new_temp();
-                gen("popparam", "", "", t1);
-                generate_3AC_for_list_copying(t1, t);
-                gen("=", t1, "", t);
-                temp_types[t1] = "[" + curr_param_type + "]";
+              if(!(curr_param_type == "int" || curr_param_type == "bool" ||
+                curr_param_type == "float" || curr_param_type == "str")){
+                gen("param&", t, "", "");
+              }
+              else{
+                gen("param", t, "", "");
               }
             }
-            gen("param", t, "", "");
         }
         
         gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
@@ -2662,25 +2657,21 @@ atom_expr:
             int curr_param_size;
             if (is_int_literal(t) || is_float_literal(t) || t[0] == '"') {
               curr_param_size = get_size(get_type(t));
+              gen("param", t, "", "");
             }
             else {
               symtable_entry sym_entry = lookup_var(t);
               std::string curr_param_type = sym_entry.type;
               curr_param_size = get_param_size(curr_param_type, t);
-              if(curr_param_type.substr(0, 4) == "list"){                
-                gen("push", std::to_string(sym_entry.size), "", "");
-                gen("stackpointer", "+4","" , "");
-                gen("1", "allocmem", "," , "call");
-                gen("stackpointer", "-4","" , "");
-                std::string t1 = new_temp();
-                gen("popparam", "", "", t1);
-                generate_3AC_for_list_copying(t1, t);
-                gen("=", t1, "", t);
-                temp_types[t1] = "[" + curr_param_type + "]";
-            }
+              if(!(curr_param_type == "int" || curr_param_type == "str" ||
+                 curr_param_type == "bool" || curr_param_type == "float")){                
+                gen("param&", t, "", "");
+              }
+              else{
+                gen("param", t, "", "");
+              }
               stack_offset += curr_param_size;
             }
-            gen("param", t, "", "");
         }
         
         gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
@@ -2756,27 +2747,22 @@ atom_expr:
             int curr_param_size;
             if (is_int_literal(t) || is_float_literal(t) || t[0] == '"') {
               curr_param_size = get_size(get_type(t));
+              gen("param", t, "", "");
             }
             else {
               symtable_entry sym_entry = lookup_var(t);
               std::string curr_param_type = sym_entry.type;
               curr_param_size = get_param_size(curr_param_type, t);
-              if(curr_param_type.substr(0, 4) == "list"){ 
-                gen("push", std::to_string(sym_entry.size), "", "");
-                gen("stackpointer", "+4","" , "");
-                gen("1", "allocmem", "," , "call");
-                gen("stackpointer", "-4","" , "");
-                std::string t1 = new_temp();
-                gen("popparam", "", "", t1);
-                generate_3AC_for_list_copying(t1, t);
-                gen("=", t1, "", t);
-                temp_types[t1] = "[" + curr_param_type + "]";
+              if(!(curr_param_type == "int" || curr_param_type == "bool" ||
+                 curr_param_type == "float" || curr_param_type == "str")){ 
+                gen("param&", t, "", "");
+              }
+              else{
+                gen("param", t, "", "");
               }
 
               stack_offset += curr_param_size;
             }
-
-            gen("param", t, "", "");
         }
         
         gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
