@@ -22,6 +22,7 @@ struct local_symtable {
 };
 
 struct class_symtable {
+  class_symtable *parent_symtable_ptr;
   std::unordered_map<std::string, symtable_entry> attr_entries; // identifier -> symtable_entry
   std::unordered_map<std::string, local_symtable *> method_symtable_ptrs; // identifier -> local_symtable *
 };
@@ -44,6 +45,6 @@ void check_redecl(const std::string &name);
 void add_func(const std::string &name, const std::vector<std::pair<std::string, std::string>> &params, const std::string &return_type, int lineno);
 local_symtable * lookup_func(const std::string &name);
 
-void add_class(const std::string &name);
+void add_class(const std::string &name, class_symtable *parent_symtable_ptr);
 class_symtable * lookup_class(const std::string &name);
 local_symtable * lookup_method(const std::string &class_name, const std::string &method_name);

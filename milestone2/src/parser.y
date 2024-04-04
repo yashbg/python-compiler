@@ -197,7 +197,13 @@ funcdef:
     }
     
     add_func($2, func_params, func_return_type, yylineno);
-    cur_func_symtable_ptr = lookup_func($2);
+    if (class_scope) {
+      cur_func_symtable_ptr = lookup_method(class_name, $2);
+    }
+    else {
+      cur_func_symtable_ptr = lookup_func($2);
+    }
+    
     func_scope = true;
 
     if (class_scope) {
@@ -3278,7 +3284,14 @@ comma_test_list:
 classdef:
   CLASS NAME parenthesis_arglist_opt_opt ':'
   {
-    add_class($2);
+
+    std::string arglist = std::string($3);
+    class_symtable *parent_symtable_ptr = nullptr;
+    if (!arglist.empty() && arglist != "()") {
+      parent_symtable_ptr = lookup_class(arglist.substr(1, arglist.size() - 2));
+    }
+
+    add_class($2, parent_symtable_ptr);
 
     cur_class_symtable_ptr = gsymtable.class_symtable_ptrs[$2];
     class_scope = true;

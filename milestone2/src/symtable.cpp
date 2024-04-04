@@ -54,6 +54,8 @@ symtable_entry lookup_attr(const std::string &class_name, const std::string &att
     return entry_itr->second;
   }
 
+  // TODO: inheritance
+
   yyerror(("Attribute error: '" + class_name + "' class has no attribute '" + attr_name + "'").c_str());
   return entry_itr->second;
 }
@@ -102,13 +104,6 @@ void add_func(const std::string &name, const std::vector<std::pair<std::string, 
 }
 
 local_symtable * lookup_func(const std::string &name) {
-  if (class_scope) {
-    auto func_symtable_itr = cur_class_symtable_ptr->method_symtable_ptrs.find(name);
-    if (func_symtable_itr != cur_class_symtable_ptr->method_symtable_ptrs.end()) {
-      return func_symtable_itr->second;
-    }
-  }
-
   auto func_symtable_itr = gsymtable.func_symtable_ptrs.find(name);
   if (func_symtable_itr != gsymtable.func_symtable_ptrs.end()) {
     return func_symtable_itr->second;
@@ -118,8 +113,9 @@ local_symtable * lookup_func(const std::string &name) {
   return func_symtable_itr->second;
 }
 
-void add_class(const std::string &name) {
+void add_class(const std::string &name, class_symtable *parent_symtable_ptr) {
   class_symtable *class_symtable_ptr = new class_symtable;
+  class_symtable_ptr->parent_symtable_ptr = parent_symtable_ptr;
   gsymtable.class_symtable_ptrs[name] = class_symtable_ptr;
 }
 
@@ -139,6 +135,8 @@ local_symtable * lookup_method(const std::string &class_name, const std::string 
   if (method_symtable_itr != class_symtable_ptr->method_symtable_ptrs.end()) {
     return method_symtable_itr->second;
   }
+
+  // TODO: inheritance
 
   yyerror(("Attribute error: '" + class_name + "' object has no method '" + method_name + "()'").c_str());
   return method_symtable_itr->second;
