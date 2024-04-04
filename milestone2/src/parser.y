@@ -262,6 +262,7 @@ funcdef:
     strcat($$, temp.c_str());
 
     func_scope = false;
+    gen("return", "", "", "");
     gen("", "", "", "endfunc");
   }
 ;
@@ -964,7 +965,7 @@ return_stmt:
     if($2[0] != '\0'){
       gen("push", $2, "", "");
     }
-    gen("return", "", "", "");
+    // gen("return", "", "", "");
   }
 ;
 
@@ -2595,6 +2596,9 @@ atom_expr:
         gen("1", "allocmem", "," , "call");
         gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
 
+        std::string tempstr = new_temp();
+        gen("popparam", "", "", tempstr);
+        gen("param", tempstr, "", "");
         for (const auto& t : tokens) {
             int curr_param_size;
             if (is_int_literal(t) || is_float_literal(t) || t[0] == '"') {
