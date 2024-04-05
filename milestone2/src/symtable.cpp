@@ -54,7 +54,16 @@ symtable_entry lookup_attr(const std::string &class_name, const std::string &att
     return entry_itr->second;
   }
 
-  // TODO: inheritance
+  // inheritance
+  class_symtable *parent_symtable_ptr = class_symtable_ptr->parent_symtable_ptr;
+  while (parent_symtable_ptr) {
+    entry_itr = parent_symtable_ptr->attr_entries.find(attr_name);
+    if (entry_itr != parent_symtable_ptr->attr_entries.end()) {
+      return entry_itr->second;
+    }
+    
+    parent_symtable_ptr = parent_symtable_ptr->parent_symtable_ptr;
+  }
 
   yyerror(("Attribute error: '" + class_name + "' class has no attribute '" + attr_name + "'").c_str());
   return entry_itr->second;
@@ -136,7 +145,16 @@ local_symtable * lookup_method(const std::string &class_name, const std::string 
     return method_symtable_itr->second;
   }
 
-  // TODO: inheritance
+  // inheritance
+  class_symtable *parent_symtable_ptr = class_symtable_ptr->parent_symtable_ptr;
+  while (parent_symtable_ptr) {
+    method_symtable_itr = parent_symtable_ptr->method_symtable_ptrs.find(method_name);
+    if (method_symtable_itr != parent_symtable_ptr->method_symtable_ptrs.end()) {
+      return method_symtable_itr->second;
+    }
+    
+    parent_symtable_ptr = parent_symtable_ptr->parent_symtable_ptr;
+  }
 
   yyerror(("Attribute error: '" + class_name + "' object has no method '" + method_name + "()'").c_str());
   return method_symtable_itr->second;

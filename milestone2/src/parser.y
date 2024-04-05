@@ -3284,12 +3284,12 @@ comma_test_list:
 classdef:
   CLASS NAME parenthesis_arglist_opt_opt ':'
   {
-
-    std::string arglist = std::string($3);
     class_symtable *parent_symtable_ptr = nullptr;
-    if (!arglist.empty() && arglist != "()") {
-      parent_symtable_ptr = lookup_class(arglist.substr(1, arglist.size() - 2));
+    if (!func_args.empty()) {
+      parent_symtable_ptr = lookup_class(func_args[0]);
     }
+
+    func_args.clear();
 
     add_class($2, parent_symtable_ptr);
 
