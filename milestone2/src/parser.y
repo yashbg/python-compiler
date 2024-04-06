@@ -2159,7 +2159,8 @@ arith_expr:
       }
       
       std::string t = new_temp();
-      gen(current_operator , $1, $2, t);
+      gen("+" , $1, $2, t);
+      
       strcpy($$, t.c_str());
 
       temp_types[t] = max_type(arg_type1, arg_type2);
@@ -2232,7 +2233,13 @@ plus_or_minus_term_list:
       }
 
       std::string t = new_temp();
-      gen($2, $1, $3, t);
+      if(current_operator == "-"){
+        gen($2, "-" + std::string($1), $3, t);
+      }
+      else{
+        gen($2, $1, $3, t);
+      }
+      current_operator = "";
       strcpy($$, t.c_str());
 
       temp_types[t] = max_type(arg_type1, arg_type2);
