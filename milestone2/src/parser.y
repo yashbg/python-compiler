@@ -2264,7 +2264,11 @@ plus_or_minus_term_list:
 ;
 
 term:
-  factor star_or_slash_or_percent_or_doubleslash_factor_list
+  factor
+  {
+    strcpy($$, $1);
+  }
+  | factor star_or_slash_or_percent_or_doubleslash factor star_or_slash_or_percent_or_doubleslash_factor_list
   {
     parser_logfile << "factor star_or_slash_or_percent_or_doubleslash_factor_list" << std::endl;
     // if($2[0]=='\0'){
@@ -2275,26 +2279,28 @@ term:
     // strcpy($$, $1);
     // }
 
-    if($2[0] == '\0'){
-      strcpy($$, $1);
+    
+    std::string op = $2;
+    std::string arg_type1 = get_type($1);
+    if (!(arg_type1 == "int" || arg_type1 == "float")) {
+      type_err_op(op, arg_type1);
+    }
+    std::string arg_type2 = get_type($3);
+    if (!(arg_type2 == "int" || arg_type2 == "float")) {
+      type_err_op(op, arg_type2);
+    }
+    
+    std::string t = new_temp();
+    gen(op, $1, $3, t);
+    temp_types[t] = max_type(arg_type1, arg_type2);
+    if($4[0] == '\0'){
+      strcpy($$, t.c_str());
     }
     else{
-      std::string op = current_operator;
-      std::string arg_type1 = get_type($1);
-      if (!(arg_type1 == "int" || arg_type1 == "float")) {
-        type_err_op(op, arg_type1);
-      }
-
-      std::string arg_type2 = get_type($2);
-      if (!(arg_type2 == "int" || arg_type2 == "float")) {
-        type_err_op(op, arg_type2);
-      }
-      
-      std::string t = new_temp();
-      gen(current_operator, $1, $2, t);
-      strcpy($$, t.c_str());
-
-      temp_types[t] = max_type(arg_type1, arg_type2);
+      std::string t2 = new_temp();
+      gen(current_operator, t, $4, t2);
+      temp_types[t2] = max(get_type(t), get_type($4));
+      strcpy($$, t2.c_str());
     }
   }
 ;
