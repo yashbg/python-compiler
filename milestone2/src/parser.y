@@ -758,9 +758,8 @@ annassign:
 
     if($4[0] != '\0'){
       check_type_equiv(var_type, get_type($4));
-
       std::string temp = var_type.substr(0, 4);
-      if(temp == "list"){
+      if(temp == "list" && $4[0] == '['){
         int element_number = get_list_element_count($4);
         int list_size = get_list_size($2, $4);
         curr_list_size = list_size;
@@ -779,7 +778,7 @@ annassign:
         temp_types[t] = var_type;
       }
       else{
-        strcpy($$, $4);
+      strcpy($$, $4);
       }
     }
     else{
@@ -2591,7 +2590,7 @@ atom_expr:
         gen("popparam", "", "", tempstr);
 
         // pass new object as first argument
-        gen("param&", tempstr, "", "");
+        gen("param", tempstr, "", "");
 
         for (const auto& arg : func_args) {
           std::string arg_type = get_type(arg);
@@ -2599,7 +2598,7 @@ atom_expr:
             gen("param", arg, "", "");
           }
           else {
-            gen("param&", arg, "", "");
+            gen("param", arg, "", "");
           }
         }
         
@@ -2629,7 +2628,7 @@ atom_expr:
             gen("param", arg, "", "");
           }
           else {
-            gen("param&", arg, "", "");
+            gen("param", arg, "", "");
           }
         }
         
@@ -2694,7 +2693,7 @@ atom_expr:
         check_method_args(class_name, method);
 
         // pass object as first argument
-        gen("param&", $1, "", "");
+        gen("param", $1, "", "");
 
         int stack_offset = 0; // TODO
         for (const auto& arg : func_args) {
@@ -2704,7 +2703,7 @@ atom_expr:
             gen("param", arg, "", "");
           }
           else {
-            gen("param&", arg, "", "");
+            gen("param", arg, "", "");
           }
         }
         
