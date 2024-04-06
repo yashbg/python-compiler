@@ -764,8 +764,7 @@ annassign:
         int element_number = get_list_element_count($4);
         int list_size = get_list_size($2, $4);
         curr_list_size = list_size;
-               
-        gen("push", std::to_string(list_size), "", "");
+        gen("param", std::to_string(list_size), "", "");
         gen("stackpointer", "+4","" , "");
         gen("1", "allocmem", "," , "call");
         gen("stackpointer", "-4","" , "");
