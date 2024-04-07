@@ -12,16 +12,34 @@ extern global_symtable gsymtable;
 extern local_symtable *cur_func_symtable_ptr;
 extern class_symtable *cur_class_symtable_ptr;
 
+extern int list_len;
+
 extern void yyerror(const char *);
 
 extern int get_size(const std::string &type);
+extern int get_list_width(const std::string &type);
 
-void insert_var(const std::string &name, const symtable_entry &entry) {
+void insert_var(const std::string &name, const std::string &type) {
   // TODO: handle redeclarations
+  int size = get_size(type);
+  symtable_entry entry;
+  if (type.substr(0, 4) == "list") {
+    entry = {type, yylineno, size, list_len, get_list_width(type), 0};
+  }
+  else {
+    entry = {type, yylineno, size, 0, 0, 0};
+  }
+
   if (func_scope) {
+    entry.offset = cur_func_symtable_ptr->offset;
+    cur_func_symtable_ptr->offset += size;
+
     cur_func_symtable_ptr->var_entries[name] = entry;
     return;
   }
+
+  entry.offset = gsymtable.offset;
+  gsymtable.offset += size;
 
   gsymtable.var_entries[name] = entry;
 }
@@ -43,7 +61,19 @@ symtable_entry lookup_var(const std::string &name) {
   return entry_itr->second;
 }
 
-void insert_attr(const std::string &name, const symtable_entry &entry) {
+void insert_attr(const std::string &name, const std::string &type) {
+  int size = get_size(type);
+  symtable_entry entry;
+  if (type.substr(0, 4) == "list") {
+    entry = {type, yylineno, size, list_len, get_list_width(type), 0};
+  }
+  else {
+    entry = {type, yylineno, size, 0, 0, 0};
+  }
+
+  entry.offset = cur_class_symtable_ptr->offset;
+  cur_class_symtable_ptr->offset += size;
+
   cur_class_symtable_ptr->attr_entries[name] = entry;
 }
 
@@ -98,7 +128,7 @@ void add_func(const std::string &name, const std::vector<std::pair<std::string, 
   local_symtable *func_symtable_ptr = new local_symtable;
   for (auto &param : params) {
     func_symtable_ptr->param_types.push_back(param.second);
-    func_symtable_ptr->var_entries[param.first] = {param.second, "", yylineno, get_size(param.second), 0}; // TODO
+    insert_var(param.first, param.second);
   }
 
   func_symtable_ptr->return_type = return_type;

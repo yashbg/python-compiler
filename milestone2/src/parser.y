@@ -209,7 +209,7 @@ funcdef:
 
     if (class_scope) {
       // add self to method symbol table
-      insert_var(func_params[0].first, {class_name, "", yylineno, get_size(class_name), 0, 0, offset}); // TODO
+      insert_var(func_params[0].first, class_name);
     }
 
     if (!($2 == "len" || $2 == "range" || $2 == "print")) {
@@ -598,34 +598,13 @@ expr_stmt:
     // strcpy($$, $3);
 
     if (std::string($1).substr(0, 4) == "self") {
-      if (var_type.substr(0, 4) == "list") {
-        // int list_size = list_len * get_size(var_type);
-        // if(var_type == "list[str]"){
-        //   list_size = curr_list_size;
-        // }
-
-        insert_attr(std::string($1).substr(5), {var_type, "", yylineno, get_size(var_type), list_len, get_list_width(var_type), offset}); // TODO
-        list_len = 0;
-      }
-      else {
-        insert_attr(std::string($1).substr(5), {var_type, "", yylineno, get_size(var_type), 0, 0, offset}); // TODO
-      }
+      insert_attr(std::string($1).substr(5), var_type);
     }
     else {
-      if (var_type.substr(0, 4) == "list") {
-        // int list_size = list_len * get_size(var_type);
-        // if(var_type == "list[str]"){
-        //   list_size = curr_list_size;
-        // }
-
-        insert_var($1, {var_type, "", yylineno, get_size(var_type), list_len, get_list_width(var_type), offset}); // TODO
-        list_len = 0;
-      }
-      else {
-        insert_var($1, {var_type, "", yylineno, get_size(var_type), 0, 0, offset}); // TODO
-      }
+      insert_var($1, var_type);
     }
 
+    list_len = 0;
 
     if($3[0] != ':') {
       gen("=", $3, "", $1);

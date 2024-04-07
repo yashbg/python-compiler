@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
     std::cout << "Parsing input file and creating DOT file..." << std::endl;
   }
 
-  insert_var("__name__", {"str", "", 0, 0, 0, 0, 0});
+  insert_var("__name__", "str");
 
   // add_dot_header();
   yyparse();
