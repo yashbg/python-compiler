@@ -111,6 +111,7 @@
   int get_param_size(std::string datatype, std::string param_name);
   bool is_func(const std::string &name);
   std::string get_func_ret_type(const std::string &name);
+  int get_list_width(const std::string &type);
 
   bool is_class(const std::string &name);
 
@@ -208,7 +209,7 @@ funcdef:
 
     if (class_scope) {
       // add self to method symbol table
-      insert_var(func_params[0].first, {class_name, "", yylineno, 0, 0, 0, offset}); // TODO
+      insert_var(func_params[0].first, {class_name, "", yylineno, get_size(class_name), 0, 0, offset}); // TODO
     }
 
     if (!($2 == "len" || $2 == "range" || $2 == "print")) {
@@ -598,12 +599,12 @@ expr_stmt:
 
     if (std::string($1).substr(0, 4) == "self") {
       if (var_type.substr(0, 4) == "list") {
-        int list_size = list_len * get_size(var_type);
-        if(var_type == "list[str]"){
-          list_size = curr_list_size;
-        }
+        // int list_size = list_len * get_size(var_type);
+        // if(var_type == "list[str]"){
+        //   list_size = curr_list_size;
+        // }
 
-        insert_attr(std::string($1).substr(5), {var_type, "", yylineno, list_size, list_len, get_size(var_type), offset}); // TODO
+        insert_attr(std::string($1).substr(5), {var_type, "", yylineno, get_size(var_type), list_len, get_list_width(var_type), offset}); // TODO
         list_len = 0;
       }
       else {
@@ -612,12 +613,12 @@ expr_stmt:
     }
     else {
       if (var_type.substr(0, 4) == "list") {
-        int list_size = list_len * get_size(var_type);
-        if(var_type == "list[str]"){
-          list_size = curr_list_size;
-        }
+        // int list_size = list_len * get_size(var_type);
+        // if(var_type == "list[str]"){
+        //   list_size = curr_list_size;
+        // }
 
-        insert_var($1, {var_type, "", yylineno, list_size, list_len, get_size(var_type), offset}); // TODO
+        insert_var($1, {var_type, "", yylineno, get_size(var_type), list_len, get_list_width(var_type), offset}); // TODO
         list_len = 0;
       }
       else {
@@ -4003,6 +4004,10 @@ bool is_func(const std::string &name) {
 
 std::string get_func_ret_type(const std::string &name) {
   return lookup_func(name)->return_type;
+}
+
+int get_list_width(const std::string &type) {
+  return get_size(type.substr(5, type.size() - 6));
 }
 
 bool is_class(const std::string &name) {
