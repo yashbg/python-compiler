@@ -100,7 +100,7 @@
   std::string class_name;
 
   std::string get_sem_val(char *c_str); // get semantic value from AST node
-  int get_size(const std::string &type); // returns width for lists
+  int get_size(const std::string &type);
   int get_list_element_count(char* list);
   std::string get_list_element_datatype(char* list_type);
   int get_list_size(char* list_datatype, char* list);
@@ -3615,34 +3615,32 @@ std::string get_sem_val(char *c_str) {
   return str.substr(start + 1, end - start - 1);
 }
 
-// returns width for lists
 int get_size(const std::string &type) {
   if (type == "bool") {
     return 1;
   }
 
-  if(type == "int"){
+  if (type == "int"){
     return 4;
   }
 
-  if(type == "float"){
+  if (type == "float"){
     return 4;
-  }
-
-  if(type == "double"){
-    return 8;
   }
   
   if (type == "str") {
-    // TODO
-    return 0;
+    return 8;
   }
 
   if (type.substr(0, 4) == "list") {
-    return get_size(type.substr(5, type.size() - 6));
+    return 8;
   }
 
-  return 4;
+  if (is_class(type)) {
+    return 8;
+  }
+
+  return 8;
 }
 
 void print_curr_3ac_instr(std::vector<std::string> &line_code) {
