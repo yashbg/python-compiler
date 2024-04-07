@@ -50,7 +50,6 @@
   // bool attr_type_rem = false;
   // std::string attr_decl;
 
-  std::unordered_map<std::string, std::string> temp_types; // temp -> type
   std::string atom_token;
   bool in_var_decl = false;
   int list_len = 0;
@@ -755,7 +754,7 @@ annassign:
 
         strcpy($$, t.c_str());
 
-        temp_types[t] = var_type;
+        insert_var(t, var_type);
       }
       else{
       strcpy($$, $4);
@@ -1448,7 +1447,7 @@ or_test:
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "bool";
+      insert_var(t, "bool");
     }
   }
 ;
@@ -1491,7 +1490,7 @@ or_and_test_list:
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "bool";
+      insert_var(t, "bool");
     }
   }
 ;
@@ -1528,7 +1527,7 @@ and_test:
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "bool";
+      insert_var(t, "bool");
     }
   }
 ;
@@ -1571,7 +1570,7 @@ and_not_test_list:
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "bool";
+      insert_var(t, "bool");
     }
   }
 ;
@@ -1598,7 +1597,7 @@ not_test:
     gen(current_operator, $2, "", t);
     strcpy($$, t.c_str());
 
-    temp_types[t] = "bool";
+    insert_var(t, "bool");
   }
 | comparison
   {
@@ -1650,7 +1649,7 @@ comparison:
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "bool";
+      insert_var(t, "bool");
     }
   }
 ;
@@ -1696,7 +1695,7 @@ comp_op_expr_list:
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "bool";
+      insert_var(t, "bool");
     }
   }
 ;
@@ -1757,7 +1756,7 @@ star_expr:
     gen("*", $2, "", t);
     strcpy($$, t.c_str());
 
-    temp_types[t] = get_type($2);
+    insert_var(t, get_type($2));
   }
 ;
 
@@ -1794,7 +1793,7 @@ expr:
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "int";
+      insert_var(t, "int");
     }
   }
 ;
@@ -1837,7 +1836,7 @@ or_xor_expr_list:
       gen("|", $1, $3, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "int";
+      insert_var(t, "int");
     }
 
     // std::string t=new_temp();
@@ -1879,7 +1878,7 @@ xor_expr:
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "int";
+      insert_var(t, "int");
     }
   }
 ;
@@ -1922,7 +1921,7 @@ xor_and_expr_list:
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "int";
+      insert_var(t, "int");
     }
 
     // std::string t=new_temp();
@@ -1964,7 +1963,7 @@ and_expr:
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "int";
+      insert_var(t, "int");
     }
   }
 ;
@@ -2007,7 +2006,7 @@ and_shift_expr_list:
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "int";
+      insert_var(t, "int");
     }
 
     // std::string t=new_temp();
@@ -2047,7 +2046,7 @@ shift_expr:
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "int";
+      insert_var(t, "int");
     }
   }
 ;
@@ -2103,7 +2102,7 @@ shift_arith_expr_list:
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = "int";
+      insert_var(t, "int");
     }
 
     // std::string t=new_temp();
@@ -2143,7 +2142,7 @@ arith_expr:
       
       strcpy($$, t.c_str());
 
-      temp_types[t] = max_type(arg_type1, arg_type2);
+      insert_var(t, max_type(arg_type1, arg_type2));
     }
     else{
       strcpy($$, $1);
@@ -2222,7 +2221,7 @@ plus_or_minus_term_list:
       current_operator = "";
       strcpy($$, t.c_str());
 
-      temp_types[t] = max_type(arg_type1, arg_type2);
+      insert_var(t, max_type(arg_type1, arg_type2));
     }
 
     // std::string t=new_temp();
@@ -2272,14 +2271,14 @@ term:
     
     std::string t = new_temp();
     gen(op, $1, $3, t);
-    temp_types[t] = max_type(arg_type1, arg_type2);
+    insert_var(t, max_type(arg_type1, arg_type2));
     if($4[0] == '\0'){
       strcpy($$, t.c_str());
     }
     else{
       std::string t2 = new_temp();
       gen(current_operator, t, $4, t2);
-      temp_types[t2] = max_type(get_type(t), get_type($4));
+      insert_var(t2, max_type(get_type(t), get_type($4)));
       strcpy($$, t2.c_str());
     }
   }
@@ -2346,7 +2345,7 @@ star_or_slash_or_percent_or_doubleslash_factor_list:
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = max_type(arg_type1, arg_type2);
+      insert_var(t, max_type(arg_type1, arg_type2));
     }
 
     // std::string t=new_temp();
@@ -2384,7 +2383,7 @@ factor:
     gen($1, $2, "", t);
     strcpy($$, t.c_str());
 
-    temp_types[t] = arg_type;
+    insert_var(t, arg_type);
   }
 | power
   {
@@ -2440,7 +2439,7 @@ power:
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
 
-      temp_types[t] = max_type(arg_type1, arg_type2);
+      insert_var(t, max_type(arg_type1, arg_type2));
     }
   }
 ;
@@ -2558,9 +2557,9 @@ atom_expr:
       strcpy($$, t2.c_str());
       //strcpy($$, (std::string($1) + "[" + t + "]").c_str());
 
-      temp_types[t] = "int";
+      insert_var(t, "int");
       std::string list_type = get_type($1);
-      temp_types[t2] = list_type.substr(5, list_type.size() - 6);
+      insert_var(t2, list_type.substr(5, list_type.size() - 6));
     }
     else if ($2[0] == '(') {
       if (is_class($1)) {
@@ -2602,7 +2601,7 @@ atom_expr:
         std::string temp = new_temp();
         gen("popparam","" , "", temp);
 
-        temp_types[temp] = $1;
+        insert_var(temp, $1);
 
         func_args.clear();
 
@@ -2633,7 +2632,7 @@ atom_expr:
         if (ret_type != "None") {
           std::string temp = new_temp();
           gen("popparam","" , "", temp);
-          temp_types[temp] = ret_type;
+          insert_var(temp, ret_type);
 
           strcpy($$, temp.c_str());
         }
@@ -2670,7 +2669,7 @@ atom_expr:
         }
         else if(str == "len"){
           std::string t = new_temp();
-          temp_types[t] = "int";
+          insert_var(t, "int");
           gen("=", size, "", t);
           strcpy($$, t.c_str());
         }
@@ -2708,7 +2707,7 @@ atom_expr:
         if(ret_type != "None"){
           std::string temp = new_temp();
           gen("popparam","" , "", temp);
-          temp_types[temp] = ret_type;
+          insert_var(temp, ret_type);
 
           strcpy($$, temp.c_str());
         }
@@ -3793,10 +3792,6 @@ std::string get_type(const std::string &str) {
 
   if (is_class(str)) {
     return str;
-  }
-
-  if (temp_types.find(str) != temp_types.end()) {
-    return temp_types[str];
   }
 
   int dot = str.find('.');
