@@ -2279,7 +2279,7 @@ term:
     else{
       std::string t2 = new_temp();
       gen(current_operator, t, $4, t2);
-      temp_types[t2] = max(get_type(t), get_type($4));
+      temp_types[t2] = max_type(get_type(t), get_type($4));
       strcpy($$, t2.c_str());
     }
   }
