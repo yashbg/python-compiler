@@ -191,11 +191,20 @@ local_symtable * lookup_method(const std::string &class_name, const std::string 
 }
 
 int get_class_size(const std::string &name) {
-  // TODO: support inheritance
   int size = 0;
   class_symtable *class_symtable_ptr = lookup_class(name);
   for (auto &entry : class_symtable_ptr->attr_entries) {
     size += entry.second.size;
+  }
+
+  // inheritance
+  class_symtable *parent_symtable_ptr = class_symtable_ptr->parent_symtable_ptr;
+  while (parent_symtable_ptr) {
+    for (auto &entry : parent_symtable_ptr->attr_entries) {
+      size += entry.second.size;
+    }
+    
+    parent_symtable_ptr = parent_symtable_ptr->parent_symtable_ptr;
   }
 
   return size;
