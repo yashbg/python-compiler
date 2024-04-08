@@ -189,3 +189,14 @@ local_symtable * lookup_method(const std::string &class_name, const std::string 
   yyerror(("Attribute error: '" + class_name + "' object has no method '" + method_name + "()'").c_str());
   return method_symtable_itr->second;
 }
+
+int get_class_size(const std::string &name) {
+  // TODO: support inheritance
+  int size = 0;
+  class_symtable *class_symtable_ptr = lookup_class(name);
+  for (auto &entry : class_symtable_ptr->attr_entries) {
+    size += entry.second.size;
+  }
+
+  return size;
+}

@@ -2544,19 +2544,16 @@ atom_expr:
         // class constructor call
         check_method_args($1, "__init__");
 
-        int stack_offset = 0;
-        for (const auto& arg : func_args) {
-          stack_offset += get_size(get_type(arg));
-        }
+        int size = get_class_size($1);
         
         // create new object
         std::string t2 = new_temp();
         insert_var(t2, "int");
-        gen("=", std::to_string(stack_offset), "", t2);
+        gen("=", std::to_string(size), "", t2);
         gen("param", t2, "", "");
-        gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
+        gen("stackpointer", "+4", "", "");
         gen("1", "allocmem", "," , "call");
-        gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
+        gen("stackpointer", "-4", "", "");
         std::string tempstr = new_temp();
         insert_var(tempstr, $1);
         gen("popparam", "", "", tempstr);
@@ -2564,19 +2561,16 @@ atom_expr:
         // pass new object as first argument
         gen("param", tempstr, "", "");
 
-        for (const auto& arg : func_args) {
-          std::string arg_type = get_type(arg);
-          if (arg_type == "int" || arg_type == "bool" || arg_type == "float" || arg_type == "str") {
-            gen("param", arg, "", "");
-          }
-          else {
-            gen("param", arg, "", "");
-          }
+        int stack_offset = get_size($1);
+        for (auto &arg : func_args) {
+          stack_offset += get_size(get_type(arg));
+
+          gen("param", arg, "", "");
         }
         
-        gen("stackpointer", "+" + std::to_string(stack_offset),"" , ""); // TODO: check if this is correct
+        gen("stackpointer", "+" + std::to_string(stack_offset), "", "");
         gen(std::to_string(1 + func_args.size()), std::string($1) + ".__init__", ",", "call");
-        gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
+        gen("stackpointer", "-" + std::to_string(stack_offset), "", "");
 
         std::string temp = new_temp();
         insert_var(temp, $1);
@@ -2590,22 +2584,17 @@ atom_expr:
         // function call
         check_func_args($1);
 
-        // Print the split strings
         int stack_offset = 0;
-        for (const auto& arg : func_args) {
+        for (auto &arg : func_args) {
           std::string arg_type = get_type(arg);
           stack_offset += get_size(arg_type);
-          if (arg_type == "int" || arg_type == "bool" || arg_type == "float" || arg_type == "str") {
-            gen("param", arg, "", "");
-          }
-          else {
-            gen("param", arg, "", "");
-          }
+
+          gen("param", arg, "", "");
         }
         
-        gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
+        gen("stackpointer", "+" + std::to_string(stack_offset), "", "");
         gen(std::to_string(func_args.size()), $1, ",", "call");
-        gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
+        gen("stackpointer", "-" + std::to_string(stack_offset), "", "");
 
         std::string ret_type = get_func_ret_type($1);
         if (ret_type != "None") {
@@ -2642,9 +2631,9 @@ atom_expr:
         std::string size = std::to_string(sym_entry.size);
         if(str == "print"){
         gen("param", tokens[0], "", "");
-        gen("stackpointer", "+"+size, "", "");
+        gen("stackpointer", "+" + size, "", "");
         gen("1", $1, ",", "call");
-        gen("stackpointer", "-"+size, "", "");
+        gen("stackpointer", "-" + size, "", "");
         }
         else if(str == "len"){
           std::string t = new_temp();
@@ -2666,21 +2655,16 @@ atom_expr:
         // pass object as first argument
         gen("param", $1, "", "");
 
-        int stack_offset = 0; // TODO
-        for (const auto& arg : func_args) {
-          std::string arg_type = get_type(arg);
-          stack_offset += get_size(arg_type);
-          if (arg_type == "int" || arg_type == "bool" || arg_type == "float" || arg_type == "str") {
-            gen("param", arg, "", "");
-          }
-          else {
-            gen("param", arg, "", "");
-          }
+        int stack_offset = get_size(class_name);
+        for (auto &arg : func_args) {
+          stack_offset += get_size(get_type(arg));
+
+          gen("param", arg, "", "");
         }
         
-        gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
+        gen("stackpointer", "+" + std::to_string(stack_offset), "", "");
         gen(std::to_string(1 + func_args.size()), class_name + "." + method, ",", "call");
-        gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
+        gen("stackpointer", "-" + std::to_string(stack_offset), "", "");
 
         std::string ret_type = get_type(std::string($1) + $2);
         if(ret_type != "None"){
