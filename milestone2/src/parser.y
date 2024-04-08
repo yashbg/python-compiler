@@ -40,7 +40,6 @@
   long int label_count = 1; // counter for labels
   std::string new_label(); // generate new label
 
-  int offset = 0; // TODO
   std::string var_type;
   std::string func_param_type;
   std::vector<std::pair<std::string, std::string>> func_params; // (name, type)
@@ -107,7 +106,6 @@
   void generate_3AC_for_list(char* list_datatype, char* list);
   std::string strip_braces(const std::string &str);
   std::string get_curr_param_name(char* param_list);
-  int get_param_size(std::string datatype, std::string param_name);
   bool is_func(const std::string &name);
   std::string get_func_ret_type(const std::string &name);
   int get_list_width(const std::string &type);
@@ -747,6 +745,7 @@ annassign:
         gen("1", "allocmem", "," , "call");
         gen("stackpointer", "-4","" , "");
         std::string t = new_temp();
+        insert_var(t, var_type);
         gen("popparam", "", "", t);
         generate_3AC_for_list($2, $4);
 
@@ -754,7 +753,6 @@ annassign:
 
         strcpy($$, t.c_str());
 
-        insert_var(t, var_type);
       }
       else{
       strcpy($$, $4);
@@ -1183,7 +1181,8 @@ for_stmt:
   suite else_colon_suite_opt
   {
     std::string n1 = get_sem_val($2);
-    std::string t = new_temp(); // TODO: type checking
+    std::string t = new_temp();
+    insert_var(t, get_type(n1));
     gen("", n1, "", t);
     gen("+", t, "1", n1);
     gen("", cond_stack.top(), "", "goto");
@@ -1222,7 +1221,8 @@ for_stmt:
   suite else_colon_suite_opt
   {
     std::string n1 = get_sem_val($2);
-    std::string t = new_temp(); // TODO: type checking
+    std::string t = new_temp();
+    insert_var(t, get_type(n1));
     gen("", n1, "", t);
     gen("+", t, "1", n1);
     gen("", cond_stack.top(), "", "goto");
@@ -1444,10 +1444,9 @@ or_test:
       }
       
       std::string t = new_temp();
+      insert_var(t, "bool");
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "bool");
     }
   }
 ;
@@ -1487,10 +1486,9 @@ or_and_test_list:
       }
       
       std::string t = new_temp();
+      insert_var(t, "bool");
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "bool");
     }
   }
 ;
@@ -1524,10 +1522,9 @@ and_test:
       }
       
       std::string t = new_temp();
+      insert_var(t, "bool");
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "bool");
     }
   }
 ;
@@ -1567,10 +1564,9 @@ and_not_test_list:
       }
       
       std::string t = new_temp();
+      insert_var(t, "bool");
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "bool");
     }
   }
 ;
@@ -1594,10 +1590,9 @@ not_test:
     }
     
     std::string t = new_temp();
+    insert_var(t, "bool");
     gen(current_operator, $2, "", t);
     strcpy($$, t.c_str());
-
-    insert_var(t, "bool");
   }
 | comparison
   {
@@ -1646,10 +1641,9 @@ comparison:
       }
       
       std::string t = new_temp();
+      insert_var(t, "bool");
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "bool");
     }
   }
 ;
@@ -1692,10 +1686,9 @@ comp_op_expr_list:
       }
       
       std::string t = new_temp();
+      insert_var(t, "bool");
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "bool");
     }
   }
 ;
@@ -1753,10 +1746,9 @@ star_expr:
     // strcpy($$, s.c_str());
     
     std::string t=new_temp();
+    insert_var(t, get_type($2));
     gen("*", $2, "", t);
     strcpy($$, t.c_str());
-
-    insert_var(t, get_type($2));
   }
 ;
 
@@ -1790,10 +1782,9 @@ expr:
       }
       
       std::string t = new_temp();
+      insert_var(t, "int");
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "int");
     }
   }
 ;
@@ -1833,10 +1824,9 @@ or_xor_expr_list:
       }
 
       std::string t = new_temp();
+      insert_var(t, "int");
       gen("|", $1, $3, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "int");
     }
 
     // std::string t=new_temp();
@@ -1875,10 +1865,9 @@ xor_expr:
       }
       
       std::string t = new_temp();
+      insert_var(t, "int");
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "int");
     }
   }
 ;
@@ -1918,10 +1907,9 @@ xor_and_expr_list:
       }
       
       std::string t = new_temp();
+      insert_var(t, "int");
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "int");
     }
 
     // std::string t=new_temp();
@@ -1960,10 +1948,9 @@ and_expr:
       }
       
       std::string t = new_temp();
+      insert_var(t, "int");
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "int");
     }
   }
 ;
@@ -2003,10 +1990,9 @@ and_shift_expr_list:
       }
 
       std::string t = new_temp();
+      insert_var(t, "int");
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "int");
     }
 
     // std::string t=new_temp();
@@ -2043,10 +2029,9 @@ shift_expr:
       }
       
       std::string t = new_temp();
+      insert_var(t, "int");
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "int");
     }
   }
 ;
@@ -2099,10 +2084,9 @@ shift_arith_expr_list:
       }
       
       std::string t = new_temp();
+      insert_var(t, "int");
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, "int");
     }
 
     // std::string t=new_temp();
@@ -2138,11 +2122,10 @@ arith_expr:
       }
       
       std::string t = new_temp();
+      insert_var(t, max_type(arg_type1, arg_type2));
       gen("+" , $1, $2, t);
       
       strcpy($$, t.c_str());
-
-      insert_var(t, max_type(arg_type1, arg_type2));
     }
     else{
       strcpy($$, $1);
@@ -2212,6 +2195,7 @@ plus_or_minus_term_list:
       }
 
       std::string t = new_temp();
+      insert_var(t, max_type(arg_type1, arg_type2));
       if(current_operator == "-"){
         gen($2, "-" + std::string($1), $3, t);
       }
@@ -2220,8 +2204,6 @@ plus_or_minus_term_list:
       }
       current_operator = "";
       strcpy($$, t.c_str());
-
-      insert_var(t, max_type(arg_type1, arg_type2));
     }
 
     // std::string t=new_temp();
@@ -2270,15 +2252,15 @@ term:
     }
     
     std::string t = new_temp();
-    gen(op, $1, $3, t);
     insert_var(t, max_type(arg_type1, arg_type2));
+    gen(op, $1, $3, t);
     if($4[0] == '\0'){
       strcpy($$, t.c_str());
     }
     else{
       std::string t2 = new_temp();
-      gen(current_operator, t, $4, t2);
       insert_var(t2, max_type(get_type(t), get_type($4)));
+      gen(current_operator, t, $4, t2);
       strcpy($$, t2.c_str());
     }
   }
@@ -2342,10 +2324,9 @@ star_or_slash_or_percent_or_doubleslash_factor_list:
       }
 
       std::string t = new_temp();
+      insert_var(t, max_type(arg_type1, arg_type2));
       gen($2, $1, $3, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, max_type(arg_type1, arg_type2));
     }
 
     // std::string t=new_temp();
@@ -2380,10 +2361,9 @@ factor:
     }
 
     std::string t = new_temp();
+    insert_var(t, arg_type);
     gen($1, $2, "", t);
     strcpy($$, t.c_str());
-
-    insert_var(t, arg_type);
   }
 | power
   {
@@ -2436,10 +2416,9 @@ power:
       }
       
       std::string t = new_temp();
+      insert_var(t, max_type(arg_type1, arg_type2));
       gen(current_operator, $1, $2, t);
       strcpy($$, t.c_str());
-
-      insert_var(t, max_type(arg_type1, arg_type2));
     }
   }
 ;
@@ -2549,17 +2528,16 @@ atom_expr:
       }
       
       std::string t = new_temp();
+      insert_var(t, "int");
       //if(entry.type.substr(0, 4) ==  "list") gen("*", index, std::to_string(entry.size), t);
       //else 
       gen("*", index, std::to_string(entry.size), t);
       std::string t2 = new_temp();
+      std::string list_type = get_type($1);
+      insert_var(t2, list_type.substr(5, list_type.size() - 6));
       gen("=", (std::string($1) + "[" + t + "]").c_str(), "", t2);
       strcpy($$, t2.c_str());
       //strcpy($$, (std::string($1) + "[" + t + "]").c_str());
-
-      insert_var(t, "int");
-      std::string list_type = get_type($1);
-      insert_var(t2, list_type.substr(5, list_type.size() - 6));
     }
     else if ($2[0] == '(') {
       if (is_class($1)) {
@@ -2572,13 +2550,15 @@ atom_expr:
         }
         
         // create new object
-        std::string t2 = new_temp(); //TODO : type checking
+        std::string t2 = new_temp();
+        insert_var(t2, "int");
         gen("=", std::to_string(stack_offset), "", t2);
         gen("param", t2, "", "");
         gen("stackpointer", "+" + std::to_string(stack_offset),"" , "");
         gen("1", "allocmem", "," , "call");
         gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
         std::string tempstr = new_temp();
+        insert_var(tempstr, $1);
         gen("popparam", "", "", tempstr);
 
         // pass new object as first argument
@@ -2599,9 +2579,8 @@ atom_expr:
         gen("stackpointer", "-" + std::to_string(stack_offset),"" , "");
 
         std::string temp = new_temp();
-        gen("popparam","" , "", temp);
-
         insert_var(temp, $1);
+        gen("popparam","" , "", temp);
 
         func_args.clear();
 
@@ -2631,8 +2610,8 @@ atom_expr:
         std::string ret_type = get_func_ret_type($1);
         if (ret_type != "None") {
           std::string temp = new_temp();
-          gen("popparam","" , "", temp);
           insert_var(temp, ret_type);
+          gen("popparam","" , "", temp);
 
           strcpy($$, temp.c_str());
         }
@@ -2706,8 +2685,8 @@ atom_expr:
         std::string ret_type = get_type(std::string($1) + $2);
         if(ret_type != "None"){
           std::string temp = new_temp();
-          gen("popparam","" , "", temp);
           insert_var(temp, ret_type);
+          gen("popparam","" , "", temp);
 
           strcpy($$, temp.c_str());
         }
@@ -3946,18 +3925,6 @@ std::string get_curr_param_name(char* param_list){
   }
   start_pos = i + 1;
   return curr_param_name;
-}
-
-int get_param_size(std::string datatype, std::string var_name){
-    symtable_entry sym_entry = lookup_var(var_name);
-    std::string temp = datatype.substr(0, 4);
-    if(temp == "list"){
-      // TODO
-      return 4;
-    }
-    else{
-      return sym_entry.size;
-    }
 }
 
 bool is_func(const std::string &name) {
