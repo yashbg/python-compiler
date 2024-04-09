@@ -2613,7 +2613,7 @@ atom_expr:
       else if (str == "len" || str == "print") {
         // TODO: handle len variable (when $2 is not "()")
         if (func_args.size() != 1) {
-          yyerror("Syntax error: " + str + "() takes exactly one argument");
+          yyerror(("Syntax error: " + str + "() takes exactly one argument").c_str());
         }
 
         std::string arg = func_args[0];
