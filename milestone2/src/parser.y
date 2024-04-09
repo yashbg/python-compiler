@@ -2610,37 +2610,36 @@ atom_expr:
         
         func_args.clear();
       }
-      else if ((str == "len" || str == "print")) {
+      else if (str == "len" || str == "print") {
         // TODO: handle len variable (when $2 is not "()")
-        std::string str2 = $2;
-        std::string arglist = str2.substr(1, str2.length() - 2);
-        std::stringstream ss(arglist);
-        std::vector<std::string> tokens;
-        std::string token;
-
-        // Iterate through each token separated by ',' and store it in the vector
-        while (std::getline(ss, token, ',')) {
-            tokens.push_back(token);
+        if (func_args.size() != 1) {
+          yyerror("Syntax error: " + str + "() takes exactly one argument");
         }
 
-        if(tokens.size() != 1){
-          yyerror("Syntax error: len() and print() take exactly one argument");
-        }
+        std::string arg = func_args[0];
+        symtable_entry entry = lookup_var(arg);
+        if (str == "len") {
+          if (entry.type.substr(0, 4) != "list") {
+            yyerror("Type error: argument to len() must be a list");
+          }
 
-        symtable_entry sym_entry = lookup_var(tokens[0]);
-        std::string size = std::to_string(sym_entry.size);
-        if(str == "print"){
-        gen("param", tokens[0], "", "");
-        gen("stackpointer", "+" + size, "", "");
-        gen("1", $1, ",", "call");
-        gen("stackpointer", "-" + size, "", "");
-        }
-        else if(str == "len"){
+          std::string len = std::to_string(entry.list_len);
           std::string t = new_temp();
           insert_var(t, "int");
-          gen("=", size, "", t);
+          gen("=", len, "", t);
+
           strcpy($$, t.c_str());
         }
+        else if (str == "print") {
+          gen("param", "\"" + get_type(arg) + "\"", "", "");
+          gen("stackpointer", "+8", "", "");
+          gen("1", $1, ",", "call");
+          gen("stackpointer", "-8", "", "");
+
+          strcpy($$, "print");
+        }
+        
+        func_args.clear();
       }
       // TODO: else
     }
