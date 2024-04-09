@@ -2623,6 +2623,7 @@ atom_expr:
             yyerror("Type error: argument to len() must be a list");
           }
 
+          // TODO: len of function parameters
           std::string len = std::to_string(entry.list_len);
           std::string t = new_temp();
           insert_var(t, "int");
