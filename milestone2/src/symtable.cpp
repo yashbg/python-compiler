@@ -127,7 +127,7 @@ void check_redecl(const std::string &name) {
 void add_func(const std::string &name, const std::vector<std::pair<std::string, std::string>> &params, const std::string &return_type, int lineno) {
   local_symtable *func_symtable_ptr = new local_symtable;
   for (auto &param : params) {
-    func_symtable_ptr->param_types.push_back(param.second);
+    func_symtable_ptr->params.push_back(param);
 
     int size = get_size(param.second);
     symtable_entry entry;

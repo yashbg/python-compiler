@@ -3863,14 +3863,14 @@ void check_func_args(const std::string &name) {
   local_symtable *func_symtable_ptr = lookup_func(name);
   int num_args = func_args.size();
 
-  int num_params = func_symtable_ptr->param_types.size();
+  int num_params = func_symtable_ptr->params.size();
   if (num_args != num_params) {
     yyerror(("Type error: " + name + "() takes " + std::to_string(num_params) + " positional arguments but " + std::to_string(num_args) + " were given").c_str());
   }
 
   for (int i = 0; i < num_params; i++) {
     std::string arg_type = get_type(func_args[i]);
-    std::string param_type = func_symtable_ptr->param_types[i];
+    std::string param_type = func_symtable_ptr->params[i].second;
     if (arg_type != param_type) {
       yyerror(("Type mismatch in call to " + name + "(): " + param_type + " required but " + arg_type + " was passed").c_str());
     }
@@ -3881,14 +3881,14 @@ void check_method_args(const std::string &class_name, const std::string &method_
   local_symtable *func_symtable_ptr = lookup_method(class_name, method_name);
   int num_args = func_args.size();
   
-  int num_params = func_symtable_ptr->param_types.size();
+  int num_params = func_symtable_ptr->params.size();
   if (num_args + 1 != num_params) {
     yyerror(("Type error: " + class_name + "." + method_name + "() takes " + std::to_string(num_params - 1) + " positional arguments but " + std::to_string(num_args) + " were given").c_str());
   }
 
   for (int i = 1; i < num_params; i++) {
     std::string arg_type = get_type(func_args[i - 1]);
-    std::string param_type = func_symtable_ptr->param_types[i];
+    std::string param_type = func_symtable_ptr->params[i].second;
     if (arg_type != param_type) {
       yyerror(("Type mismatch in call to " + class_name + "." + method_name + "(): " + param_type + " required but " + arg_type + " was passed").c_str());
     }

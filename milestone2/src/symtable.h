@@ -14,7 +14,7 @@ struct symtable_entry {
 };
 
 struct local_symtable {
-  std::vector<std::string> param_types;
+  std::vector<std::pair<std::string, std::string>> params; // (name, type)
   std::string return_type;
   std::unordered_map<std::string, symtable_entry> var_entries; // identifier -> symtable_entry
   int lineno; // TODO
