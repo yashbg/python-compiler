@@ -190,6 +190,8 @@ newline_or_stmt_list:
 funcdef:
   DEF NAME parameters arrow_test_opt ':'
   {
+    func_scope = true;
+
     if (class_scope && std::string($2) == "__init__") {
       func_return_type = "None";
     }
@@ -201,8 +203,6 @@ funcdef:
     else {
       cur_func_symtable_ptr = lookup_func($2);
     }
-    
-    func_scope = true;
 
     if (class_scope) {
       // add self to method symbol table

@@ -128,7 +128,20 @@ void add_func(const std::string &name, const std::vector<std::pair<std::string, 
   local_symtable *func_symtable_ptr = new local_symtable;
   for (auto &param : params) {
     func_symtable_ptr->param_types.push_back(param.second);
-    insert_var(param.first, param.second);
+
+    int size = get_size(param.second);
+    symtable_entry entry;
+    if (param.second.substr(0, 4) == "list") {
+      entry = {param.second, yylineno, size, list_len, get_list_width(param.second), 0};
+    }
+    else {
+      entry = {param.second, yylineno, size, 0, 0, 0};
+    }
+
+    entry.offset = func_symtable_ptr->offset;
+    func_symtable_ptr->offset += size;
+
+    func_symtable_ptr->var_entries[param.first] = entry;
   }
 
   func_symtable_ptr->return_type = return_type;
