@@ -15,7 +15,6 @@ NAME
 ARROW
 NONE
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 NAME
@@ -23,7 +22,6 @@ NAME
 NAME
 '='
 INTEGER
-Reached indent pattern
 NEWLINE
 FOR
 NAME
@@ -33,7 +31,6 @@ NAME
 NAME
 ')'
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 NAME
@@ -41,14 +38,12 @@ NAME
 NAME
 '='
 FALSE
-Reached indent pattern
 NEWLINE
 NAME
 ':'
 NAME
 '='
 INTEGER
-Reached indent pattern
 NEWLINE
 FOR
 NAME
@@ -64,7 +59,6 @@ NAME
 INTEGER
 ')'
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 IF
@@ -80,7 +74,6 @@ NAME
 INTEGER
 ']'
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 NAME
@@ -91,7 +84,6 @@ NAME
 '['
 NAME
 ']'
-Reached indent pattern
 NEWLINE
 NAME
 '['
@@ -104,7 +96,6 @@ NAME
 '+'
 INTEGER
 ']'
-Reached indent pattern
 NEWLINE
 NAME
 '['
@@ -114,12 +105,10 @@ INTEGER
 ']'
 '='
 NAME
-Reached indent pattern
 NEWLINE
 NAME
 '='
 TRUE
-Reached indent pattern
 NEWLINE
 DEDENT
 DEDENT
@@ -127,11 +116,9 @@ IF
 NOT
 NAME
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 BREAK
-Reached indent pattern
 NEWLINE
 DEDENT
 DEDENT
@@ -153,7 +140,6 @@ NAME
 ARROW
 NONE
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 NAME
@@ -161,7 +147,6 @@ NAME
 NAME
 '='
 INTEGER
-Reached indent pattern
 NEWLINE
 FOR
 NAME
@@ -173,7 +158,6 @@ INTEGER
 NAME
 ')'
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 NAME
@@ -184,7 +168,6 @@ NAME
 '['
 NAME
 ']'
-Reached indent pattern
 NEWLINE
 NAME
 ':'
@@ -193,7 +176,6 @@ NAME
 NAME
 '-'
 INTEGER
-Reached indent pattern
 NEWLINE
 WHILE
 NAME
@@ -207,7 +189,6 @@ NAME
 NAME
 ']'
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 NAME
@@ -221,12 +202,10 @@ NAME
 '['
 NAME
 ']'
-Reached indent pattern
 NEWLINE
 NAME
 MINEQUAL
 INTEGER
-Reached indent pattern
 NEWLINE
 DEDENT
 NAME
@@ -237,7 +216,6 @@ INTEGER
 ']'
 '='
 NAME
-Reached indent pattern
 NEWLINE
 DEDENT
 DEDENT
@@ -246,7 +224,6 @@ NAME
 '('
 ')'
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 NAME
@@ -269,7 +246,6 @@ INTEGER
 '-'
 INTEGER
 ']'
-Reached indent pattern
 NEWLINE
 NAME
 ':'
@@ -291,7 +267,6 @@ INTEGER
 '-'
 INTEGER
 ']'
-Reached indent pattern
 NEWLINE
 NAME
 '('
@@ -299,7 +274,6 @@ NAME
 ','
 INTEGER
 ')'
-Reached indent pattern
 NEWLINE
 NAME
 '('
@@ -307,7 +281,6 @@ NAME
 ','
 INTEGER
 ')'
-Reached indent pattern
 NEWLINE
 DEDENT
 IF
@@ -315,12 +288,10 @@ NAME
 DOUBLEEQUAL
 STRING
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 NAME
 '('
 ')'
-Reached indent pattern
 NEWLINE
 DEDENT

@@ -1,7 +1,6 @@
 CLASS
 NAME
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 DEF
@@ -10,7 +9,6 @@ NAME
 NAME
 ')'
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 NAME
@@ -20,7 +18,6 @@ NAME
 NAME
 '='
 INTEGER
-Reached indent pattern
 NEWLINE
 NAME
 '.'
@@ -29,7 +26,6 @@ NAME
 NAME
 '='
 FLOAT_NUMBER
-Reached indent pattern
 NEWLINE
 DEDENT
 DEDENT
@@ -39,7 +35,6 @@ NAME
 NAME
 ')'
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 DEF
@@ -48,7 +43,6 @@ NAME
 NAME
 ')'
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 NAME
@@ -56,14 +50,12 @@ NAME
 NAME
 '='
 INTEGER
-Reached indent pattern
 NEWLINE
 NAME
 '.'
 NAME
 '='
 FLOAT_NUMBER
-Reached indent pattern
 NEWLINE
 NAME
 '.'
@@ -72,7 +64,6 @@ NAME
 NAME
 '='
 STRING
-Reached indent pattern
 NEWLINE
 DEDENT
 DEDENT
@@ -81,7 +72,6 @@ NAME
 '('
 ')'
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 NAME
@@ -91,7 +81,6 @@ NAME
 NAME
 '('
 ')'
-Reached indent pattern
 NEWLINE
 NAME
 ':'
@@ -100,7 +89,6 @@ NAME
 NAME
 '('
 ')'
-Reached indent pattern
 NEWLINE
 DEDENT
 IF
@@ -108,12 +96,10 @@ NAME
 DOUBLEEQUAL
 STRING
 ':'
-Reached indent pattern
 NEWLINE
 INDENT
 NAME
 '('
 ')'
-Reached indent pattern
 NEWLINE
 DEDENT

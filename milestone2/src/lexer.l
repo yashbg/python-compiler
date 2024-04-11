@@ -75,7 +75,6 @@ OTHER               .
                                 if(yytext[i] == '\n') last_newline_pos = i;
                               }
                               if(last_newline_pos != -1){
-                                fprintf(lexer_logfile, "Reached Comment pattern\n");
                                 int currindent = len - last_newline_pos - 1;
                                 if(currindent > indent[top]){
                                   top++;
@@ -104,7 +103,6 @@ OTHER               .
                                 if(yytext[i] == '\n') last_newline_pos = i;
                               }
                               if(last_newline_pos != -1){
-                                fprintf(lexer_logfile, "Reached indent pattern\n");
                                 int currindent = len - last_newline_pos - 1;
                                 if(currindent > indent[top]){
                                   top++;
