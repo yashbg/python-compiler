@@ -67,15 +67,15 @@ OTHER               .
     return DEDENT;
   }
 
-\n([\n\t ]*{COMMENT}\n)+  {
+\n([\n\t ]*{COMMENT}[\n\t ]+)+  {
                             store_token();
-                            fprintf(lexer_logfile, "%s\n", "NEWLINE");
                             if (!line_join) {
                               int last_newline_pos =  -1, len = strlen(yytext);
                               for(int i = 0; i < len; i++){
                                 if(yytext[i] == '\n') last_newline_pos = i;
                               }
                               if(last_newline_pos != -1){
+                                fprintf(lexer_logfile, "Reached Comment pattern  ");
                                 int currindent = len - last_newline_pos - 1;
                                 if(currindent > indent[top]){
                                   top++;
@@ -104,6 +104,7 @@ OTHER               .
                                 if(yytext[i] == '\n') last_newline_pos = i;
                               }
                               if(last_newline_pos != -1){
+                                fprintf(lexer_logfile, "Reached indent pattern  ");
                                 int currindent = len - last_newline_pos - 1;
                                 if(currindent > indent[top]){
                                   top++;
