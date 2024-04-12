@@ -17,7 +17,6 @@
   extern int yylex();
   extern int yylineno;
   extern char* yytext;
-  extern std::ofstream outfile;
   extern std::ofstream parser_logfile;
 
   void yyerror(const char *);
@@ -69,8 +68,6 @@
 
   void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result); //gen function for 3AC
 
-  std::map<std::string, std::string> true_list;
-  std::map<std::string, std::string> false_list;
   std::string true_label;
   std::string false_label;
   std::string cond_label;
@@ -81,7 +78,6 @@
   std::stack<std::string> end_stack;
   std::stack<std::string> loop_stack;
   std::stack<std::string> loop_stack_false;
-  std::stack<std::vector<std::string>> code_stack;
   std::string class_name;
 
   int get_size(const std::string &type);
@@ -91,7 +87,6 @@
   void print_curr_3ac_instr(std::vector<std::string> &line_code);
   void generate_3AC_for_list(char* list_datatype, char* list);
   std::string strip_braces(const std::string &str);
-  std::string get_curr_param_name(char* param_list);
   bool is_func(const std::string &name);
   std::string get_func_ret_type(const std::string &name);
   int get_list_width(const std::string &type);
@@ -113,8 +108,6 @@
 
   void push_activation_record(activation_record ar);
   void pop_activation_record();
-
-  void generate_3AC_for_list_copying(std::string dest, std::string src);
 %}
 
 %union { char tokenname[1024]; }
@@ -233,7 +226,7 @@ arrow_test_opt:
 | ARROW test
   {
     parser_logfile << "| ARROW test" << std::endl;
-    
+
     func_return_type = $2;
   }
 ;
@@ -2605,10 +2598,6 @@ int is_digit(char c) {
   return ((c >= '0') && (c <= '9'));
 }
 
-void emit_dot_node(const char* node_name, const char* label) {
-  outfile << "\"" << node_name << "\" [label=\"" << label << "\"];" << std::endl;
-}
-
 int get_size(const std::string &type) {
   if (type == "bool") {
     return 1;
@@ -2932,22 +2921,6 @@ void check_method_args(const std::string &class_name, const std::string &method_
   }
 }
 
-std::string get_curr_param_name(char* param_list){
-  std::string curr_param_name; 
-  int i = start_pos;
-  while(i < strlen(param_list) - 1){
-    if(param_list[i] == ':') break;
-    curr_param_name += param_list[i];
-    i++;
-  }
-  while(i < strlen(param_list)){
-    if(param_list[i] == ',') break;
-    i++;
-  }
-  start_pos = i + 1;
-  return curr_param_name;
-}
-
 bool is_func(const std::string &name) {
   if (class_scope) {
     auto func_symtable_itr = cur_class_symtable_ptr->method_symtable_ptrs.find(name);
@@ -2974,18 +2947,6 @@ int get_list_width(const std::string &type) {
 
 bool is_class(const std::string &name) {
   return gsymtable.class_symtable_ptrs.find(name) != gsymtable.class_symtable_ptrs.end();
-}
-
-void generate_3AC_for_list_copying(std::string dest, std::string src){
-    symtable_entry sym_entry = lookup_var(src);
-    int len = sym_entry.list_len;
-    int width = sym_entry.list_width;
-    if(sym_entry.type == "list[str]") width = 1, len = sym_entry.size;
-    int curr_pos = 0;
-    for(int i = 0; i < len; i++){
-      gen("=", src + "[" + std::to_string(curr_pos) + "]", "", dest + "[" + std::to_string(curr_pos) + "]");
-      curr_pos += width;
-    }
 }
 
 void push_activation_record(activation_record ar){

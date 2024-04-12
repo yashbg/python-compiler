@@ -9,7 +9,6 @@
 extern FILE *yyin;
 extern int yyparse();
 
-std::ofstream outfile;
 FILE *lexer_logfile;
 std::ofstream parser_logfile;
 
@@ -17,9 +16,6 @@ extern global_symtable gsymtable;
 extern std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
 
 void show_help();
-
-void add_dot_header();
-void add_dot_footer();
 
 void add_csv_header(std::ofstream &csvfile);
 void dump_symtables(const std::string &output_dir);
@@ -77,8 +73,6 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  outfile.open("graph.dot");
-
   std::filesystem::create_directories(output_dir);
 
   lexer_logfile = fopen((output_dir + "lexer.log").c_str(), "w");
@@ -87,20 +81,12 @@ int main(int argc, char *argv[]) {
   if (verbose) {
     std::cout << "Input file: " << input_file << std::endl;
     std::cout << "Output directory: " << output_dir << std::endl;
-    std::cout << "Parsing input file and creating DOT file..." << std::endl;
+    std::cout << "Parsing input file..." << std::endl;
   }
 
   insert_var("__name__", "str");
 
-  // add_dot_header();
   yyparse();
-  // add_dot_footer();
-
-  // if (verbose) {
-  //   std::cout << "Creating AST..." << std::endl;
-  // }
-
-  // system(("dot -Tpdf graph.dot -o " + output_dir + "graph.pdf").c_str());
 
   if (verbose) {
     std::cout << "Dumping symbol tables and 3AC..." << std::endl;
@@ -117,14 +103,6 @@ void show_help() {
             << "  -input: Input file to parse." << std::endl
             << "  -output: Output directory to dump the symbol tables and the 3AC." << std::endl
             << "  -verbose: Show verbose output." << std::endl;
-}
-
-void add_dot_header() {
-  outfile << "strict digraph AST {" << std::endl;
-}
-
-void add_dot_footer() {
-  outfile << "}" << std::endl;
 }
 
 void add_csv_header(std::ofstream &csvfile) {
