@@ -68,8 +68,6 @@
   int is_digit(char c);
 
   void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result); //gen function for 3AC
-  void gen(std::string s); //gen function for goto operations
-  void gen(std::string s, int); //gen function for goto operations
 
   std::map<std::string, std::string> true_list;
   std::map<std::string, std::string> false_list;
@@ -86,7 +84,6 @@
   std::stack<std::vector<std::string>> code_stack;
   std::string class_name;
 
-  std::string get_sem_val(char *c_str); // get semantic value from AST node
   int get_size(const std::string &type);
   int get_list_element_count(char* list);
   std::string get_list_element_datatype(char* list_type);
@@ -235,6 +232,8 @@ arrow_test_opt:
   }
 | ARROW test
   {
+    parser_logfile << "| ARROW test" << std::endl;
+    
     func_return_type = $2;
   }
 ;
@@ -427,7 +426,7 @@ expr_stmt:
   {
     parser_logfile << "testlist_star_expr annassign" << std::endl;
 
-    // check_redecl(get_sem_val($1)); // TODO
+    // check_redecl($1); // TODO
 
     if (std::string($1).substr(0, 4) == "self") {
       insert_attr(std::string($1).substr(5), var_type);
@@ -857,9 +856,9 @@ while_stmt:
 for_stmt:
   FOR NAME IN NAME '(' arith_expr ')' ':' 
   {
-    std::string n2 = get_sem_val($4);
-    std::string n1 = get_sem_val($2);
-    std::string in = get_sem_val($6);
+    std::string n2 = $4;
+    std::string n1 = $2;
+    std::string in = $6;
     if( n2 != "range")
       yyerror("Invalid iterator");
     else {
@@ -880,7 +879,7 @@ for_stmt:
   }
   suite else_colon_suite_opt
   {
-    std::string n1 = get_sem_val($2);
+    std::string n1 = $2;
     std::string t = new_temp();
     insert_var(t, get_type(n1));
     gen("", n1, "", t);
@@ -895,10 +894,10 @@ for_stmt:
   }
   | FOR NAME IN NAME '(' arith_expr ',' arith_expr ')' ':' 
   {
-    std::string n2 = get_sem_val($4);
-    std::string n1 = get_sem_val($2);
-    std::string in1 = get_sem_val($6);
-    std::string in2 = get_sem_val($8);
+    std::string n2 = $4;
+    std::string n1 = $2;
+    std::string in1 = $6;
+    std::string in2 = $8;
     if( n2 != "range")
       yyerror("Invalid iterator");
     else {
@@ -922,7 +921,7 @@ for_stmt:
   {
     parser_logfile << "FOR exprlist IN testlist ':' suite else_colon_suite_opt" << std::endl;
 
-    std::string n1 = get_sem_val($2);
+    std::string n1 = $2;
     std::string t = new_temp();
     insert_var(t, get_type(n1));
     gen("", n1, "", t);
@@ -1609,19 +1608,6 @@ arith_expr:
     else{
       strcpy($$, $1);
     }
-
-    // if($2[0] != '\0'){
-    //   std::string t = new_temp();
-    //   if(current_operator == "-"){
-    //     code_stack.push({"=", "-", "", });
-    //   }
-    //   code_stack.push({"+", get_sem_val($1), get_sem_val($2), t});
-    //   empty_code_stack();
-    //   strcpy($$, t.c_str());
-    // }
-    // else{
-    //   strcpy($$, $1);
-    // }
   }
 ;
 
@@ -1675,22 +1661,6 @@ plus_or_minus_term_list:
       current_operator = "";
       strcpy($$, t.c_str());
     }
-
-    // std::string t=new_temp();
-    // std::string arg1 = get_sem_val($1); 
-    // code_stack.push({"+", arg1, get_sem_val($3), t});
-    // 
-    // std::string t2, t3, curr_temp = t;
-    // if(arg1[0] == '-'){
-    //   arg1 = remove_leading_minus($1);
-    //   t2 = new_temp();
-    //   code_stack.pop();
-    //   code_stack.push({"-", arg1, "", t});
-    //   code_stack.push({get_sem_val($2), t, get_sem_val($3), t2});
-    //   curr_temp = "-" + t2;
-    // }
-    // strcpy($$, curr_temp.c_str()); 
-    // if($1[0] == '\0') current_operator = $2;
   }
 ;
 
@@ -2110,19 +2080,6 @@ atom_expr:
       }
       else {
         // object attribute access
-        // symtable_entry obj_entry = lookup_var($1);
-        // std::string class_name = obj_entry.type;
-
-        // std::string attr = std::string($2).substr(1);
-        // symtable_entry attr_entry = lookup_attr(class_name, attr);
-
-        // std::string t = new_temp();
-        // gen("=", std::string($1) + $2, "", t);
-
-        // temp_types[t] = attr_entry.type;
-
-        // strcpy($$, t.c_str());
-
         strcpy($$, (std::string($1) + $2).c_str());
       }
     }
@@ -2652,22 +2609,6 @@ void emit_dot_node(const char* node_name, const char* label) {
   outfile << "\"" << node_name << "\" [label=\"" << label << "\"];" << std::endl;
 }
 
-// get semantic value from AST node
-std::string get_sem_val(char *c_str) {
-  std::string str = c_str;
-  if (str.substr(0, 4) == "NONE") {
-    return "None";
-  }
-
-  int start = str.find('(');
-  if (start == std::string::npos) {
-    return str;
-  }
-
-  int end = str.find(')');
-  return str.substr(start + 1, end - start - 1);
-}
-
 int get_size(const std::string &type) {
   if (type == "bool") {
     return 1;
@@ -2716,11 +2657,6 @@ void print_curr_3ac_instr(std::vector<std::string> &line_code) {
 
 void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result) {
   ac3_code.push_back({op, arg1, arg2, result});
-  // print_curr_3ac_instr(ac3_code.back());
-}
-
-void gen(std::string s) {
-  ac3_code.push_back({s});
   // print_curr_3ac_instr(ac3_code.back());
 }
 
