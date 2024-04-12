@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include "symtable.h"
+#include "codegen.h"
 
 extern FILE *yyin;
 extern int yyparse();
@@ -94,6 +95,12 @@ int main(int argc, char *argv[]) {
 
   dump_symtables(output_dir);
   dump_3ac(output_dir);
+
+  if (verbose) {
+    std::cout << "Generating x86_64 code..." << std::endl;
+  }
+
+  gen_x86_code();
 
   return 0;
 }
