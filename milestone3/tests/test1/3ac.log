@@ -1,0 +1,158 @@
+bubbleSort:
+beginfunc
+array = popparam
+n = popparam
+i = 0
+L1:
+if i<n goto L2
+goto L3
+L2:
+swapped = False
+j = 0
+t1 = -i - 1
+t2 = n + t1
+j = 0
+L4:
+if j<t2 goto L5
+goto L6
+L5:
+L7:
+t3 = j * 8
+t4 = array[t3]
+t5 = j + 1
+t6 = t5 * 8
+t7 = array[t6]
+t8 = t4 > t7
+if t8 goto L8
+goto L9
+L8:
+t9 = j * 8
+t10 = array[t9]
+temp = t10
+t11 = j * 8
+t12 = array[t11]
+t13 = j + 1
+t14 = t13 * 8
+t15 = array[t14]
+t12 = t15
+t16 = j + 1
+t17 = t16 * 8
+t18 = array[t17]
+t18 = temp
+swapped = True
+goto L10
+L9:
+L10:
+t19 = j
+j = t19 + 1
+goto L4
+L6:
+L11:
+t20 = not swapped
+if t20 goto L12
+goto L13
+L12:
+goto L3
+goto L14
+L13:
+L14:
+t21 = i
+i = t21 + 1
+goto L1
+L3:
+return
+endfunc
+insertionSort:
+beginfunc
+arr = popparam
+n = popparam
+i = 0
+i = 1
+L15:
+if i<n goto L16
+goto L17
+L16:
+t1 = i * 8
+t2 = arr[t1]
+key = t2
+t3 = i + 1
+j = t3
+L18:
+t4 = j >= 0
+t5 = j * 8
+t6 = arr[t5]
+t7 = key < t6
+t8 = t4 and t7
+if t8 goto L19
+goto L20
+L19:
+t9 = j + 1
+t10 = t9 * 8
+t11 = arr[t10]
+t12 = j * 8
+t13 = arr[t12]
+t11 = t13
+j = j - 1
+goto L18
+L20:
+t14 = j + 1
+t15 = t14 * 8
+t16 = arr[t15]
+t16 = key
+t17 = i
+i = t17 + 1
+goto L15
+L17:
+return
+endfunc
+main:
+beginfunc
+t1 = - 2
+t2 = - 9
+param 20
+stackpointer +4
+call allocmem , 1
+stackpointer -4
+t3 = popparam
+t3[0] = t1
+t3[4] = 45
+t3[8] = 0
+t3[12] = 11
+t3[16] = t2
+data1 = t3
+t4 = - 2
+t5 = - 9
+param 20
+stackpointer +4
+call allocmem , 1
+stackpointer -4
+t6 = popparam
+t6[0] = t4
+t6[4] = 45
+t6[8] = 0
+t6[12] = 11
+t6[16] = t5
+data2 = t6
+param data1
+param 5
+stackpointer +12
+call bubbleSort , 2
+stackpointer -12
+param data2
+param 5
+stackpointer +12
+call insertionSort , 2
+stackpointer -12
+return
+endfunc
+L21:
+t1 = __name__ == "__main__"
+if t1 goto L22
+goto L23
+L22:
+stackpointer +0
+call main , 0
+stackpointer -0
+goto L24
+L23:
+L24:

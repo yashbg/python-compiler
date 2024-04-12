@@ -1,0 +1,9 @@
+token,lexeme,type,ret_type,size,lineno
+NAME,b,B,,8,21
+NAME,t5,B,,8,21
+NAME,t4,int,,4,21
+NAME,a,A,,8,18
+NAME,t3,A,,8,18
+NAME,t2,A,,8,18
+NAME,t6,B,,8,21
+NAME,t1,int,,4,18
