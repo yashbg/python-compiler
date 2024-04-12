@@ -22,6 +22,8 @@ void add_csv_header(std::ofstream &csvfile);
 void dump_symtables(const std::string &output_dir);
 void dump_3ac(const std::string &output_dir);
 
+void dump_x86_code(const std::string &output_dir);
+
 int main(int argc, char *argv[]) {
   std::string input_file, output_dir;
   bool verbose = false;
@@ -85,6 +87,8 @@ int main(int argc, char *argv[]) {
     std::cout << "Parsing input file..." << std::endl;
   }
 
+  // frontend
+
   insert_var("__name__", "str");
 
   yyparse();
@@ -96,11 +100,14 @@ int main(int argc, char *argv[]) {
   dump_symtables(output_dir);
   dump_3ac(output_dir);
 
+  // backend
+
   if (verbose) {
     std::cout << "Generating x86_64 code..." << std::endl;
   }
 
   gen_x86_code();
+  dump_x86_code(output_dir);
 
   return 0;
 }
@@ -221,5 +228,13 @@ void dump_3ac(const std::string &output_dir) {
                    << line_code[0] << " "
                    << line_code[2] << std::endl;
     }
+  }
+}
+
+void dump_x86_code(const std::string &output_dir) {
+  std::ofstream x86_dumpfile;
+  x86_dumpfile.open(output_dir + "x86.s");
+  for (const auto &line : x86_code) {
+    x86_dumpfile << line << std::endl;
   }
 }
