@@ -14,7 +14,7 @@ FILE *lexer_logfile;
 std::ofstream parser_logfile;
 
 extern global_symtable gsymtable;
-extern std::vector<std::vector<std::string>> ac3_code;
+extern std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
 
 void show_help();
 

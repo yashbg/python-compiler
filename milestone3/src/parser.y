@@ -22,10 +22,6 @@
 
   void yyerror(const char *);
 
-  std::map<std::string, int> node_map;
-  int comma_number = 1;
-  std::string s1, s2;
-
   bool func_scope = false;
   bool class_scope = false;
   global_symtable gsymtable;
@@ -45,9 +41,6 @@
   std::vector<std::pair<std::string, std::string>> func_params; // (name, type)
   std::string func_return_type;
   std::string current_operator;
-
-  // bool attr_type_rem = false;
-  // std::string attr_decl;
 
   std::string atom_token;
   bool in_var_decl = false;
@@ -74,13 +67,9 @@
 
   int is_digit(char c);
 
-  void emit_dot_node(const char* node_name, const char* label);
-  void emit_dot_edge(const char* from, const char* to);
-
   void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result); //gen function for 3AC
   void gen(std::string s); //gen function for goto operations
   void gen(std::string s, int); //gen function for goto operations
-  void backpatch(std::vector<std::string> &list, std::string label); //backpatch function for 3AC
 
   std::map<std::string, std::string> true_list;
   std::map<std::string, std::string> false_list;
@@ -178,8 +167,6 @@ newline_or_stmt_list:
 | newline_or_stmt_list newline_or_stmt
   {
     parser_logfile << "| newline_or_stmt_list newline_or_stmt" << std::endl;
-    char str[5] = "Root";
-    emit_dot_edge(str, $2);
   }
 ;
 
@@ -233,36 +220,6 @@ funcdef:
   suite
   {
     parser_logfile << "DEF NAME parameters arrow_test_opt ':' suite" << std::endl;
-    strcpy($$, "NAME(");
-    strcat($$, $2);
-    strcat($$, ")");
-    node_map[$2]++;
-    node_map["DEF"]++;
-
-    s1 = "DEF" + std::to_string(node_map["DEF"]);
-    s2 = $$ + std::to_string(node_map[$2]);
-    emit_dot_edge(s1.c_str(), s2.c_str());
-
-    s1 = $$ + std::to_string(node_map[$2]);
-    emit_dot_edge(s1.c_str(), $3);
-
-    node_map[":"]++;
-    s1 = $5+std::to_string(node_map[":"]);
-    if($4[0] != '\0'){
-      s2 = "DEF"+std::to_string(node_map["DEF"]);
-      emit_dot_edge($4, s2.c_str());
-      emit_dot_edge(s1.c_str(), $4);
-    }
-    else {
-      s2 = "DEF" + std::to_string(node_map["DEF"]);
-      emit_dot_edge(s1.c_str(), s2.c_str());
-    }
-
-    emit_dot_edge(s1.c_str(), $7);
-
-    strcpy($$, $5);
-    std::string temp = std::to_string(node_map[":"]);
-    strcat($$, temp.c_str());
 
     func_scope = false;
     gen("return", "", "", "");
@@ -278,13 +235,6 @@ arrow_test_opt:
   }
 | ARROW test
   {
-    node_map["->"]++;
-    parser_logfile << "| ARROW test" << std::endl;
-    s1 = "->"+std::to_string(node_map["->"]);
-    s2 = $2;
-    emit_dot_edge(s1.c_str(), $2);
-    strcpy($$,s1.c_str());
-
     func_return_type = $2;
   }
 ;
@@ -293,17 +243,6 @@ parameters:
   '(' typedargslist_opt ')'
   {
     parser_logfile << "'(' typedargslist_opt ')'" << std::endl;
-    
-    node_map["()"]++;
-
-    // if($2[0] != '\0'){
-    //   s1 = "()"+std::to_string(node_map["()"]);
-    //   emit_dot_edge(s1.c_str(), $2);
-    // }
-
-    // strcpy($$, "()");
-    // std::string temp = std::to_string(node_map["()"]);
-    // strcat($$, temp.c_str());
     
     strcpy($$, $1);
     strcat($$, $2);
@@ -328,34 +267,7 @@ typedargslist:
   tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list
   {
     parser_logfile << "tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list" << std::endl;
-    // if($2[0] != '\0') {
-    //   s1 = $2;
-    //   s2 = $1;
-    //   emit_dot_edge(s1.c_str(), s2.c_str());
-    // }
- 
-    // if($3[0]!='\0')
-    // {
-    //   if($2[0] != '\0'){
-    //     s1 = $3;
-    //     s2 =$2;
-    //     emit_dot_edge($3, s2.c_str());
-    //     strcpy($$, $3);
-    //   }
-    //   else{
-    //     emit_dot_edge($3, $1);
-    //     strcpy($$, $3);
-    //   }
-    // }
-    // else
-    // {
-    //   if($2[0] != '\0'){
-    //     strcpy($$, $2);
-    //   }
-    //   else{
-    //     strcpy($$, $1);
-    //   }
-    // }
+
     if($3[0] == '\0'){
       strcpy($$, $1);
     }
@@ -370,23 +282,6 @@ typedargslist:
 tfpdef:
   NAME colon_test_opt
   {
-    // node_map[$1]++;
-    // s2 = "NAME(";
-    // s2 += $1;
-    // s2 += ")";
-    // s2 += std::to_string(node_map[$1]);
- 
-    // if($2[0] != '\0'){
-    //   parser_logfile << "NAME colon_test_opt" << std::endl;
-    //   strcpy($$, ":");
-    //   std::string temp = std::to_string(node_map[":"]);
-    //   strcat($$, temp.c_str());
- 
-    //   emit_dot_edge($2, s2.c_str());
-    // }
-    // else {
-    //   strcpy($$, s2.c_str());
-    // }
     strcpy($$, $1);
     if($2[0] != '\0'){
       strcat($$, $2);
@@ -404,9 +299,6 @@ comma_opt:
 | ','
   {
     parser_logfile << "| ','" << std::endl;
-    node_map[","]++;
-    s1 = "," + std::to_string(node_map[","]);
-    strcpy($$, s1.c_str());
   }
 ;
 
@@ -419,10 +311,6 @@ equal_test_opt:
 | '=' test
   {
     parser_logfile << "| '=' test" << std::endl;
-    //node_map["="]++;
-    //s1 = "="+std::to_string(node_map["="]);
-    //emit_dot_edge(s1.c_str(), $2);
-    //strcpy($$, s1.c_str());
     strcpy($$, $2);
   }
 ;
@@ -436,44 +324,7 @@ comma_tfpdef_equal_test_opt_list:
 | comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt
   {
     parser_logfile << "| comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt" << std::endl;
-    // if($4[0] != '\0'){
-    //   s1 = $4;
-    //   s2 = $3;
-    //   emit_dot_edge(s1.c_str(), $3);
-    // }
-// 
-    // node_map[","]++;
-// 
-    // if($1[0]!='\0')
-    // {
-    //   if($4[0] != '\0'){
-    //     s2 =$4;
-    //     emit_dot_edge($1, s2.c_str());
-    //   }
-    //   else{
-    //     emit_dot_edge($1, $3);
-// 
-    //   }
-    //   s1 = ","+std::to_string(node_map[","]);
-    //   emit_dot_edge(s1.c_str(), $1);
-    //   strcpy($$, ",");
-    //   std::string temp = std::to_string(node_map[","]);
-    //   strcat($$, temp.c_str());
-    // }
-    // else{
-    //   s1 = "," + std::to_string(node_map[","]);
-    //   if($4[0] != '\0'){
-    //     s2 = $4;
-    //   }
-    //   else{
-    //     s2 = $3;
-    //   }
-    //   emit_dot_edge(s1.c_str(), s2.c_str());
-// 
-    //   strcpy($$, ",");
-    //   std::string temp = std::to_string(node_map[","]);
-    //   strcat($$, temp.c_str());
-    // }
+
     if($1[0] != '\0'){
       strcpy($$, $1);
     }
@@ -491,10 +342,7 @@ colon_test_opt:
 | ':' test
   {
     parser_logfile << "| ':' test" << std::endl;
-    // node_map[":"]++;
-    // s1 = ":"+std::to_string(node_map[":"]);
-    // emit_dot_edge(s1.c_str(), $2);
-    // strcpy($$, s1.c_str());
+
     strcpy($$, $1);
     strcat($$, $2);
     func_param_type = $2;
@@ -535,8 +383,7 @@ simple_stmt:
       strcpy($$, $1);
     }
     else{
-        emit_dot_edge($2, $1);
-        strcpy($$, $2);
+      strcpy($$, $2);
     }
   }
 ;
@@ -550,16 +397,6 @@ semicolon_small_stmt_list:
 | semicolon_small_stmt_list ';' small_stmt
   {
     parser_logfile << "| semicolon_small_stmt_list ';' small_stmt" << std::endl;
-    if($1[0] != '\0'){
-      node_map[";"]++;
-      s1 = ";"+std::to_string(node_map[";"]);
-      emit_dot_edge(s1.c_str(), $1);
-      emit_dot_edge(s1.c_str(), $3);
-      strcpy($$, s1.c_str());
-    }
-    else{
-      strcpy($$, $3);
-    }
   }
 ;
 
@@ -591,8 +428,6 @@ expr_stmt:
     parser_logfile << "testlist_star_expr annassign" << std::endl;
 
     // check_redecl(get_sem_val($1)); // TODO
-    // emit_dot_edge($3, $1);
-    // strcpy($$, $3);
 
     if (std::string($1).substr(0, 4) == "self") {
       insert_attr(std::string($1).substr(5), var_type);
@@ -612,11 +447,6 @@ expr_stmt:
 | testlist_star_expr augassign testlist
   {
     parser_logfile << "| testlist_star_expr augassign testlist" << std::endl;
-
-    // s1 = $2;
-    // emit_dot_edge(s1.c_str(), $3);
-    // emit_dot_edge(s1.c_str(), $1);
-    // strcpy($$, s1.c_str());
 
     std::string aug_op = $2;
     std::string op = aug_op.substr(0, aug_op.size() - 1);
@@ -649,15 +479,6 @@ expr_stmt:
   {
     parser_logfile << "| testlist_star_expr expr_stmt_suffix_choices" << std::endl;
     
-    // if($2[0] == '\0'){
-    //   strcpy($$, $1);
-    // }
-    // else{
-    //   s1 = $2;
-    //   emit_dot_edge($2, $1);
-    //   strcpy($$, $2);
-    // }
-    
     if($2[0] != '\0'){
       check_type_equiv(get_type($1), get_type($2));
 
@@ -689,14 +510,6 @@ equal_testlist_star_expr_list:
   {
     parser_logfile << "| equal_testlist_star_expr_list '=' testlist_star_expr" << std::endl;
     
-    // node_map["="]++;
-    // s1 = "=" + std::to_string(node_map["="]);
-    // if($1[0] != '\0'){
-    //   emit_dot_edge(s1.c_str(), $1);
-    // }
-    // emit_dot_edge(s1.c_str(), $3);
-    // strcpy($$, s1.c_str());
-    
     strcpy($$, $3);
   }
 ;
@@ -715,19 +528,6 @@ annassign:
   equal_test_opt
   {
     parser_logfile << "':' test equal_test_opt" << std::endl;
-    //node_map[":"]++;
-    //s1 = ":" + std::to_string(node_map[":"]);
-    //emit_dot_edge(s1.c_str(), $2);
-
-    //s2 = ":" + std::to_string(node_map[":"]);
-
-    //if($4[0] != '\0'){
-    //  emit_dot_edge(s1.c_str(), $4);
-    //  strcpy($$, s1.c_str());
-    //}
-    //else{
-    //  strcpy($$, s2.c_str());
-    //}
 
     var_type = $2;
 
@@ -768,13 +568,6 @@ testlist_star_expr:
   test_or_star_expr comma_test_or_star_expr_list comma_opt
   {
     parser_logfile << "test_or_star_expr comma_test_or_star_expr_list comma_opt" << std::endl;
-    //if($2[0] != '\0'){
-    //  emit_dot_edge($2, $1);
-    //  strcpy($$, $2);
-    //}
-    //else{
-    //  strcpy($$, $1);
-    //}
 
     std::string temp = $1;
     strcpy($$, temp.c_str());
@@ -803,17 +596,7 @@ comma_test_or_star_expr_list:
 | comma_test_or_star_expr_list ',' test_or_star_expr
   {
     parser_logfile << "| comma_test_or_star_expr_list ',' test_or_star_expr" << std::endl;
-    // node_map[","]++;
-    // s1 = "," + std::to_string(node_map[","]);
-    // emit_dot_edge(s1.c_str(), $3);
-    // if($1[0] != '\0'){
-    //   emit_dot_edge(s1.c_str(), $1);
-    //   strcpy($$, s1.c_str());
-    // }
-    // else{
-    //   comma_number = node_map[","];
-    //   strcpy($$, s1.c_str());
-    // }
+
     if($1[0] == '\0'){
       strcpy($$, $3);
     }
@@ -912,26 +695,18 @@ flow_stmt:
 break_stmt:
   BREAK
   {
-    gen("", loop_stack_false.top(), "", "goto");
     parser_logfile << "BREAK" << std::endl;
-    // node_map["BREAK"]++;
-    // std::string no=std::to_string(node_map["BREAK"]);
-    // std::string s="BREAK"+no;
-    // //emit_dot_node(s.c_str(), "BREAK");
-    // strcpy($$, s.c_str());
+
+    gen("", loop_stack_false.top(), "", "goto");
   }
 ;
 
 continue_stmt:
   CONTINUE
   {
-    gen("", loop_stack.top(), "", "goto");
     parser_logfile << "CONTINUE" << std::endl;
-    // node_map["CONTINUE"]++;
-    // std::string no=std::to_string(node_map["CONTINUE"]);
-    // std::string s="CONTINUE"+no;
-    // //emit_dot_node(s.c_str(), "CONTINUE");
-    // strcpy($$, s.c_str());
+
+    gen("", loop_stack.top(), "", "goto");
   }
 ;
 
@@ -939,17 +714,10 @@ return_stmt:
   RETURN testlist_opt
   {
     parser_logfile << "RETURN testlist_opt" << std::endl;
-    // node_map["RETURN"]++;
-    // std::string no=std::to_string(node_map["RETURN"]);
-    // std::string s="RETURN"+no;
-    // //emit_dot_node(s.c_str(), "RETURN");
-    // if($2[0]!='\0'){
-    //   emit_dot_edge(s.c_str(), $2);}
-    // strcpy($$, s.c_str());
+
     if($2[0] != '\0'){
       gen("push", $2, "", "");
     }
-    // gen("return", "", "", "");
   }
 ;
 
@@ -970,21 +738,6 @@ global_stmt:
   GLOBAL NAME comma_name_list
   {
     parser_logfile << "GLOBAL NAME comma_name_list" << std::endl;
-    node_map["GLOBAL"]++;
-    std::string no=std::to_string(node_map["GLOBAL"]);
-    std::string s="GLOBAL"+no;
-    //emit_dot_node(s.c_str(), "GLOBAL");
-    char* s2;
-    node_map[$2]++;
-    strcpy(s2,"NAME(");
-    strcat(s2,$2);
-    strcat(s2,")");
-    std::string temp = std::to_string(node_map[$2]);
-    strcat(s2, temp.c_str());
-    emit_dot_edge(s.c_str(), s2);
-    if($3[0]!='\0'){
-      emit_dot_edge(s.c_str(), $3);}
-    strcpy($$, s.c_str());
   }
 ;
 
@@ -997,22 +750,6 @@ comma_name_list:
 | comma_name_list ',' NAME
   {
     parser_logfile << "| comma_name_list ',' NAME" << std::endl;
-    node_map[","]++;
-    std::string no=std::to_string(node_map[","]);
-    std::string s=","+no;
-    //emit_dot_node(s.c_str(), ",");
-    char* s2;
-    node_map[$3]++;
-    strcpy(s2,"NAME(");
-    strcat(s2,$3);
-    strcat(s2,")");
-    std::string temp = std::to_string(node_map[$3]);
-    strcat(s2, temp.c_str());
-    emit_dot_edge(s.c_str(), s2);
-    if($1[0]!='\0'){
-      emit_dot_edge(s.c_str(), $1);
-    }
-    strcpy($$, s.c_str());
   }
 ;
 
@@ -1070,37 +807,13 @@ if_stmt:
   }
   elif_test_colon_suite_list else_colon_suite_opt
   {
+    parser_logfile << "IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt" << std::endl;
+    
     gen("", ":", "", end_stack.top());  
     end_stack.pop();
     true_stack.pop();
     cond_stack.pop();
     false_stack.pop();
-    parser_logfile << "IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt" << std::endl;
-    // node_map["IF"]++;
-    // std::string no=std::to_string(node_map["IF"]);
-    // std::string s="IF"+no;
-    // emit_dot_edge(s.c_str(), $2);
-    // node_map[":"]++;
-    // std::string no1=std::to_string(node_map[":"]);
-    // std::string s1=":"+no1;
-    // emit_dot_edge(s1.c_str(), s.c_str());
-    // emit_dot_edge(s1.c_str(), $4);
-    // strcpy($$, $3);
-    // std::string temp = std::to_string(node_map[":"]);
-    // strcat($$, temp.c_str());
-    // if(($5[0] == '\0') && ($6[0] == '\0')){
-
-    // }
-    // else if($5[0] == '\0'){
-    //   emit_dot_edge($$, $6);
-    // }
-    // else if($6[0] == '\0'){
-    //   emit_dot_edge($$, $5);
-    // }
-    // else{
-    //   emit_dot_edge($$, $5);
-    //   emit_dot_edge($5, $6);
-    // }
   }
 ;
 
@@ -1130,26 +843,13 @@ while_stmt:
   }
   else_colon_suite_opt
   {
+    parser_logfile << "WHILE test ':' suite else_colon_suite_opt" << std::endl;
+
     true_stack.pop();
     loop_stack.pop();
     cond_stack.pop();
     false_stack.pop();
     loop_stack_false.pop();
-    parser_logfile << "WHILE test ':' suite else_colon_suite_opt" << std::endl;
-    // node_map["WHILE"]++;
-    // std::string no=std::to_string(node_map["WHILE"]);
-    // std::string s="WHILE"+no;
-    // //emit_dot_node(s.c_str(), "WHILE");
-    // emit_dot_edge(s.c_str(), $2);
-    // if($4[0]!='\0'){
-    //   emit_dot_edge(s.c_str(), $4);
-    // }
-    // node_map[":"]++;
-    // std::string no1=std::to_string(node_map[":"]);
-    // std::string s1=":"+no1;
-    // //emit_dot_node(s1.c_str(), ":");
-    // emit_dot_edge(s.c_str(), s1.c_str());
-    // strcpy($$, s.c_str());
   }
 ;
 
@@ -1220,6 +920,8 @@ for_stmt:
   }
   suite else_colon_suite_opt
   {
+    parser_logfile << "FOR exprlist IN testlist ':' suite else_colon_suite_opt" << std::endl;
+
     std::string n1 = get_sem_val($2);
     std::string t = new_temp();
     insert_var(t, get_type(n1));
@@ -1232,28 +934,6 @@ for_stmt:
     cond_stack.pop();
     false_stack.pop();
     loop_stack_false.pop();
-    parser_logfile << "FOR exprlist IN testlist ':' suite else_colon_suite_opt" << std::endl;
-    // node_map["FOR"]++;
-    // std::string no=std::to_string(node_map["FOR"]);
-    // std::string s="FOR"+no;
-    //emit_dot_node(s.c_str(), "FOR");
-    // emit_dot_edge(s.c_str(), $2);
-
-    // node_map["IN"]++;
-    // std::string no1=std::to_string(node_map["IN"]);
-    // std::string s1="IN"+no1;
-    // //emit_dot_node(s1.c_str(), "IN");
-    // emit_dot_edge(s.c_str(), s1.c_str());
-
-    // node_map[":"]++;
-    // std::string no2=std::to_string(node_map[":"]);
-    // std::string s2=":"+no2;
-    // //emit_dot_node(s2.c_str(), ":");
-    // emit_dot_edge(s1.c_str(), s2.c_str());
-    // emit_dot_edge(s2.c_str(), $4);
-    // emit_dot_edge(s2.c_str(), $6);
-
-    // strcpy($$, s.c_str());
   }
 ;
 
@@ -1266,15 +946,6 @@ else_colon_suite_opt:
 | ELSE ':' suite
   {
     parser_logfile << "| ELSE ':' suite" << std::endl;
-    // node_map["ELSE"]++;
-    // std::string no=std::to_string(node_map["ELSE"]);
-    // std::string s="ELSE"+no;
-    // node_map[":"]++;
-    // std::string no1=std::to_string(node_map[":"]);
-    // std::string s1=":"+no1;
-    // emit_dot_edge(s1.c_str(), s.c_str());
-    // emit_dot_edge(s1.c_str(), $3);
-    // strcpy($$, s1.c_str());
   }
 ;
 
@@ -1302,25 +973,13 @@ elif_test_colon_suite_list:
   }
   suite
   {
+    parser_logfile << "| elif_test_colon_suite_list ELIF test ':' suite" << std::endl;
+
     gen("", end_stack.top(), "", "goto"); 
     gen("", ":", "", false_stack.top());
     true_stack.pop();
     cond_stack.pop();
     false_stack.pop();
-    parser_logfile << "| elif_test_colon_suite_list ELIF test ':' suite" << std::endl;
-    // node_map["ELIF"]++;
-    // std::string no=std::to_string(node_map["ELIF"]);
-    // std::string s="ELIF"+no;
-    // node_map[":"]++;
-    // std::string no1=std::to_string(node_map[":"]);
-    // std::string s1=":"+no1;
-    // emit_dot_edge(s.c_str(), s1.c_str());
-    // emit_dot_edge(s1.c_str(), $5);
-    // emit_dot_edge(s1.c_str(), $3);
-    // strcpy($$, s.c_str());
-    // if($1[0] != '\0'){
-    //   emit_dot_edge(s1.c_str(),$1);
-    // }
   }
 ;
 
@@ -1335,17 +994,6 @@ suite:
 | NEWLINE INDENT stmt stmt_list DEDENT
   {
     parser_logfile << "| NEWLINE INDENT stmt stmt_list DEDENT" << std::endl;
-    if($4[0]=='\0'){
-      strcpy($$, $3);
-    }
-    else
-    {
-      node_map["statements"]++;
-      s1 = "statements" + std::to_string(node_map["statements"]);
-      emit_dot_edge(s1.c_str(), $3);
-      emit_dot_edge(s1.c_str(), $4);
-      strcpy($$, s1.c_str());
-    }
   }
 ;
 
@@ -1358,17 +1006,6 @@ stmt_list:
 | stmt_list stmt
   {
     parser_logfile << "| stmt_list stmt" << std::endl;
-    if($1[0] == '\0'){
-      strcpy($$, $2);
-    }
-    else
-    {
-      node_map["statements"]++;
-      s1 = "statements" + std::to_string(node_map["statements"]);
-      emit_dot_edge(s1.c_str(), $1);
-      emit_dot_edge(s1.c_str(), $2);
-      strcpy($$, s1.c_str());
-    }
   }
 ;
 
@@ -1376,17 +1013,8 @@ test:
   or_test if_or_test_else_test_opt
   {
     parser_logfile << "or_test if_or_test_else_test_opt" << std::endl;
-    // if($2[0] == '\0'){
-    //   strcpy($$, $1);
-    // }
-    // else
-    //   {
-    //     emit_dot_edge($1,$2);
-    //     strcpy($$, $1);
-    // }
 
-    std::string temp = $1;
-    strcpy($$, temp.c_str());
+    strcpy($$, $1);
   }
 ;
 
@@ -1418,16 +1046,7 @@ or_test:
   and_test or_and_test_list
   {
     parser_logfile << "and_test or_and_test_list" << std::endl;
-    // if($2[0] == '\0'){
-    //   strcpy($$, $1);
-    // }
-    // else
-    //   {
-    //     std::string no=std::to_string(node_map["OR"]);
-    //     std::string s="OR"+no;
-    //     emit_dot_edge(s.c_str(), $1);
-    //     strcpy($$, s.c_str());
-    // }
+
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -1460,14 +1079,6 @@ or_and_test_list:
 | or_and_test_list OR and_test
   {
     parser_logfile << "| or_and_test_list OR and_test" << std::endl;
-    // node_map["OR"]++;
-    // std::string no=std::to_string(node_map["OR"]);
-    // std::string s="OR"+no;
-    // emit_dot_edge(s.c_str(), $3);
-    // if($1[0] != '\0'){
-    //   emit_dot_edge(s.c_str(), $1);
-    // }
-    // strcpy($$, s.c_str());
 
     if($1[0] == '\0'){
       current_operator = $2;
@@ -1497,15 +1108,7 @@ and_test:
   not_test and_not_test_list
   {
     parser_logfile << "not_test and_not_test_list" << std::endl;
-    // if($2[0] == '\0'){
-    //   strcpy($$, $1);}
-    // else
-    //   {
-    //     std::string no=std::to_string(node_map["AND"]);
-    //     std::string s="AND"+no;
-    //     emit_dot_edge(s.c_str(), $1);
-    //     strcpy($$, s.c_str());
-    // }
+    
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -1538,14 +1141,6 @@ and_not_test_list:
 | and_not_test_list AND not_test
   {
     parser_logfile << "| and_not_test_list AND not_test" << std::endl;
-    // node_map["AND"]++;
-    // std::string no=std::to_string(node_map["AND"]);
-    // std::string s="AND"+no;
-    // emit_dot_edge(s.c_str(), $3);
-    // if($1[0] != '\0'){
-    //   emit_dot_edge(s.c_str(), $1);
-    // }
-    //   strcpy($$, s.c_str());
 
     if($1[0] == '\0'){
       current_operator = $2;
@@ -1575,11 +1170,6 @@ not_test:
   NOT not_test
   {
     parser_logfile << "NOT not_test" << std::endl;
-    // node_map["NOT"]++;
-    // std::string no=std::to_string(node_map["NOT"]);
-    // std::string s="NOT"+no;
-    // emit_dot_edge(s.c_str(), $2);
-    // strcpy($$, s.c_str());
     
     current_operator = $1;
 
@@ -1605,25 +1195,6 @@ comparison:
   expr comp_op_expr_list
   {
     parser_logfile << "expr comp_op_expr_list" << std::endl;
-    // if($2[0] == '\0'){
-    //   strcpy($$, $1);
-    // }
-    // else
-    // {
-    //   strcpy($$, "COMP_OP(");
-    //   int len = strlen($2), i = len - 1;
-    //   while((i >= 0) && (is_digit($2[i]))){
-    //     $2[i] = '\0';
-    //     i--;
-    //   }
-    //   strcat($$, $2);
-    //   strcat($$, ")");
-    //   node_map[$$]++;
-    //   std::string no=std::to_string(node_map[$$]);
-    //   std::string s=$$+no;
-    //   emit_dot_edge(s.c_str(), $1);
-    //   strcat($$, no.c_str());
-    // }
 
     if($2[0] == '\0'){
       strcpy($$, $1);
@@ -1657,17 +1228,6 @@ comp_op_expr_list:
 | comp_op_expr_list comp_op expr
   {
     parser_logfile << "| comp_op_expr_list comp_op expr" << std::endl;
-    // node_map[$2]++;
-    // std::string s3 = "COMP_OP(";
-    // std::string no=std::to_string(node_map[$2]);
-    // std::string s2 = $2+no;
-    // std::string s=s3 + $2 + ")" + no;
- 
-    // emit_dot_edge(s.c_str(), $3);
-    // if($1[0] != '\0'){
-    //   emit_dot_edge(s.c_str(), $1);
-    // }
-    // strcpy($$, s2.c_str());
 
     if($1[0] == '\0'){
       current_operator = $2;
@@ -1738,12 +1298,6 @@ star_expr:
   '*' expr
   {
     parser_logfile << "'*' expr" << std::endl;
-
-    // node_map["*"]++;
-    // std::string no=std::to_string(node_map["*"]);
-    // std::string s="*"+no;
-    // emit_dot_edge(s.c_str(), $2);
-    // strcpy($$, s.c_str());
     
     std::string t=new_temp();
     insert_var(t, get_type($2));
@@ -1756,15 +1310,6 @@ expr:
   xor_expr or_xor_expr_list
   {
     parser_logfile << "xor_expr or_xor_expr_list" << std::endl;
-    // if($2[0] == '\0')
-    //   strcpy($$, $1);
-    // else
-    //   {
-    //     std::string no=std::to_string(node_map["|"]);
-    //     std::string s="|"+no;
-    //     emit_dot_edge(s.c_str(), $1);
-    //     strcpy($$, s.c_str());
-    //   }
 
     if($2[0] == '\0'){
       strcpy($$, $1);
@@ -1798,14 +1343,6 @@ or_xor_expr_list:
 | or_xor_expr_list '|' xor_expr
   {
     parser_logfile << "| or_xor_expr_list '|' xor_expr" << std::endl;
-    // node_map["|"]++;
-    // std::string no=std::to_string(node_map[$2]);
-    // std::string s=$2+no;
-    // emit_dot_edge(s.c_str(), $3);
-    // if($1[0] != '\0'){
-    //   emit_dot_edge(s.c_str(), $1);
-    // }
-    // strcpy($$, s.c_str());
 
     if($1[0] == '\0'){
       current_operator = "|";
@@ -1839,16 +1376,7 @@ xor_expr:
   and_expr xor_and_expr_list
   {
     parser_logfile << "and_expr xor_and_expr_list" << std::endl;
-    // if($2[0] == '\0'){
-    //   strcpy($$, $1);
-    // }
-    // else
-    //   {
-    //     std::string no=std::to_string(node_map["^"]);
-    //     std::string s="^"+no;
-    //     emit_dot_edge(s.c_str(), $1);
-    //     strcpy($$, s.c_str());
-    // }
+    
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -1881,14 +1409,6 @@ xor_and_expr_list:
 | xor_and_expr_list '^' and_expr
   {
     parser_logfile << "| xor_and_expr_list '^' and_expr" << std::endl;
-    // node_map["^"]++;
-    // std::string no=std::to_string(node_map[$2]);
-    // std::string s=$2+no;
-    // emit_dot_edge(s.c_str(), $3);
-    // if($1[0] != '\0'){
-    //   emit_dot_edge(s.c_str(), $1);
-    // }
-    // strcpy($$, s.c_str());
     
     if($1[0] == '\0'){
       current_operator = $2;
@@ -1922,16 +1442,7 @@ and_expr:
   shift_expr and_shift_expr_list
   {
     parser_logfile << "shift_expr and_shift_expr_list" << std::endl;
-    // if($2[0] == '\0'){
-    //   strcpy($$, $1);
-    // }
-    // else
-    //   {
-    //     std::string no=std::to_string(node_map["&"]);
-    //     std::string s="&"+no;
-    //     emit_dot_edge(s.c_str(), $1);
-    //     strcpy($$, s.c_str());
-    // }
+    
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -1964,14 +1475,6 @@ and_shift_expr_list:
 | and_shift_expr_list '&' shift_expr
   {
     parser_logfile << "| and_shift_expr_list '&' shift_expr" << std::endl;
-    // node_map["&"]++;
-    // std::string no=std::to_string(node_map[$2]);
-    // std::string s=$2+no;
-    // emit_dot_edge(s.c_str(), $3);
-    // if($1[0] != '\0'){
-    //   emit_dot_edge(s.c_str(), $1);
-    // }
-    //   strcpy($$, s.c_str());
 
     if($1[0] == '\0'){
       current_operator = $2;
@@ -2005,13 +1508,6 @@ shift_expr:
   arith_expr shift_arith_expr_list
   {
     parser_logfile << "arith_expr shift_arith_expr_list" << std::endl;
-    // if($2[0] == '\0'){
-    //   strcpy($$, $1);}
-    // else
-    //   {
-    //       emit_dot_edge($2, $1);
-    //       strcpy($$, $2);
-    //   }
 
     if($2[0] == '\0'){
       strcpy($$, $1);
@@ -2058,14 +1554,6 @@ shift_arith_expr_list:
 | shift_arith_expr_list ltshift_or_rtshift arith_expr
   {
     parser_logfile << "| shift_arith_expr_list ltshift_or_rtshift arith_expr" << std::endl;
-    // node_map[$2]++;
-    // std::string no=std::to_string(node_map[$2]);
-    // std::string s=$2+no;
-    // emit_dot_edge($2, $3);
-    // if($1[0] != '\0'){
-    //   emit_dot_edge($2, $1);
-    // }
-    // strcpy($$, s.c_str());
 
     if($1[0] == '\0'){
       current_operator = $2;
@@ -2099,15 +1587,6 @@ arith_expr:
   term plus_or_minus_term_list
   {
     parser_logfile << "term plus_or_minus_term_list" << std::endl;
-    // if($2[0] == '\0'){
-    //   strcpy($$, $1);
-    // }
-    // else
-    // {
-    //   emit_dot_edge($2, $1);
-    //   strcpy($$, $2);
-    // }
-    
 
     if($2[0] != '\0'){
       std::string op = current_operator;
@@ -2168,15 +1647,6 @@ plus_or_minus_term_list:
 | plus_or_minus_term_list plus_or_minus term
   {
     parser_logfile << "| plus_or_minus_term_list plus_or_minus term" << std::endl;
-    // node_map[$2]++;
-    // std::string no=std::to_string(node_map[$2]);
-    // std::string s=$2+no;
-    // //emit_dot_node(s.c_str(), $2);
-    // emit_dot_edge(s.c_str(), $3);
-    // if($1[0]!='\0'){
-    //   emit_dot_edge(s.c_str(), $1);
-    // }
-    // strcpy($$, s.c_str());
 
     if($1[0] == '\0'){
       current_operator = $2;
@@ -2232,14 +1702,6 @@ term:
   | factor star_or_slash_or_percent_or_doubleslash factor star_or_slash_or_percent_or_doubleslash_factor_list
   {
     parser_logfile << "factor star_or_slash_or_percent_or_doubleslash_factor_list" << std::endl;
-    // if($2[0]=='\0'){
-    //   strcpy($$, $1);
-    // }
-    // else{
-    // emit_dot_edge($1, $2);
-    // strcpy($$, $1);
-    // }
-
     
     std::string op = $2;
     std::string arg_type1 = get_type($1);
@@ -2298,14 +1760,6 @@ star_or_slash_or_percent_or_doubleslash_factor_list:
 | star_or_slash_or_percent_or_doubleslash_factor_list star_or_slash_or_percent_or_doubleslash factor
   {
     parser_logfile << "| star_or_slash_or_percent_or_doubleslash_factor_list star_or_slash_or_percent_or_doubleslash factor" << std::endl;
-    // node_map[$2]++;
-    // std::string no=std::to_string(node_map[$2]);
-    // std::string s=$2+no;
-    // //emit_dot_node(s.c_str(), $2);
-    // emit_dot_edge(s.c_str(), $3);
-    // if($1[0]!='\0'){
-    //   emit_dot_edge($1, s.c_str());}
-    //   strcpy($$, s.c_str());
 
     if($1[0] == '\0'){
       current_operator = $2;
@@ -2339,13 +1793,6 @@ factor:
   plus_or_minus_or_tilde factor
   {
     parser_logfile << "plus_or_minus_or_tilde factor" << std::endl;
-    
-    // node_map[$1]++;
-    // std::string no=std::to_string(node_map[$1]);
-    // std::string s=$1+no;
-    // //emit_dot_node(s.c_str(), $1);
-    // emit_dot_edge(s.c_str(), $2);
-    // strcpy($$, s.c_str());
 
     std::string op = $1;
     std::string arg_type = get_type($2);
@@ -2394,13 +1841,7 @@ power:
   atom_expr doublestar_factor_opt
   {
     parser_logfile << "atom_expr doublestar_factor_opt" << std::endl;
-    // if($2[0]=='\0'){
-    //   strcpy($$, $1);}
-    // else
-    //   {
-    // emit_dot_edge($1, $2);
-    // strcpy($$, $1);
-    // }
+    
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -2432,19 +1873,9 @@ doublestar_factor_opt:
 | DOUBLESTAR factor
   {
     parser_logfile << "| DOUBLESTAR factor" << std::endl;
-    // node_map["**"]++;
-    // std::string no=std::to_string(node_map["**"]);
-    // std::string s="**"+no;
-    // //emit_dot_node(s.c_str(), "**");
-    // emit_dot_edge(s.c_str(), $2);
-    // strcpy($$, s.c_str());
     
-      current_operator = "**";
-      strcpy($$, $2);
-
-    // std::string t=new_temp();
-    // gen("**", $2, "", t);
-    // strcpy($$, t.c_str());
+    current_operator = "**";
+    strcpy($$, $2);
   }
 ;
 
@@ -2463,10 +1894,7 @@ atom_expr:
         yyerror(("Too many indices given for accessing list " + std::string($1)).c_str());
       }
     }
-    // if($2[0] != '\0'){
-    //   emit_dot_edge($1, $2);
-    // }
-    // strcpy($$, $1);
+    
     std::string str = $1;
     if(str == "self"){
       if(class_scope == false){
@@ -2711,16 +2139,10 @@ trailer_list:
     parser_logfile << "%empty" << std::endl;
     $$[0]='\0';
   }
-| trailer_list trailer  // TODO, might be needed for class objects
+| trailer_list trailer
   {
     parser_logfile << "| trailer_list trailer" << std::endl;
-    // if ($1[0] == '\0') {
-    //   strcpy($$, $2);
-    // }
-    // else {
-    //   emit_dot_edge($1, $2);
-    //   strcpy($$, $1);
-    // }
+    
     if($1[0] == '\0') strcpy($$, $2);
     else{
       strcpy($$, $1);
@@ -2734,15 +2156,6 @@ atom:
   {
     parser_logfile << "'(' testlist_comp_opt ')'" << std::endl;
     
-    // node_map["()"]++;
-    // std::string no=std::to_string(node_map["()"]);
-    // std::string s="()"+no;
-    // //emit_dot_node(s.c_str(), "()");
-    // if($2[0]!='\0'){
-    //   emit_dot_edge(s.c_str(), $2);
-    // }
-    // strcpy($$, s.c_str());
-    
     if (in_var_decl) {
       yyerror(("Type error: invalid type: (" + std::string($2) + ")").c_str());
     }
@@ -2752,15 +2165,6 @@ atom:
 | '[' testlist_comp_opt ']'
   {
     parser_logfile << "'[' testlist_comp_opt ']'" << std::endl;
-
-    // node_map["[]"]++;
-    // std::string no=std::to_string(node_map["[]"]);
-    // std::string s="[]"+no;
-    // emit_dot_node(s.c_str(), "[]");
-    // if($2[0]!='\0'){
-    //   emit_dot_edge(s.c_str(), $2);
-    // }
-    // strcpy($$, s.c_str());
 
     if (in_var_decl) {
       check_valid_type($2);
@@ -2775,13 +2179,6 @@ atom:
   {
     parser_logfile << "NAME" << std::endl;
 
-    // node_map[$1]++;
-    // strcpy($$, "NAME(");
-    // strcat($$, $1);
-    // strcat($$, ")");
-    // std::string temp = std::to_string(node_map[$1]);
-    // strcat($$, temp.c_str());
-
     strcpy($$, $1);
 
     if (is_valid_type($1)) {
@@ -2795,16 +2192,6 @@ atom:
   {
     parser_logfile << "INTEGER" << std::endl;
 
-    // strcpy($$, "INTEGER(");
-    // strcat($$, $1);
-    // strcat($$, ")");
-    // node_map[$$]++;
-    // std::string temp = std::to_string(node_map[$$]);
-    // strcat($$, temp.c_str());
-    // //std::string t=new_temp();
-    // //gen("=", $1, "", t);
-    // //strcpy($$, t.c_str());
-
     strcpy($$, $1);
 
     atom_token = "INTEGER";
@@ -2812,16 +2199,6 @@ atom:
 | FLOAT_NUMBER
   {
     parser_logfile << "FLOAT_NUMBER" << std::endl;
-
-    // strcpy($$, "FLOAT_NUMBER(");
-    // strcat($$, $1);
-    // strcat($$, ")");
-    // node_map[$$]++;
-    // std::string temp = std::to_string(node_map[$$]);
-    // strcat($$, temp.c_str());
-    // //std::string t=new_temp();
-    // //gen("=", $1, "", t);
-    // //strcpy($$, t.c_str());
 
     strcpy($$, $1);
 
@@ -2831,16 +2208,6 @@ atom:
   {
     parser_logfile << "IMAGINARY" << std::endl;
 
-    // strcpy($$, "IMAGINARY(");
-    // strcat($$, $1);
-    // strcat($$, ")");
-    // node_map[$$]++;
-    // std::string temp = std::to_string(node_map[$$]);
-    // strcat($$, temp.c_str());
-    // //std::string t=new_temp();
-    // //gen("=", $1, "", t);
-    // //strcpy($$, t.c_str());
-
     strcpy($$, $1);
 
     atom_token = "IMAGINARY";
@@ -2849,23 +2216,11 @@ atom:
   {
     parser_logfile << "STRING string_list" << std::endl;
 
-    // strcpy($$, "STRING(");
-
     int len = strlen($1);
-    //char* str = new char(len - 1);
     for(int i = 0; i < len - 1; i++){
       $1[i] = $1[i + 1];
     }
     $1[len - 2] = '\0';
-
-    // strcat($$, $1);
-    // strcat($$, ")");
-    // node_map[$$]++;
-    // std::string temp = std::to_string(node_map[$$]);
-    // strcat($$, temp.c_str());
-    // if($2[0] != '\0'){
-    //   emit_dot_edge($$, $2);
-    // }
     
     strcpy($$, (("\"" + std::string($1) + "\"").c_str()));
 
@@ -2874,11 +2229,6 @@ atom:
 | NONE
   {
     parser_logfile << "NONE" << std::endl;
-    
-    // strcpy($$, "NONE");
-    // node_map[$$]++;
-    // std::string temp = std::to_string(node_map[$$]);
-    // strcat($$, temp.c_str());
 
     strcpy($$, "None");
 
@@ -2888,11 +2238,6 @@ atom:
   {
     parser_logfile << "TRUE" << std::endl;
 
-    // strcpy($$, "TRUE");
-    // node_map[$$]++;
-    // std::string temp = std::to_string(node_map[$$]);
-    // strcat($$, temp.c_str());
-
     strcpy($$, "True");
 
     atom_token = "TRUE";
@@ -2900,11 +2245,6 @@ atom:
 | FALSE
   {
     parser_logfile << "FALSE" << std::endl;
-
-    // strcpy($$, "FALSE");
-    // node_map[$$]++;
-    // std::string temp = std::to_string(node_map[$$]);
-    // strcat($$, temp.c_str());
 
     strcpy($$, "False");
 
@@ -2924,19 +2264,6 @@ string_list:
     if($1[0]=='\0'){
       strcpy($$,$2);}
     else{
-      strcpy($$, "STRING(");
-      int len = strlen($2);
-      //char* str = new char(len - 1);
-      for(int i = 0; i < len - 1; i++){
-          $2[i] = $2[i+1];
-      }
-      $2[len - 2] = '\0';
-      strcat($$, $2);
-      strcat($$, ")");
-      node_map[$$]++;
-      std::string temp = std::to_string(node_map[$$]);
-      strcat($$, temp.c_str());
-      emit_dot_edge($$, $2);
       strcpy($$, $1);
     }
   }
@@ -2959,16 +2286,6 @@ testlist_comp:
   test_or_star_expr comp_for_OR_comma_test_or_star_expr_list_comma_opt
   {
     parser_logfile << "test_or_star_expr comp_for_OR_comma_test_or_star_expr_list_comma_opt" << std::endl;
-    // if($2[0] == '\0'){
-    //   strcpy($$, $1);
-    // }
-    // else{
-    //   //emit_dot_edge($1, $2);
-    //   //strcpy($$, $1);
-    //   s1 = "," + std::to_string(comma_number);
-    //   emit_dot_edge(s1.c_str(), $1);
-    //   strcpy($$, $2);
-    // }
 
     if($2[0] == '\0'){
       strcpy($$, $1);
@@ -2999,44 +2316,19 @@ trailer:
   '(' arglist_opt ')'
   {
     parser_logfile << "'(' arglist_opt ')'" << std::endl;
-    // node_map["()"]++;
-    // std::string no=std::to_string(node_map["()"]);
-    // std::string s="()"+no;
-    // //emit_dot_node(s.c_str(), "()");
-    // if($2[0]!='\0'){
-    //   emit_dot_edge(s.c_str(), $2);}
-    // strcpy($$, s.c_str());
 
     strcpy($$, ("(" + std::string($2) + ")").c_str());
   }
 | '[' subscriptlist ']'
   {
     parser_logfile << "'[' subscriptlist ']'" << std::endl;
-    // node_map["[]"]++;
-    // std::string no=std::to_string(node_map["[]"]);
-    // std::string s="[]"+no;
-    // //emit_dot_node(s.c_str(), "[]");
-    // if($2[0]!='\0'){
-    //   emit_dot_edge(s.c_str(), $2);}
-    // strcpy($$, s.c_str());
 
     strcpy($$, ("[" + std::string($2) + "]").c_str());
   }
 | '.' NAME
   {
     parser_logfile << "'.' NAME" << std::endl;
-    // node_map["."]++;
-    // std::string no=std::to_string(node_map["."]);
-    // std::string s="."+no;
-    // //emit_dot_node(s.c_str(), ".");
-    // strcpy($$, "NAME(");
-    // strcat($$, $2);
-    // strcat($$, ")");
-    // node_map[$2]++;
-    // std::string temp = std::to_string(node_map[$2]);
-    // strcat($$, temp.c_str());
-    // emit_dot_edge(s.c_str(),$$);
-    // strcpy($$, s.c_str());
+    
     strcpy($$, $1);
     strcat($$, $2);
   }
@@ -3063,7 +2355,6 @@ subscriptlist:
       strcpy($$, $1);
     }
     else {
-      emit_dot_edge($2, $1);
       strcpy($$, $2);
     }
   }
@@ -3078,14 +2369,6 @@ comma_subscript_list:
 | comma_subscript_list ',' subscript
   {
     parser_logfile << "| comma_subscript_list ',' subscript" << std::endl;
-    node_map[","]++;
-    std::string no=std::to_string(node_map[","]);
-    std::string s=","+no;
-    //emit_dot_node(s.c_str(), ",");
-    if($1[0]!='\0'){
-      emit_dot_edge(s.c_str(), $1);}
-    emit_dot_edge(s.c_str(), $3);
-    strcpy($$, s.c_str());
   }
 ;
 
@@ -3098,17 +2381,6 @@ subscript:
 | test_opt ':' test_opt
   {
     parser_logfile << "| test_opt ':' test_opt" << std::endl;
-    node_map[":"]++;
-    std::string no=std::to_string(node_map[":"]);
-    std::string s=":"+no;
-    //emit_dot_node(s.c_str(), ":");
-    if($1[0]!='\0'){
-      emit_dot_edge(s.c_str(), $1);
-    }
-    if($3[0]!='\0'){
-      emit_dot_edge(s.c_str(), $3);
-    }
-    strcpy($$, s.c_str());
   }
 ;
 
@@ -3129,13 +2401,7 @@ exprlist:
   expr_or_star_expr comma_expr_or_star_expr_list comma_opt
   {
     parser_logfile << "expr_or_star_expr comma_expr_or_star_expr_list comma_opt" << std::endl;
-    // if($2[0]=='\0'){
-    //   strcpy($$, $1);
-    // }
-    // else{
-    //   emit_dot_edge($2, $1);
-    //   strcpy($$, $2);
-    // }
+    
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -3155,15 +2421,7 @@ comma_expr_or_star_expr_list:
 | comma_expr_or_star_expr_list ',' expr_or_star_expr
   {
     parser_logfile << "| comma_expr_or_star_expr_list ',' expr_or_star_expr" << std::endl;
-    // node_map[","]++;
-    // std::string no=std::to_string(node_map[","]);
-    // std::string s=","+no;
-    // //emit_dot_node(s.c_str(), ",");
-    // if($1[0]!='\0'){
-    //   emit_dot_edge(s.c_str(), $1);
-    // }
-    // emit_dot_edge(s.c_str(), $2);
-    // strcpy($$, s.c_str());
+    
     if($1[0] == '\0'){
       strcpy($$, $3);
     }
@@ -3191,13 +2449,7 @@ testlist:
   test comma_test_list comma_opt
   {
     parser_logfile << "test comma_test_list comma_opt" << std::endl;
-    // if($2[0]=='\0'){
-    //   strcpy($$, $1);
-    // }
-    // else if($2[0]!='\0'){
-    //   emit_dot_edge($2, $1);
-    //   strcpy($$, $2);
-    // }
+    
     if($2[0] == '\0'){
       strcpy($$, $1);
     }
@@ -3217,15 +2469,7 @@ comma_test_list:
 | comma_test_list ',' test
   {
     parser_logfile << "| comma_test_list ',' test" << std::endl;
-    // node_map[","]++;
-    // std::string no=std::to_string(node_map[","]);
-    // std::string s=","+no;
-    // //emit_dot_node(s.c_str(), ",");
-    // if($1[0]!='\0'){
-    //   emit_dot_edge(s.c_str(), $1);
-    // }
-    // emit_dot_edge(s.c_str(), $3);
-    // strcpy($$, s.c_str());
+    
     if($1[0] == '\0') strcpy($$, $3);
     else{
       std::string temp = std::string($1) + "," + std::string($3);
@@ -3253,40 +2497,6 @@ classdef:
   suite
   {
     parser_logfile << "CLASS NAME parenthesis_arglist_opt_opt ':' suite" << std::endl;
-    strcpy($$, "NAME(");
-    strcat($$, $2);
-    strcat($$, ")");
-    node_map[$2]++;
-    node_map["CLASS"]++;
-
-    s1 = "CLASS"+std::to_string(node_map["CLASS"]);
-    s2 = $$+std::to_string(node_map[$$]);
-    emit_dot_edge(s1.c_str(), s2.c_str());
-
-    node_map["()"]++;
-
-    s1 = $$+std::to_string(node_map[$$]);
-    s2 = "()"+std::to_string(node_map["()"]);
-    emit_dot_edge(s1.c_str(), s2.c_str());
-
-    if($3[0] != '\0'){
-      s1 = s2;
-      s2 = $3;
-      emit_dot_edge(s1.c_str(), s2.c_str());
-    }
-
-    node_map[":"]++;
-
-    s1 = $4+std::to_string(node_map[":"]);
-    s2 = "CLASS"+std::to_string(node_map["CLASS"]);
-    emit_dot_edge(s1.c_str(), s2.c_str());
-
-    s2 = $6;
-    emit_dot_edge(s1.c_str(), s2.c_str());
-
-    strcpy($$, $4);
-    std::string temp = std::to_string(node_map[":"]);
-    strcat($$, temp.c_str());
 
     class_scope = false;
   }
@@ -3302,12 +2512,6 @@ parenthesis_arglist_opt_opt:
   {
     parser_logfile << "'(' arglist_opt ')'" << std::endl;
     
-    // node_map["()"]++;
-    // std::string no=std::to_string(node_map["()"]);
-    // std::string s="()"+no;
-    // //emit_dot_node(s.c_str(), "()");
-    // emit_dot_edge(s.c_str(), $2);
-    // strcpy($$, s.c_str());
     std::string temp = "(" + std::string($2) + ")";
     strcpy($$, temp.c_str());
   }
@@ -3317,13 +2521,6 @@ arglist:
   argument comma_argument_list comma_opt
   {
     parser_logfile << "argument comma_argument_list comma_opt" << std::endl;
-    // if($2[0]=='\0'){
-    //   strcpy($$, $1);}
-    // else
-    //   {
-    //     emit_dot_edge($2, $1);
-    //     strcpy($$, $2);
-    //   }
 
     if($2[0] == '\0'){
       strcpy($$, $1);
@@ -3344,18 +2541,7 @@ comma_argument_list:
 | comma_argument_list ',' argument
   {
     parser_logfile << "| comma_argument_list ',' argument" << std::endl;
-    // if($3[0]=='\0'){
-    //   strcpy($$, $1);
-    // }
-    // else{
-    //   node_map[","]++;
-    //   std::string no=std::to_string(node_map[","]);
-    //   std::string s=","+no;
-    //   //emit_dot_node(s.c_str(), ",");
-    //   emit_dot_edge(s.c_str(), $1);
-    //   emit_dot_edge(s.c_str(), $3);
-    //   strcpy($$, s.c_str());
-    // }
+    
     if($1[0] == '\0') strcpy($$, $3);
     else{
       std::string temp = std::string($1) + "," + std::string($3);
@@ -3379,13 +2565,6 @@ argument:
   {
     parser_logfile << "test comp_for_opt" << std::endl;
 
-    // if($2[0]=='\0'){
-    //   strcpy($$, $1);}
-    // else{
-    //   emit_dot_edge($2, $1);
-    //   strcpy($$, $2);
-    // }
-
     strcpy($$, $1);
 
     func_args.push_back($1);
@@ -3393,23 +2572,10 @@ argument:
 | test '=' test
   {
     parser_logfile << "test '=' test" << std::endl;
-    node_map["="]++;
-    std::string no=std::to_string(node_map["="]);
-    std::string s=$2+no;
-    //emit_dot_node(s.c_str(), "=");
-    emit_dot_edge(s.c_str(), $1);
-    emit_dot_edge(s.c_str(), $3);
-    strcpy($$, s.c_str());
   }
 | '*' test
   {
     parser_logfile << "'*' test" << std::endl;
-    node_map["*"]++;
-    std::string no=std::to_string(node_map["*"]);
-    std::string s="*"+no;
-    //emit_dot_node(s.c_str(), "*");
-    emit_dot_edge(s.c_str(), $2);
-    strcpy($$, s.c_str());
   }
 ;
 
@@ -3443,21 +2609,6 @@ comp_for:
   FOR exprlist IN or_test comp_iter_opt
   {
     parser_logfile << "FOR exprlist IN or_test comp_iter_opt" << std::endl;
-    node_map["FOR"]++;
-    std::string no=std::to_string(node_map["FOR"]);
-    std::string s="FOR"+no;
-    //emit_dot_node(s.c_str(), "FOR");
-    emit_dot_edge(s.c_str(), $2);
-    node_map["IN"]++;
-    std::string no1=std::to_string(node_map["IN"]);
-    std::string s1="IN"+no1;
-    //emit_dot_node(s1.c_str(), "IN");
-    emit_dot_edge(s.c_str(), s1.c_str());
-    if($5[0]!='\0'){
-      emit_dot_edge(s.c_str(), $5);
-    }
-    emit_dot_edge(s1.c_str(), $4);
-    strcpy($$, s.c_str());
   }
 ;
 
@@ -3465,15 +2616,6 @@ comp_if:
   IF test_nocond comp_iter_opt
   {
     parser_logfile << "IF test_nocond comp_iter_opt" << std::endl;
-    node_map["IF"]++;
-    std::string no=std::to_string(node_map["IF"]);
-    std::string s="IF"+no;
-    //emit_dot_node(s.c_str(), "IF");
-    emit_dot_edge(s.c_str(), $2);
-    if($3[0]!='\0'){
-      emit_dot_edge(s.c_str(), $3);
-    }
-    strcpy($$, s.c_str());
   }
 ;
 
@@ -3508,37 +2650,6 @@ int is_digit(char c) {
 
 void emit_dot_node(const char* node_name, const char* label) {
   outfile << "\"" << node_name << "\" [label=\"" << label << "\"];" << std::endl;
-}
-
-void emit_dot_edge(const char* from, const char* to) {
-  if((from[0] == '\0')) return;
-  if(to[0] == '\0') return;
-  char* fromlabel = (char*)malloc(strlen(from) + 1);  // Allocate memory for fromlabel
-  char* tolabel = (char*)malloc(strlen(to) + 1);
-  int i = 0;
-  while(from[i] != '\0'){
-    fromlabel[i] = from[i];
-    i++;
-  }
-  int j = 0;
-  while(to[j] != '\0'){
-    tolabel[j] = to[j];
-    j++;
-  }
-  i--;j--;
-  while(i>=0 && is_digit(from[i])){
-    i--;
-  }
-  while(j>=0 && is_digit(to[j])){
-    j--;
-  }
-  fromlabel[i+1] = '\0';
-  tolabel[j+1] = '\0';
-  emit_dot_node(from, fromlabel);
-  emit_dot_node(to, tolabel);
-  outfile << "\"" << from << "\" -> \"" << to << "\";" << std::endl;
-  free(fromlabel);  // Free allocated memory
-  free(tolabel);    // Free allocated memory
 }
 
 // get semantic value from AST node
@@ -3611,16 +2722,6 @@ void gen(const std::string &op, const std::string &arg1, const std::string &arg2
 void gen(std::string s) {
   ac3_code.push_back({s});
   // print_curr_3ac_instr(ac3_code.back());
-}
-
-void gen(std::string s1, int new_ln) {
-  if(new_ln==0)
-  {
-    ac3_code[ac3_code.size()-1].push_back(s1);
-    return;
-  }
-  ac3_code.push_back({s1, s2});
-  // print_curr_3ac_instr(line_code);
 }
 
 std::string new_temp() {
