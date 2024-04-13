@@ -55,6 +55,9 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
 
     x86_code.push_back("\tpushq\t%rbp");
     x86_code.push_back("\tmovq\t%rsp, %rbp");
+
+    int offset = align_offset(cur_func_symtable_ptr->offset);
+    x86_code.push_back("\tsubq\t$" + std::to_string(offset) + ", %rsp");
   }
   else if (result == "endfunc") {
     // endfunc
@@ -99,6 +102,16 @@ std::string get_addr(const std::string &name) {
     return "$" + name;
   }
 
-  int offset = lookup_var(name).offset;
-  return "-" + std::to_string(4 + offset) + "(%rbp)";
+  symtable_entry entry = lookup_var(name);
+  int offset = entry.offset + entry.size;
+  return "-" + std::to_string(offset) + "(%rbp)";
+}
+
+int align_offset(int offset) {
+  int rem = offset % 16;
+  if (rem) {
+    offset += 16 - rem;
+  }
+
+  return offset;
 }
