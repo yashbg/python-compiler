@@ -61,7 +61,9 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     x86_code.push_back("\tmovq\t%rsp, %rbp");
 
     int offset = align_offset(cur_func_symtable_ptr->offset);
-    x86_code.push_back("\tsubq\t$" + std::to_string(offset) + ", %rsp");
+    if (offset) {
+      x86_code.push_back("\tsubq\t$" + std::to_string(offset) + ", %rsp");
+    }
 
     store_args(func_name);
     return;
@@ -90,6 +92,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   
   if (op == "popparam") {
     // result = popparam
+    x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
     return;
   }
   
