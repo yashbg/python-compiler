@@ -23,11 +23,12 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   std::string result = ac3_line[3];
 
   if (op == "=") {
+    // result = arg1
     std::string arg1_addr = get_addr(arg1);
     std::string result_addr = get_addr(result);
-    // result = arg1
-    x86_code.push_back("movl " + arg1_addr + ", " + "%eax");
-    x86_code.push_back("movl %eax, " + result_addr);
+
+    x86_code.push_back("\tmovl\t" + arg1_addr + ", " + "%eax");
+    x86_code.push_back("\tmovl\t%eax, " + result_addr);
   }
   else if (result == "goto") {
     // goto arg1
@@ -38,6 +39,8 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   else if (arg1 == ":" && op.empty()) {
     // result:
     cur_label = result;
+
+    x86_code.push_back(result + ":");
   }
   else if (result == "beginfunc") {
     // beginfunc
