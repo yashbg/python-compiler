@@ -23,12 +23,17 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   std::string result = ac3_line[3];
 
   if (op == "=") {
-    // result = arg1
-    std::string arg1_addr = get_addr(arg1);
-    std::string result_addr = get_addr(result);
+    if (arg1 == "popparam") {
+      // result = popparam
+    }
+    else {
+      // result = arg1
+      std::string arg1_addr = get_addr(arg1);
+      std::string result_addr = get_addr(result);
 
-    x86_code.push_back("\tmovl\t" + arg1_addr + ", " + "%eax");
-    x86_code.push_back("\tmovl\t%eax, " + result_addr);
+      x86_code.push_back("\tmovl\t" + arg1_addr + ", " + "%eax");
+      x86_code.push_back("\tmovl\t%eax, " + result_addr);
+    }
   }
   else if (result == "goto") {
     // goto arg1
@@ -45,10 +50,12 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   }
   else if (result == "beginfunc") {
     // beginfunc
+    func_scope = true;
     cur_func_symtable_ptr = lookup_func(cur_label);
   }
   else if (result == "endfunc") {
     // endfunc
+    func_scope = false;
   }
   else if (op == "push") {
     // push arg1
@@ -89,6 +96,6 @@ std::string get_addr(const std::string &name) {
     return "$" + name;
   }
 
-  int offset = cur_func_symtable_ptr->var_entries[name].offset; // TODO: use lookup_var
+  int offset = lookup_var(name).offset;
   return "-" + std::to_string(4 + offset) + "(%rbp)";
 }

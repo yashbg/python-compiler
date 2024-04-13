@@ -22,10 +22,6 @@
 
   void yyerror(const char *);
 
-  bool func_scope = false;
-  bool class_scope = false;
-  class_symtable *cur_class_symtable_ptr = nullptr;
-
   std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
   long int temp_count = 1; // counter for temporary variables
   std::string new_temp(); // generate new temporary variable

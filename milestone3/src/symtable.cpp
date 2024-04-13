@@ -19,6 +19,9 @@ extern int get_list_width(const std::string &type);
 
 global_symtable gsymtable;
 local_symtable *cur_func_symtable_ptr = nullptr;
+class_symtable *cur_class_symtable_ptr = nullptr;
+bool func_scope = false;
+bool class_scope = false;
 
 void insert_var(const std::string &name, const std::string &type) {
   // TODO: handle redeclarations

@@ -38,6 +38,9 @@ struct global_symtable {
 
 extern global_symtable gsymtable;
 extern local_symtable *cur_func_symtable_ptr;
+extern class_symtable *cur_class_symtable_ptr;
+extern bool func_scope;
+extern bool class_scope;
 
 void insert_var(const std::string &name, const std::string &type);
 symtable_entry lookup_var(const std::string &name);
