@@ -866,7 +866,7 @@ for_stmt:
     std::string n1 = $2;
     std::string t = new_temp();
     insert_var(t, get_type(n1));
-    gen("", n1, "", t);
+    gen("=", n1, "", t);
     gen("+", t, "1", n1);
     gen("", cond_stack.top(), "", "goto");
     gen("", ":", "", false_stack.top());
@@ -893,7 +893,7 @@ for_stmt:
       true_stack.push(true_label);
       false_stack.push(false_label);
       loop_stack_false.push(false_label);
-      gen("", in1, "", n1);
+      gen("=", in1, "", n1);
       std::string t = n1 + "<" + in2;
       gen("", ":", "", cond_label);
       gen(t, "goto", true_label, "if");
@@ -908,7 +908,7 @@ for_stmt:
     std::string n1 = $2;
     std::string t = new_temp();
     insert_var(t, get_type(n1));
-    gen("", n1, "", t);
+    gen("=", n1, "", t);
     gen("+", t, "1", n1);
     gen("", cond_stack.top(), "", "goto");
     gen("", ":", "", false_stack.top());
@@ -1863,7 +1863,7 @@ atom_expr:
 
       // symtable_entry entry = lookup_attr(class_name, std::string($2).substr(1));
       // std::string t = new_temp(); //TODO  -- store size of x in self.x
-      // gen("", std::to_string(entry.size), "", t);
+      // gen("=", std::to_string(entry.size), "", t);
       // std::string t2 = new_temp(); // TODO -- store address of x in self.x
       // gen("+", "t1", t, t2);
       // std::string t3 = "*" + t2;

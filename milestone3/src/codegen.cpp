@@ -108,11 +108,6 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   
-  if (op.empty() && arg2.empty()) {
-    // result = arg1
-    return;
-  }
-  
   if (arg2.empty()) {
     // result = op arg1
     return;
