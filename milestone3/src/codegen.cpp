@@ -52,6 +52,9 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   }
   else if (op == "push") {
     // push arg1
+    std::string arg1_addr = get_addr(arg1);
+
+    x86_code.push_back("\tmovl\t" + arg1_addr + ", " + "%eax");
   }
   else if (op == "return") {
     // return
