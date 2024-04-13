@@ -22,12 +22,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   std::string arg2 = ac3_line[2];
   std::string result = ac3_line[3];
 
-  if (op == "=") {
-    if (arg1 == "popparam") {
-      // result = popparam
-      return;
-    }
-
+  if (op == "=" && arg1 != "popparam") {
     // result = arg1
     std::string arg1_addr = get_addr(arg1);
     std::string result_addr = get_addr(result);
@@ -93,7 +88,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   
-  if (op.substr(0, 8) == "popparam") {
+  if (op == "popparam") {
     // result = popparam
     return;
   }
@@ -103,7 +98,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   
-  if (op.substr(0, 5) == "param") {
+  if (op == "param") {
     // param arg1
     return;
   }

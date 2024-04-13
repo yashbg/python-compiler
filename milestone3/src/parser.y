@@ -76,7 +76,6 @@
   int get_list_element_count(char* list);
   std::string get_list_element_datatype(char* list_type);
   int get_list_size(char* list_datatype, char* list);
-  void print_curr_3ac_instr(std::vector<std::string> &line_code);
   void generate_3AC_for_list(char* list_datatype, char* list);
   std::string strip_braces(const std::string &str);
   bool is_func(const std::string &name);
@@ -2614,27 +2613,8 @@ int get_size(const std::string &type) {
   return 8;
 }
 
-void print_curr_3ac_instr(std::vector<std::string> &line_code) {
-  if (line_code[0] == "=") {
-    std::cout << line_code[3] << " = "
-              << line_code[1] << std::endl;
-  }
-  else if (line_code[2].empty()) {
-    std::cout << line_code[3] << " = "
-              << line_code[0] << " "
-              << line_code[1] << std::endl;
-  }
-  else {
-    std::cout << line_code[3] << " = "
-              << line_code[1] << " "
-              << line_code[0] << " "
-              << line_code[2] << std::endl;
-  }
-}
-
 void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result) {
   ac3_code.push_back({op, arg1, arg2, result});
-  // print_curr_3ac_instr(ac3_code.back());
 }
 
 std::string new_temp() {
