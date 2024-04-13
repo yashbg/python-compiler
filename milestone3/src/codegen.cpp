@@ -32,6 +32,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   }
   else if (result == "goto") {
     // goto arg1
+    x86_code.push_back("\tjmp\t" + arg1);
   }
   else if (arg1 == "goto") {
     // result op goto arg2
@@ -84,5 +85,5 @@ std::string get_addr(const std::string &name) {
   }
 
   int offset = cur_func_symtable_ptr->var_entries[name].offset; // TODO: use lookup_var
-  return "-" + std::to_string(offset) + "(%rbp)";
+  return "-" + std::to_string(4 + offset) + "(%rbp)";
 }
