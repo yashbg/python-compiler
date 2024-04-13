@@ -1,8 +1,8 @@
 .PHONY: all
 all: main
 
-main: main.cpp codegen.cpp codegen.h symtable.cpp symtable.h parser.tab.c lex.yy.c
-	g++ -g -std=c++17 main.cpp codegen.cpp symtable.cpp parser.tab.c lex.yy.c -o main
+main: main.cpp codegen.cpp codegen.h symtable.cpp symtable.h utils.cpp utils.h parser.tab.c lex.yy.c
+	g++ -g -std=c++17 main.cpp codegen.cpp symtable.cpp utils.cpp parser.tab.c lex.yy.c -o main
 
 lex.yy.c: lexer.l
 	flex lexer.l

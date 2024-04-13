@@ -13,6 +13,7 @@
   #include <algorithm>
   #include <sstream>
   #include "symtable.h"
+  #include "utils.h"
 
   extern int yylex();
   extern int yylineno;
@@ -52,7 +53,6 @@
   void check_valid_type(const std::string &type);
   std::string get_type(const std::string &type);
   std::string max_type(const std::string &type1, const std::string &type2);
-  bool is_int_literal(const std::string &str);
   bool is_float_literal(const std::string &str);
   std::string get_list_literal_type(const std::string &str);
   int calc_list_len(const std::string &str);
@@ -61,8 +61,6 @@
   void check_type_equiv(const std::string &type1, const std::string &type2);
   void check_func_args(const std::string &name);
   void check_method_args(const std::string &class_name, const std::string &method_name);
-
-  int is_digit(char c);
 
   void gen(const std::string &op, const std::string &arg1, const std::string &arg2, const std::string &result); //gen function for 3AC
 
@@ -2592,10 +2590,6 @@ void yyerror(const char *s) {
   exit(1);
 }
 
-int is_digit(char c) {
-  return ((c >= '0') && (c <= '9'));
-}
-
 int get_size(const std::string &type) {
   if (type == "bool") {
     return 1;
@@ -2821,16 +2815,6 @@ std::string max_type(const std::string &type1, const std::string &type2) {
 
   std::cout << "Can't calculate max type: " << type1 << " " << type2 << std::endl;
   return type1;
-}
-
-bool is_int_literal(const std::string &str) {
-  for (auto c : str) {
-    if (!is_digit(c)) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 bool is_float_literal(const std::string &str) {
