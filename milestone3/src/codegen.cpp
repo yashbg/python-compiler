@@ -52,6 +52,9 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     // beginfunc
     func_scope = true;
     cur_func_symtable_ptr = lookup_func(cur_label);
+
+    x86_code.push_back("\tpushq\t%rbp");
+    x86_code.push_back("\tmovq\t%rsp, %rbp");
   }
   else if (result == "endfunc") {
     // endfunc
@@ -65,7 +68,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   }
   else if (op == "return") {
     // return
-    x86_code.push_back("\tpopq\t%rbp");
+    x86_code.push_back("\tleave");
     x86_code.push_back("\tret");
   }
   else if (op.substr(0, 8) == "popparam") {
