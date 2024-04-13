@@ -8,8 +8,6 @@ extern int yylineno;
 
 extern bool func_scope;
 extern bool class_scope;
-extern global_symtable gsymtable;
-extern local_symtable *cur_func_symtable_ptr;
 extern class_symtable *cur_class_symtable_ptr;
 
 extern int list_len;
@@ -18,6 +16,9 @@ extern void yyerror(const char *);
 
 extern int get_size(const std::string &type);
 extern int get_list_width(const std::string &type);
+
+global_symtable gsymtable;
+local_symtable *cur_func_symtable_ptr = nullptr;
 
 void insert_var(const std::string &name, const std::string &type) {
   // TODO: handle redeclarations

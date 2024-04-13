@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include "codegen.h"
+#include "symtable.h"
 
 extern std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
 
@@ -19,7 +20,11 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   std::string result = ac3_line[3];
 
   if (op == "=") {
+    std::string arg1_addr = get_addr(arg1);
+    std::string result_addr = get_addr(result);
     // result = arg1
+    x86_code.push_back("movl " + arg1_addr + ", " + "%eax");
+    x86_code.push_back("movl %eax, " + result_addr);
   }
   else if (result == "goto") {
     // goto arg1
@@ -60,4 +65,9 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   else {
     // result = arg1 op arg2
   }
+}
+
+std::string get_addr(const std::string &name) {
+  int offset = cur_func_symtable_ptr->var_entries[name].offset;
+  return "-" + std::to_string(offset) + "(%rbp)";
 }

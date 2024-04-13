@@ -36,6 +36,9 @@ struct global_symtable {
   int offset = 0;
 };
 
+extern global_symtable gsymtable;
+extern local_symtable *cur_func_symtable_ptr;
+
 void insert_var(const std::string &name, const std::string &type);
 symtable_entry lookup_var(const std::string &name);
 

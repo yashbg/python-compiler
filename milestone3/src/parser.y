@@ -23,8 +23,6 @@
 
   bool func_scope = false;
   bool class_scope = false;
-  global_symtable gsymtable;
-  local_symtable *cur_func_symtable_ptr = nullptr;
   class_symtable *cur_class_symtable_ptr = nullptr;
 
   std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
