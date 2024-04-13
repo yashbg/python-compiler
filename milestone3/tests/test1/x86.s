@@ -52,6 +52,8 @@ L13:
 L14:
 	jmp	L1
 L3:
+	popq	%rbp
+	ret
 insertionSort:
 	movl	-4(%rbp), %eax
 	movl	%eax, -4(%rbp)
@@ -87,6 +89,8 @@ L20:
 	movl	%eax, -79(%rbp)
 	jmp	L15
 L17:
+	popq	%rbp
+	ret
 main:
 	movl	-4(%rbp), %eax
 	movl	%eax, -4(%rbp)
@@ -112,6 +116,8 @@ main:
 	movl	%eax, -4(%rbp)
 	movl	-36(%rbp), %eax
 	movl	%eax, -44(%rbp)
+	popq	%rbp
+	ret
 L21:
 	jmp	L23
 L22:

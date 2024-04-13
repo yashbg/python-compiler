@@ -58,6 +58,8 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   }
   else if (op == "return") {
     // return
+    x86_code.push_back("\tpopq\t%rbp");
+    x86_code.push_back("\tret");
   }
   else if (op.substr(0, 8) == "popparam") {
     // result = popparam
