@@ -2,6 +2,7 @@
 #include <vector>
 #include "codegen.h"
 #include "symtable.h"
+#include "utils.h"
 
 extern std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
 
@@ -68,6 +69,10 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
 }
 
 std::string get_addr(const std::string &name) {
+  if (is_int_literal(name)) {
+    return "$" + name;
+  }
+
   int offset = cur_func_symtable_ptr->var_entries[name].offset;
   return "-" + std::to_string(offset) + "(%rbp)";
 }
