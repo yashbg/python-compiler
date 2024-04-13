@@ -8,6 +8,8 @@ extern std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, 
 
 std::vector<std::string> x86_code;
 
+std::string cur_label;
+
 void gen_x86_code() {
   for (const auto &ac3_line : ac3_code) {
     gen_x86_line_code(ac3_line);
@@ -35,9 +37,14 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   }
   else if (arg1 == ":" && op.empty()) {
     // result:
+    cur_label = result;
   }
-  else if (result == "beginfunc" || result == "endfunc") {
-    // beginfunc | endfunc
+  else if (result == "beginfunc") {
+    // beginfunc
+    cur_func_symtable_ptr = lookup_func(cur_label);
+  }
+  else if (result == "endfunc") {
+    // endfunc
   }
   else if (op == "push") {
     // push arg1
@@ -73,6 +80,6 @@ std::string get_addr(const std::string &name) {
     return "$" + name;
   }
 
-  int offset = cur_func_symtable_ptr->var_entries[name].offset;
+  int offset = cur_func_symtable_ptr->var_entries[name].offset; // TODO: use lookup_var
   return "-" + std::to_string(offset) + "(%rbp)";
 }
