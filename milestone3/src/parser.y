@@ -1756,7 +1756,7 @@ factor:
       }
     }
     else if (op == "~") {
-      if (arg_type != "bool") {
+      if (arg_type != "int") {
         type_err_op(op, arg_type);
       }
     }
