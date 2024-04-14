@@ -1620,7 +1620,15 @@ plus_or_minus_term_list:
 
     if($1[0] == '\0'){
       current_operator = $2;
-      strcpy($$, $3);
+      if (current_operator == "-") {
+        std::string t = new_temp();
+        insert_var(t, get_type($3));
+        gen("-", $3, "", t);
+        strcpy($$, t.c_str());
+      }
+      else {
+        strcpy($$, $3);
+      }
     }
     else{
       std::string op = $2;
@@ -1636,12 +1644,9 @@ plus_or_minus_term_list:
 
       std::string t = new_temp();
       insert_var(t, max_type(arg_type1, arg_type2));
-      if(current_operator == "-"){
-        gen($2, "-" + std::string($1), $3, t);
-      }
-      else{
-        gen($2, $1, $3, t);
-      }
+
+      gen($2, $1, $3, t);
+      
       current_operator = "";
       strcpy($$, t.c_str());
     }
