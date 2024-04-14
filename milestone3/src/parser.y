@@ -191,7 +191,7 @@ funcdef:
       local_temp_count = 1;
       
       for(int i = 0; i < func_params.size(); i++){
-        gen("=", "popparam", "", func_params[i].first);
+        gen("popparam", "", "", func_params[i].first);
       }
     }
     // TODO: else

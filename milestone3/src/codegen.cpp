@@ -124,6 +124,20 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   
   if (arg2.empty()) {
     // result = op arg1
+    if(op == "-"){
+      x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
+      x86_code.push_back("\tnegl\t%eax");
+      x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
+      return;
+    }
+    if(op == "!"){
+      x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
+      x86_code.push_back("\tcmpl\t$0, %eax");
+      x86_code.push_back("\tsete\t%al");
+      x86_code.push_back("\tmovzbl\t%al, %eax");
+      x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
+      return;
+    }
     return;
   }
 
@@ -134,10 +148,16 @@ std::string get_addr(const std::string &name) {
   if (is_int_literal(name)) {
     return "$" + name;
   }
-
-  symtable_entry entry = lookup_var(name);
-  int offset = entry.offset + entry.size;
-  return "-" + std::to_string(offset) + "(%rbp)";
+  if(name == "True"){
+    return "$1";
+  }
+  if(name == "False"){
+    return "$0";
+  }
+  return "";
+  // symtable_entry entry = lookup_var(name);
+  // int offset = entry.offset + entry.size;
+  // return "-" + std::to_string(offset) + "(%rbp)";
 }
 
 int align_offset(int offset) {
