@@ -285,6 +285,19 @@ std::string get_addr(const std::string &name) {
   if (name == "False") {
     return "$0";
   }
+
+  int brace = name.find('[');
+  if (brace != std::string::npos) {
+    // array access
+    // TODO: offset can be a variable
+    // TODO: a[i] = a[j]
+    std::string arr = name.substr(0, brace);
+    std::string offset = name.substr(brace + 1, name.size() - brace - 2);
+    std::string arr_addr = get_addr(arr);
+
+    x86_code.push_back("\tmovq\t" + arr_addr + ", %rdx");
+    return offset + "(%rdx)";
+  }
   
   symtable_entry entry = lookup_var(name);
   int offset = entry.offset + entry.size;
