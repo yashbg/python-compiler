@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <stack>
 #include "codegen.h"
 #include "symtable.h"
 #include "utils.h"
@@ -7,8 +8,11 @@
 extern std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
 
 std::vector<std::string> x86_code;
+std::vector<std::string> arg_regs = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
 
 std::string cur_label;
+
+std::stack<std::string> arg_stack;
 
 void gen_x86_code() {
   for (const auto &ac3_line : ac3_code) {
@@ -103,11 +107,16 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   
   if (op == "param") {
     // param arg1
+    arg_stack.push(arg1);
     return;
   }
   
   if (result == "call") {
-    // call arg1 arg2 op
+    // call arg1, op
+    int num_args = std::stoi(op);
+    pass_args(num_args);
+
+    x86_code.push_back("\tcall\t" + arg1);
     return;
   }
   
@@ -141,9 +150,17 @@ int align_offset(int offset) {
 void store_args(const std::string &func_name) {
   local_symtable *func_symtable_ptr = lookup_func(func_name);
   int num_args = func_symtable_ptr->params.size();
-  std::vector<std::string> regs = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
-  for (int i = 0; i < num_args && i < regs.size(); i++) {
+  for (int i = 0; i < num_args && i < arg_regs.size(); i++) {
     std::string param = func_symtable_ptr->params[i].first;
-    x86_code.push_back("\tmovl\t" + regs[i] + ", " + get_addr(param));
+    x86_code.push_back("\tmovl\t" + arg_regs[i] + ", " + get_addr(param));
+  }
+}
+
+void pass_args(int num_args) {
+  for (int i = 0; i < num_args; i++) {
+    std::string arg = arg_stack.top();
+    std::string arg_reg = arg_regs[arg_regs.size() - i - 1];
+    x86_code.push_back("\tmovl\t" + get_addr(arg) + ", " + arg_reg);
+    arg_stack.pop();
   }
 }

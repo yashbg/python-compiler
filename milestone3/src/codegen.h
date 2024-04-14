@@ -11,3 +11,4 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line);
 std::string get_addr(const std::string &name);
 int align_offset(int offset);
 void store_args(const std::string &func_name);
+void pass_args(int num_args);
