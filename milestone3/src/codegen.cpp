@@ -130,11 +130,17 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
       x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
       return;
     }
-    if(op == "!"){
+    if(op == "not"){
       x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
       x86_code.push_back("\tcmpl\t$0, %eax");
       x86_code.push_back("\tsete\t%al");
       x86_code.push_back("\tmovzbl\t%al, %eax");
+      x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
+      return;
+    }
+    if(op == "~"){
+      x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
+      x86_code.push_back("\tnotl\t%eax");
       x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
       return;
     }
