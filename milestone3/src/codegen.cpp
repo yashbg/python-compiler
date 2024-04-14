@@ -277,16 +277,18 @@ std::string get_addr(const std::string &name) {
   if (is_int_literal(name)) {
     return "$" + name;
   }
-  if(name == "True"){
+
+  if (name == "True") {
     return "$1";
   }
-  if(name == "False"){
+
+  if (name == "False") {
     return "$0";
   }
-  return "";
-  // symtable_entry entry = lookup_var(name);
-  // int offset = entry.offset + entry.size;
-  // return "-" + std::to_string(offset) + "(%rbp)";
+  
+  symtable_entry entry = lookup_var(name);
+  int offset = entry.offset + entry.size;
+  return "-" + std::to_string(offset) + "(%rbp)";
 }
 
 int align_offset(int offset) {
