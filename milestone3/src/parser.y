@@ -191,7 +191,7 @@ funcdef:
       local_temp_count = 1;
       
       for(int i = 0; i < func_params.size(); i++){
-        gen("=", "popparam", "", func_params[i].first);
+        gen("popparam", "param", "", func_params[i].first);
       }
     }
     // TODO: else
@@ -529,7 +529,7 @@ annassign:
         gen("stackpointer", "-4","" , "");
         std::string t = new_temp();
         insert_var(t, var_type);
-        gen("popparam", "", "", t);
+        gen("popparam", "return_val", "", t);
         generate_3AC_for_list($2, $4);
 
         list_len = calc_list_len($4);
@@ -1938,7 +1938,7 @@ atom_expr:
         gen("stackpointer", "-4", "", "");
         std::string tempstr = new_temp();
         insert_var(tempstr, $1);
-        gen("popparam", "", "", tempstr);
+        gen("popparam", "return_val", "", tempstr);
 
         // pass new object as first argument
         gen("param", tempstr, "", "");
@@ -1956,7 +1956,7 @@ atom_expr:
 
         std::string temp = new_temp();
         insert_var(temp, $1);
-        gen("popparam","" , "", temp);
+        gen("popparam", "return_val", "", temp);
 
         func_args.clear();
 
@@ -1982,7 +1982,7 @@ atom_expr:
         if (ret_type != "None") {
           std::string temp = new_temp();
           insert_var(temp, ret_type);
-          gen("popparam","" , "", temp);
+          gen("popparam", "return_val", "", temp);
 
           strcpy($$, temp.c_str());
         }
@@ -2052,7 +2052,7 @@ atom_expr:
         if(ret_type != "None"){
           std::string temp = new_temp();
           insert_var(temp, ret_type);
-          gen("popparam","" , "", temp);
+          gen("popparam", "return_val", "", temp);
 
           strcpy($$, temp.c_str());
         }
