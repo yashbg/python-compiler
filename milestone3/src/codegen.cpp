@@ -100,11 +100,6 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   
-  if (op == "stackpointer") {
-    // stackpointer arg1
-    return;
-  }
-  
   if (op == "param") {
     // param arg1
     arg_stack.push(arg1);
@@ -117,6 +112,13 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     pass_args(num_args);
 
     x86_code.push_back("\tcall\t" + arg1);
+
+    int num_regs = arg_regs.size();
+    if (num_args > num_regs) {
+      int size = 8 * (num_args - num_regs);
+      x86_code.push_back("\taddq\t$" + std::to_string(size) + ", %rsp");
+    }
+
     return;
   }
   
@@ -150,16 +152,34 @@ int align_offset(int offset) {
 void store_args(const std::string &func_name) {
   local_symtable *func_symtable_ptr = lookup_func(func_name);
   int num_args = func_symtable_ptr->params.size();
-  for (int i = 0; i < num_args && i < arg_regs.size(); i++) {
+  int num_regs = arg_regs.size();
+  for (int i = 0; i < num_args; i++) {
     std::string param = func_symtable_ptr->params[i].first;
-    x86_code.push_back("\tmovl\t" + arg_regs[i] + ", " + get_addr(param));
+    if (i < num_regs) {
+      x86_code.push_back("\tmovl\t" + arg_regs[i] + ", " + get_addr(param));
+      continue;
+    }
+
+    int offset = 16 + 8 * (i - num_regs);
+    x86_code.push_back("\tmovl\t" + std::to_string(offset) + "(%rbp), " + get_addr(param));
   }
 }
 
 void pass_args(int num_args) {
+  int num_regs = arg_regs.size();
+  if (num_args > num_regs) {
+    for (int i = 0; i < num_args - num_regs; i++) {
+      std::string arg = arg_stack.top();
+      x86_code.push_back("\tpushq\t" + get_addr(arg));
+      arg_stack.pop();
+    }
+
+    num_args = num_regs;
+  }
+  
   for (int i = 0; i < num_args; i++) {
     std::string arg = arg_stack.top();
-    std::string arg_reg = arg_regs[arg_regs.size() - i - 1];
+    std::string arg_reg = arg_regs[num_regs - i - 1];
     x86_code.push_back("\tmovl\t" + get_addr(arg) + ", " + arg_reg);
     arg_stack.pop();
   }
