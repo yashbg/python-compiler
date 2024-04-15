@@ -483,10 +483,10 @@ void pass_args(int num_args) {
 
     num_args = num_regs;
   }
-  
+
   for (int i = 0; i < num_args; i++) {
     std::string arg = arg_stack.top();
-    std::string arg_reg = arg_regs[num_regs - i - 1];
+    std::string arg_reg = arg_regs[num_args - i - 1];
     x86_code.push_back("\tmovl\t" + get_addr(arg) + ", " + arg_reg);
     arg_stack.pop();
   }

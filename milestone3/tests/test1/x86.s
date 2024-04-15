@@ -456,7 +456,7 @@ main:
 	movl	%eax, -8(%rbp)
 
 	# call allocmem , 1
-	movl	$20, %r9d
+	movl	$20, %edi
 	call	malloc@PLT
 
 	# t3 = popparam
@@ -507,7 +507,7 @@ main:
 	movl	%eax, -32(%rbp)
 
 	# call allocmem , 1
-	movl	$20, %r9d
+	movl	$20, %edi
 	call	malloc@PLT
 
 	# t6 = popparam
@@ -548,13 +548,13 @@ main:
 	movl	%eax, -48(%rbp)
 
 	# call bubbleSort , 2
-	movl	$5, %r9d
-	movl	-24(%rbp), %r8d
+	movl	$5, %esi
+	movl	-24(%rbp), %edi
 	call	bubbleSort
 
 	# call insertionSort , 2
-	movl	$5, %r9d
-	movl	-48(%rbp), %r8d
+	movl	$5, %esi
+	movl	-48(%rbp), %edi
 	call	insertionSort
 
 	# return
