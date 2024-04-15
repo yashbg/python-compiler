@@ -1,3 +1,6 @@
+	.text
+	.globl	bubbleSort
+	.type	bubbleSort, @function
 bubbleSort:
 	# beginfunc
 	pushq	%rbp
@@ -241,6 +244,11 @@ L3:
 	leave
 	ret
 
+	# endfunc
+	.size	bubbleSort, .-bubbleSort
+
+	.globl	insertionSort
+	.type	insertionSort, @function
 insertionSort:
 	# beginfunc
 	pushq	%rbp
@@ -421,6 +429,11 @@ L17:
 	leave
 	ret
 
+	# endfunc
+	.size	insertionSort, .-insertionSort
+
+	.globl	main
+	.type	main, @function
 main:
 	# beginfunc
 	pushq	%rbp
@@ -542,6 +555,9 @@ main:
 	# return
 	leave
 	ret
+
+	# endfunc
+	.size	main, .-main
 
 L21:
 	# t1 = __name__ == "__main__"

@@ -8,15 +8,18 @@
 extern std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
 
 extern std::string get_3ac_str(const std::vector<std::string> &ac3_line);
+extern bool is_func(const std::string &name);
 
 std::vector<std::string> x86_code;
 std::vector<std::string> arg_regs = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
 
 std::string cur_label;
+std::string cur_func_name;
 
 std::stack<std::string> arg_stack;
 
 void gen_x86_code() {
+  x86_code.push_back("\t.text");
   for (const auto &ac3_line : ac3_code) {
     gen_x86_line_code(ac3_line);
   }
@@ -72,6 +75,13 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     // result:
     cur_label = result;
 
+    if (is_func(result)) {
+      cur_func_name = result;
+      
+      x86_code.push_back("\t.globl\t" + result);
+      x86_code.push_back("\t.type\t" + result + ", @function");
+    }
+
     x86_code.push_back(result + ":");
     return;
   }
@@ -98,7 +108,13 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   
   if (result == "endfunc") {
     // endfunc
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     func_scope = false;
+
+    x86_code.push_back("\t.size\t" + cur_func_name + ", .-" + cur_func_name);
+    x86_code.push_back("");
+
+    cur_func_name.clear();
     return;
   }
   
