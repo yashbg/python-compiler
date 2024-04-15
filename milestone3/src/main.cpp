@@ -20,6 +20,7 @@ void show_help();
 void add_csv_header(std::ofstream &csvfile);
 void dump_symtables(const std::string &output_dir);
 void dump_3ac(const std::string &output_dir);
+std::string get_3ac_str(const std::vector<std::string> &ac3_line);
 
 void dump_x86_code(const std::string &output_dir);
 
@@ -165,65 +166,66 @@ void dump_symtables(const std::string &output_dir) {
 void dump_3ac(const std::string &output_dir) {
   std::ofstream ac3_dumpfile;
   ac3_dumpfile.open(output_dir + "3ac.log");
-  for (auto &line_code : ac3_code) {
-    if (line_code[0] == "=") {
-      ac3_dumpfile << line_code[3] << " = "
-                   << line_code[1] << std::endl;
-    }
-    else if(line_code[3] == "goto"){
-      ac3_dumpfile << line_code[3] << " "
-                   << line_code[1] << std::endl;
-    }
-    else if(line_code[1] == "goto"){
-      ac3_dumpfile << line_code[3] << " "
-                   << line_code[0] << " "
-                   << line_code[1] << " "
-                   << line_code[2] << std::endl;
-    }
-    else if((line_code[1] == ":") && (line_code[0].empty())){
-        ac3_dumpfile << line_code[3]
-                     << line_code[1] << std::endl;
-    }
-    else if((line_code[3] == "beginfunc") || (line_code[3] == "endfunc")){
-      ac3_dumpfile << line_code[3] << std::endl;
-    }
-    else if(line_code[0] == "push"){
-      ac3_dumpfile << line_code[0] << " "
-                   << line_code[1] << std::endl;
-    }
-    else if(line_code[0] == "return"){
-      ac3_dumpfile << line_code[0] << std::endl;
-    }
-    else if(line_code[0] == "popparam"){
-      ac3_dumpfile << line_code[3] << " = "
-                   << line_code[0] << std::endl;
-    }
-    else if(line_code[0] == "stackpointer"){
-      ac3_dumpfile << line_code[0] << " "
-                   << line_code[1] << std::endl;
-    }
-    else if(line_code[0] == "param"){
-      ac3_dumpfile << line_code[0] << " "
-                   << line_code[1] << std::endl;
-    }
-    else if(line_code[3] == "call"){
-      ac3_dumpfile << line_code[3] << " "
-                   << line_code[1] << " "
-                   << line_code[2] << " "
-                   << line_code[0] << std::endl;
-    }
-    else if (line_code[2].empty()) {
-      ac3_dumpfile << line_code[3] << " = "
-                   << line_code[0] << " "
-                   << line_code[1] << std::endl;
-    }
-    else {
-      ac3_dumpfile << line_code[3] << " = "
-                   << line_code[1] << " "
-                   << line_code[0] << " "
-                   << line_code[2] << std::endl;
-    }
+  for (auto &ac3_line : ac3_code) {
+    ac3_dumpfile << get_3ac_str(ac3_line) << std::endl;
   }
+}
+
+std::string get_3ac_str(const std::vector<std::string> &ac3_line) {
+  std::string op = ac3_line[0];
+  std::string arg1 = ac3_line[1];
+  std::string arg2 = ac3_line[2];
+  std::string result = ac3_line[3];
+
+  if (op == "=") {
+    return result + " = " + arg1;
+  }
+
+  if (result == "goto") {
+    return result + " " + arg1;
+  }
+
+  if (arg1 == "goto") {
+    return result + " " + op + " " + arg1 + " " + arg2;
+  }
+
+  if (arg1 == ":" && op.empty()) {
+    return result + arg1;
+  }
+
+  if (result == "beginfunc" || result == "endfunc") {
+    return result;
+  }
+
+  if (op == "push") {
+    return op + " " + arg1;
+  }
+
+  if (op == "return") {
+    return op;
+  }
+
+  if (op == "popparam") {
+    return result + " = " + op;
+  }
+
+  if (op == "stackpointer") {
+    return op + " " + arg1;
+  }
+
+  if (op == "param") {
+    return op + " " + arg1;
+  }
+
+  if (result == "call") {
+    return result + " " + arg1 + " " + arg2 + " " + op;
+  }
+
+  if (arg2.empty()) {
+    return result + " = " + op + " " + arg1;
+  }
+
+  return result + " = " + arg1 + " " + op + " " + arg2;
 }
 
 void dump_x86_code(const std::string &output_dir) {
