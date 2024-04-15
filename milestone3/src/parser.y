@@ -1929,9 +1929,7 @@ atom_expr:
       
       std::string t = new_temp();
       insert_var(t, "int");
-      //if(entry.type.substr(0, 4) ==  "list") gen("*", index, std::to_string(entry.size), t);
-      //else 
-      gen("*", index, std::to_string(entry.size), t);
+      gen("*", index, std::to_string(entry.list_width), t);
       std::string t2 = new_temp();
       std::string list_type = get_type($1);
       insert_var(t2, list_type.substr(5, list_type.size() - 6));
