@@ -316,13 +316,21 @@ std::string get_addr(const std::string &name) {
   int brace = name.find('[');
   if (brace != std::string::npos) {
     // array access
-    // TODO: offset can be a variable
     std::string arr = name.substr(0, brace);
     std::string offset = name.substr(brace + 1, name.size() - brace - 2);
     std::string arr_addr = get_addr(arr);
+    if (is_int_literal(offset)) {
+      x86_code.push_back("\tmovq\t" + arr_addr + ", %rax");
+      x86_code.push_back("\tleaq\t" + offset + "(%rax), %rdx");
+      return "(%rdx)";
+    }
 
+    std::string offset_addr = get_addr(offset);
+    x86_code.push_back("\tmovl\t" + offset_addr + ", %eax");
+    x86_code.push_back("\tcltq");
+    x86_code.push_back("\tmovq\t%rax, %rdx");
     x86_code.push_back("\tmovq\t" + arr_addr + ", %rax");
-    x86_code.push_back("\tleaq\t" + offset + "(%rax), %rdx");
+    x86_code.push_back("\taddq\t%rax, %rdx");
     return "(%rdx)";
   }
   
