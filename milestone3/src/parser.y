@@ -9,7 +9,6 @@
   #include <stack>
   #include <cstdlib>
   #include <fstream>
-  #include <stack>
   #include <algorithm>
   #include <sstream>
   #include "symtable.h"
@@ -42,6 +41,9 @@
   int local_temp_count = 1;
   int start_pos;
   int curr_list_size;
+  std::string atom_expr;
+  std::string expr_stmt_result;
+  int arr_access_ins_idx = 0;
 
   std::vector<std::string> func_args;
 
@@ -83,22 +85,6 @@
   int get_list_width(const std::string &type);
 
   bool is_class(const std::string &name);
-
-  struct activation_record {
-    std::string func_name;
-    std::vector<std::string> params;
-    std::vector<std::string> locals;
-    int return_address;
-    int return_value;
-    int old_stack_pointer;
-    std::vector<int> saved_registers;
-  };
-
-  std::stack<activation_record> control_stack;
-
-
-  void push_activation_record(activation_record ar);
-  void pop_activation_record();
 %}
 
 %union { char tokenname[1024]; }
@@ -427,14 +413,23 @@ expr_stmt:
 
     strcpy($$, $3);
   }
-| testlist_star_expr augassign testlist
+| testlist_star_expr
+  {
+    if (atom_expr.find('[') != std::string::npos) {
+      expr_stmt_result = atom_expr;
+    }
+    else {
+      expr_stmt_result = $1;
+    }
+  }
+  augassign testlist
   {
     parser_logfile << "| testlist_star_expr augassign testlist" << std::endl;
 
-    std::string aug_op = $2;
+    std::string aug_op = $3;
     std::string op = aug_op.substr(0, aug_op.size() - 1);
     std::string arg_type1 = get_type($1);
-    std::string arg_type2 = get_type($3);
+    std::string arg_type2 = get_type($4);
     if (op == "+" || op == "-" || op == "*" || op == "/" || op == "%" || op == "**" || op == "//") {
       if (!(arg_type1 == "int" || arg_type1 == "float")) {
         type_err_op(aug_op, arg_type1);
@@ -454,24 +449,40 @@ expr_stmt:
       }
     }
 
-    gen(op, $1, $3, $1);
+    gen(op, $1, $4, expr_stmt_result);
 
     strcpy($$, $1);
+
+    expr_stmt_result.clear();
   }
-| testlist_star_expr expr_stmt_suffix_choices
+| testlist_star_expr
+  {
+    if (atom_expr.find('[') != std::string::npos) {
+      expr_stmt_result = atom_expr;
+      
+      ac3_code.erase(ac3_code.begin() + arr_access_ins_idx);
+      arr_access_ins_idx = 0;
+    }
+    else {
+      expr_stmt_result = $1;
+    }
+  }
+  expr_stmt_suffix_choices
   {
     parser_logfile << "| testlist_star_expr expr_stmt_suffix_choices" << std::endl;
     
-    if($2[0] != '\0'){
-      check_type_equiv(get_type($1), get_type($2));
+    if($3[0] != '\0'){
+      check_type_equiv(get_type($1), get_type($3));
 
-      gen("=", $2, "", $1);
+      gen("=", $3, "", expr_stmt_result);
 
-      strcpy($$, $2);
+      strcpy($$, $3);
     }
     else {
       strcpy($$, $1);
     }
+
+    expr_stmt_result.clear();
   }
 ;
 
@@ -1853,6 +1864,8 @@ atom_expr:
         yyerror(("Too many indices given for accessing list " + std::string($1)).c_str());
       }
     }
+
+    atom_expr.clear();
     
     std::string str = $1;
     if(str == "self"){
@@ -1925,6 +1938,9 @@ atom_expr:
       gen("=", (std::string($1) + "[" + t + "]").c_str(), "", t2);
       strcpy($$, t2.c_str());
       //strcpy($$, (std::string($1) + "[" + t + "]").c_str());
+
+      atom_expr = std::string($1) + "[" + t + "]";
+      arr_access_ins_idx = ac3_code.size() - 1;
     }
     else if ($2[0] == '(') {
       if (is_class($1)) {
@@ -2910,16 +2926,4 @@ int get_list_width(const std::string &type) {
 
 bool is_class(const std::string &name) {
   return gsymtable.class_symtable_ptrs.find(name) != gsymtable.class_symtable_ptrs.end();
-}
-
-void push_activation_record(activation_record ar){
-  control_stack.push(ar);
-}
-
-void pop_activation_record(){
-  if (control_stack.empty()) {
-        std::cerr << "Error: Attempting to pop an empty stack!" << std::endl;
-        return;
-    }
-  control_stack.pop();
 }
