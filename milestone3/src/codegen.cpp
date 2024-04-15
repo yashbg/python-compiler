@@ -50,6 +50,21 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
 
   if (arg1 == "goto") {
     // result op goto arg2
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
+    int operator_pos = op.find("<");
+    if(operator_pos != std::string::npos){
+      std::string lhs = op.substr(0, operator_pos);
+      std::string rhs = op.substr(operator_pos + 1);
+      x86_code.push_back("\tmovl\t" + get_addr(lhs) + ", %eax");
+      x86_code.push_back("\tcmpl\t" + get_addr(rhs) + ", %eax");
+      x86_code.push_back("\tjl\t" + arg2);
+      x86_code.push_back("");
+      return;
+    }
+    x86_code.push_back("\tmovl\t" + get_addr(op) + ", %eax");
+    x86_code.push_back("\tcmpl\t$0, %eax");
+    x86_code.push_back("\tjg\t" + arg2);
+    x86_code.push_back("");
     return;
   }
   
