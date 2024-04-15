@@ -2010,7 +2010,6 @@ atom_expr:
         func_args.clear();
       }
       else if (str == "len" || str == "print") {
-        // TODO: handle len variable (when $2 is not "()")
         if (func_args.size() != 1) {
           yyerror(("Syntax error: " + str + "() takes exactly one argument").c_str());
         }
@@ -2031,10 +2030,11 @@ atom_expr:
           strcpy($$, t.c_str());
         }
         else if (str == "print") {
-          gen("param", "\"" + get_type(arg) + "\"", "", "");
-          gen("stackpointer", "+8", "", "");
+          int size = get_size(get_type(arg));
+          gen("param", arg, "", "");
+          gen("stackpointer", "+" + std::to_string(size), "", "");
           gen("1", $1, ",", "call");
-          gen("stackpointer", "-8", "", "");
+          gen("stackpointer", "-" + std::to_string(size), "", "");
 
           strcpy($$, "print");
         }
