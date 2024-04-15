@@ -457,7 +457,7 @@ main:
 
 	# call allocmem , 1
 	movl	$20, %r9d
-	call	allocmem
+	call	malloc@PLT
 
 	# t3 = popparam
 	movl	%eax, -16(%rbp)
@@ -508,7 +508,7 @@ main:
 
 	# call allocmem , 1
 	movl	$20, %r9d
-	call	allocmem
+	call	malloc@PLT
 
 	# t6 = popparam
 	movl	%eax, -40(%rbp)

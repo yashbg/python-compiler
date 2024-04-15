@@ -163,6 +163,10 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     int num_args = std::stoi(op);
     pass_args(num_args);
 
+    if (arg1 == "allocmem") {
+      arg1 = "malloc@PLT";
+    }
+
     x86_code.push_back("\tcall\t" + arg1);
 
     int num_regs = arg_regs.size();
