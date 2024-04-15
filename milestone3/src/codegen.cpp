@@ -205,6 +205,26 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   }
   if(op == "**"){
     // TODO
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
+    x86_code.push_back("\tmovl\t$1 , %eax");
+    x86_code.push_back("\tmovl\t" + get_addr(arg2) + ", %edx");
+    std::string newlabel1 = new_label();
+    x86_code.push_back(newlabel1 + ":");
+    x86_code.push_back("\tcmpl\t$0, %edx");
+    std::string newlabel2 = new_label();
+    x86_code.push_back("\tje\t" + newlabel2);
+    x86_code.push_back("\timull\t" + get_addr(arg1) + ", %eax");
+    x86_code.push_back("\tdecl\t%edx");
+    x86_code.push_back("\tjmp\t" + newlabel1);
+    x86_code.push_back(newlabel2 + ":");
+    x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
+    x86_code.push_back("");
+    return;
+
+    x86_code.push_back("\timull\t" + get_addr(arg1) + ", %eax");
+    x86_code.push_back("\tdecl\t%edx");
+    x86_code.push_back("\tjnz\t" + newlabel1);
+    x86_code.push_back("");
     return;
   }
   if(op == "%"){
