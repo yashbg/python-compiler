@@ -1,4 +1,4 @@
-token,lexeme,type,ret_type,size,lineno
-NAME,t1,bool,,1,21
-NAME,__name__,str,,8,1
-NAME,main,,None,,16
+token,lexeme,type,ret_type,size,lineno,offset
+NAME,t1,bool,,1,21,8
+NAME,__name__,str,,8,1,0
+NAME,main,,None,,16,

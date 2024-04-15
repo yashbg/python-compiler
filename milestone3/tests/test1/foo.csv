@@ -1,0 +1,7 @@
+token,lexeme,type,ret_type,size,lineno,offset
+NAME,t3,int,,4,14,28
+NAME,t2,int,,4,14,24
+NAME,j,int,,4,5,20
+NAME,i,int,,4,4,16
+NAME,arr,list[int],,8,3,8
+NAME,t1,list[int],,8,3,0

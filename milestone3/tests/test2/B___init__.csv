@@ -1,2 +1,2 @@
-token,lexeme,type,ret_type,size,lineno
-NAME,self,B,,8,10
+token,lexeme,type,ret_type,size,lineno,offset
+NAME,self,B,,8,10,8

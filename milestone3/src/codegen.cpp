@@ -333,6 +333,11 @@ std::string get_addr(const std::string &name) {
     x86_code.push_back("\taddq\t%rax, %rdx");
     return "(%rdx)";
   }
+
+  if (name == "\"__main__\"") {
+    // TODO
+    return name;
+  }
   
   symtable_entry entry = lookup_var(name);
   int offset = entry.offset + entry.size;

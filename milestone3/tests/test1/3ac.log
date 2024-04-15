@@ -9,55 +9,54 @@ goto L3
 L2:
 swapped = False
 j = 0
-t1 = -i - 1
-t2 = n + t1
+t1 = - i
+t2 = t1 - 1
+t3 = n + t2
 j = 0
 L4:
-if j<t2 goto L5
+if j<t3 goto L5
 goto L6
 L5:
 L7:
-t3 = j * 8
-t4 = array[t3]
-t5 = j + 1
-t6 = t5 * 8
-t7 = array[t6]
-t8 = t4 > t7
-if t8 goto L8
+t4 = j * 4
+t5 = array[t4]
+t6 = j + 1
+t7 = t6 * 4
+t8 = array[t7]
+t9 = t5 > t8
+if t9 goto L8
 goto L9
 L8:
-t9 = j * 8
-t10 = array[t9]
-temp = t10
-t11 = j * 8
-t12 = array[t11]
-t13 = j + 1
-t14 = t13 * 8
-t15 = array[t14]
-t12 = t15
-t16 = j + 1
-t17 = t16 * 8
-t18 = array[t17]
-t18 = temp
+t10 = j * 4
+t11 = array[t10]
+temp = t11
+t12 = j * 4
+t14 = j + 1
+t15 = t14 * 4
+t16 = array[t15]
+array[t12] = t16
+t17 = j + 1
+t18 = t17 * 4
+array[t18] = temp
 swapped = True
 goto L10
 L9:
 L10:
-t19 = j
-j = t19 + 1
+t20 = j
+j = t20 + 1
 goto L4
 L6:
 L11:
-t20 = not swapped
-if t20 goto L12
+t21 = not swapped
+if t21 goto L12
 goto L13
 L12:
 goto L3
 goto L14
 L13:
 L14:
-t21 = i
-i = t21 + 1
+t22 = i
+i = t22 + 1
 goto L1
 L3:
 return
@@ -72,35 +71,34 @@ L15:
 if i<n goto L16
 goto L17
 L16:
-t1 = i * 8
+t1 = i * 4
 t2 = arr[t1]
 key = t2
-t3 = i + 1
-j = t3
+t3 = - 1
+t4 = i + t3
+j = t4
 L18:
-t4 = j >= 0
-t5 = j * 8
-t6 = arr[t5]
-t7 = key < t6
-t8 = t4 and t7
-if t8 goto L19
+t5 = j >= 0
+t6 = j * 4
+t7 = arr[t6]
+t8 = key < t7
+t9 = t5 and t8
+if t9 goto L19
 goto L20
 L19:
-t9 = j + 1
-t10 = t9 * 8
-t11 = arr[t10]
-t12 = j * 8
-t13 = arr[t12]
-t11 = t13
+t10 = j + 1
+t11 = t10 * 4
+t13 = j * 4
+t14 = arr[t13]
+arr[t11] = t14
 j = j - 1
 goto L18
 L20:
-t14 = j + 1
-t15 = t14 * 8
-t16 = arr[t15]
-t16 = key
-t17 = i
-i = t17 + 1
+t15 = j + 1
+t16 = t15 * 4
+arr[t16] = key
+t18 = i
+i = t18 + 1
 goto L15
 L17:
 return
