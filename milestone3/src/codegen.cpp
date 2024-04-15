@@ -49,7 +49,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   }
 
   if (arg1 == "goto") {
-    // result op goto arg2
+    // if op goto arg2
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     int operator_pos = op.find("<");
     if(operator_pos != std::string::npos){

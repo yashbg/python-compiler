@@ -11,6 +11,11 @@ bubbleSort:
 	movl	%eax, -16(%rbp)
 
 L1:
+	# if i<n goto L2
+	movl	-16(%rbp), %eax
+	cmpl	-12(%rbp), %eax
+	jl	L2
+
 	# goto L3
 	jmp	L3
 
@@ -43,6 +48,11 @@ L2:
 	movl	%eax, -21(%rbp)
 
 L4:
+	# if j<t3 goto L5
+	movl	-21(%rbp), %eax
+	cmpl	-33(%rbp), %eax
+	jl	L5
+
 	# goto L6
 	jmp	L6
 
@@ -87,6 +97,11 @@ L7:
 	setg	%al
 	movzbl	%al, %eax
 	movl	%eax, -54(%rbp)
+
+	# if t9 goto L8
+	movl	-54(%rbp), %eax
+	cmpl	$0, %eax
+	jg	L8
 
 	# goto L9
 	jmp	L9
@@ -192,6 +207,11 @@ L11:
 	movzbl	%al, %eax
 	movl	%eax, -103(%rbp)
 
+	# if t21 goto L12
+	movl	-103(%rbp), %eax
+	cmpl	$0, %eax
+	jg	L12
+
 	# goto L13
 	jmp	L13
 
@@ -238,6 +258,11 @@ insertionSort:
 	movl	%eax, -16(%rbp)
 
 L15:
+	# if i<n goto L16
+	movl	-16(%rbp), %eax
+	cmpl	-12(%rbp), %eax
+	jl	L16
+
 	# goto L17
 	jmp	L17
 
@@ -297,11 +322,22 @@ L18:
 	movl	%eax, -50(%rbp)
 
 	# t9 = t5 and t8
-	movl	-41(%rbp), %eax
-	cmpl	$0, %eax
-	setne	%al
+	cmpl	$0, -41(%rbp)
+	je	L25
+	cmpl	$0, -50(%rbp)
+	je	L25
+	movl	$1, %eax
+	jmp	L26
+L25:
+	movl	$0, %eax
+L26:
 	movzbl	%al, %eax
 	movl	%eax, -51(%rbp)
+
+	# if t9 goto L19
+	movl	-51(%rbp), %eax
+	cmpl	$0, %eax
+	jg	L19
 
 	# goto L20
 	jmp	L20
@@ -514,6 +550,11 @@ L21:
 	sete	%al
 	movzbl	%al, %eax
 	movl	%eax, -9(%rbp)
+
+	# if t1 goto L22
+	movl	-9(%rbp), %eax
+	cmpl	$0, %eax
+	jg	L22
 
 	# goto L23
 	jmp	L23
