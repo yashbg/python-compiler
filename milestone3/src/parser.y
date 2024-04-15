@@ -27,7 +27,6 @@
   std::string current_temp; // current temporary variable
 
   long int label_count = 1; // counter for labels
-  std::string new_label(); // generate new label
 
   std::string var_type;
   std::string func_param_type;

@@ -242,11 +242,17 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   }
   if(op == "and"){
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
-    // std::string newlabel = new_label();
-    x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
-    x86_code.push_back("\tcmpl\t$0, %eax");    // TODO
-    // x86_code.push_back("\tje\t" + newlabel);
-    x86_code.push_back("\tsetne\t%al");
+    std::string newlabel1 = new_label();
+    x86_code.push_back("\tcmpl\t$0, " + get_addr(arg1));
+    x86_code.push_back("\tje\t" + newlabel1);
+    x86_code.push_back("\tcmpl\t$0, " + get_addr(arg2)); 
+    x86_code.push_back("\tje\t" + newlabel1);
+    x86_code.push_back("\tmovl\t$1, %eax");
+    std::string newlabel2 = new_label();
+    x86_code.push_back("\tjmp\t" + newlabel2);
+    x86_code.push_back(newlabel1 + ":");
+    x86_code.push_back("\tmovl\t$0, %eax");
+    x86_code.push_back(newlabel2 + ":");
     x86_code.push_back("\tmovzbl\t%al, %eax");
     x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
     x86_code.push_back("");
@@ -254,9 +260,19 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   }
   if(op == "or"){
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
-    x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
-    x86_code.push_back("\tcmpl\t$0, %eax");    // TODO
-    x86_code.push_back("\tsetne\t%al");
+    std::string newlabel1 = new_label();
+    x86_code.push_back("\tcmpl\t$0, " + get_addr(arg1));
+    x86_code.push_back("\tjne\t" + newlabel1);
+    x86_code.push_back("\tcmpl\t$0, " + get_addr(arg2)); 
+    std::string newlabel2 = new_label();
+    x86_code.push_back("\tje\t" + newlabel2);
+    x86_code.push_back(newlabel1 + ":");
+    x86_code.push_back("\tmovl\t$1, %eax");
+    std::string newlabel3 = new_label();
+    x86_code.push_back("\tjmp\t" + newlabel3);
+    x86_code.push_back(newlabel2 + ":");
+    x86_code.push_back("\tmovl\t$0, %eax");
+    x86_code.push_back(newlabel3 + ":");
     x86_code.push_back("\tmovzbl\t%al, %eax");
     x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
     x86_code.push_back("");
