@@ -166,8 +166,20 @@ void dump_symtables(const std::string &output_dir) {
 void dump_3ac(const std::string &output_dir) {
   std::ofstream ac3_dumpfile;
   ac3_dumpfile.open(output_dir + "3ac.log");
+  bool first_line = true;
   for (auto &ac3_line : ac3_code) {
-    ac3_dumpfile << get_3ac_str(ac3_line) << std::endl;
+    if (ac3_line[1] == ":" && ac3_line[0].empty()) {
+      if (!first_line) {
+        ac3_dumpfile << std::endl;
+      }
+
+      ac3_dumpfile << get_3ac_str(ac3_line) << std::endl;
+      first_line = false;
+      continue;
+    }
+
+    ac3_dumpfile << "\t" << get_3ac_str(ac3_line) << std::endl;
+    first_line = false;
   }
 }
 
