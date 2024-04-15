@@ -7,6 +7,8 @@
 
 extern std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
 
+extern std::string get_3ac_str(const std::vector<std::string> &ac3_line);
+
 std::vector<std::string> x86_code;
 std::vector<std::string> arg_regs = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
 
@@ -28,6 +30,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
 
   if (op == "=") {
     // result = arg1
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     std::string arg1_addr = get_addr(arg1);
     std::string result_addr = get_addr(result);
 
@@ -39,6 +42,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
 
   if (result == "goto") {
     // goto arg1
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tjmp\t" + arg1);
     x86_code.push_back("");
     return;
@@ -59,6 +63,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   
   if (result == "beginfunc") {
     // beginfunc
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     func_scope = true;
     std::string func_name = cur_label;
     cur_func_symtable_ptr = lookup_func(func_name);
@@ -84,6 +89,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   
   if (op == "push") {
     // push arg1
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     std::string arg1_addr = get_addr(arg1);
 
     x86_code.push_back("\tmovl\t" + arg1_addr + ", " + "%eax");
@@ -93,6 +99,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   
   if (op == "return") {
     // return
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tleave");
     x86_code.push_back("\tret");
     x86_code.push_back("");
@@ -101,6 +108,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   
   if (op == "popparam" && arg1 == "return_val") {
     // result = popparam
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
     x86_code.push_back("");
     return;
@@ -114,6 +122,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   
   if (result == "call") {
     // call arg1, op
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     int num_args = std::stoi(op);
     pass_args(num_args);
 
@@ -132,6 +141,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   if (arg2.empty()) {
     // result = op arg1
     if(op == "-"){
+      x86_code.push_back("\t# " + get_3ac_str(ac3_line));
       x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
       x86_code.push_back("\tnegl\t%eax");
       x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
@@ -139,6 +149,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
       return;
     }
     if(op == "not"){
+      x86_code.push_back("\t# " + get_3ac_str(ac3_line));
       x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
       x86_code.push_back("\tcmpl\t$0, %eax");
       x86_code.push_back("\tsete\t%al");
@@ -148,6 +159,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
       return;
     }
     if(op == "~"){
+      x86_code.push_back("\t# " + get_3ac_str(ac3_line));
       x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
       x86_code.push_back("\tnotl\t%eax");
       x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
@@ -159,6 +171,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
 
   // result = arg1 op arg2
   if(op == "+"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\taddl\t" + get_addr(arg2) + ", %eax");
     x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
@@ -166,6 +179,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "-"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\tsubl\t" + get_addr(arg2) + ", %eax");
     x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
@@ -173,6 +187,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "*"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\timull\t" + get_addr(arg2) + ", %eax");
     x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
@@ -180,6 +195,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "/"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\tcltd");
     x86_code.push_back("\tidivl\t" + get_addr(arg2));
@@ -192,6 +208,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "%"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\tcltd");
     x86_code.push_back("\tidivl\t" + get_addr(arg2));
@@ -200,6 +217,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "&"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\tandl\t" + get_addr(arg2) + ", %eax");
     x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
@@ -207,6 +225,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "|"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\torl\t" + get_addr(arg2) + ", %eax");
     x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
@@ -214,6 +233,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "^"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\txorl\t" + get_addr(arg2) + ", %eax");
     x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
@@ -221,6 +241,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "and"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     // std::string newlabel = new_label();
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\tcmpl\t$0, %eax");    // TODO
@@ -232,6 +253,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "or"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\tcmpl\t$0, %eax");    // TODO
     x86_code.push_back("\tsetne\t%al");
@@ -241,6 +263,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "=="){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\tcmpl\t" + get_addr(arg2) + ", %eax");
     x86_code.push_back("\tsete\t%al");
@@ -250,6 +273,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "!="){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\tcmpl\t" + get_addr(arg2) + ", %eax");
     x86_code.push_back("\tsetne\t%al");
@@ -259,6 +283,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "<"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\tcmpl\t" + get_addr(arg2) + ", %eax");
     x86_code.push_back("\tsetl\t%al");
@@ -268,6 +293,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == ">"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\tcmpl\t" + get_addr(arg2) + ", %eax");
     x86_code.push_back("\tsetg\t%al");
@@ -277,6 +303,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "<<"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax"); 
     x86_code.push_back("\tshll\t" + get_addr(arg2) + ", %eax"); // implemented logical shifting and not arithmetic shifting
     x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
@@ -284,6 +311,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == ">>"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\tshrl\t" + get_addr(arg2) + ", %eax"); // implemented logical shifting and not arithmetic shifting
     x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
@@ -291,6 +319,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
   if(op == "//"){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
     x86_code.push_back("\tcltd");
     x86_code.push_back("\tidivl\t" + get_addr(arg2));
