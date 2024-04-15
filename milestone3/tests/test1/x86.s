@@ -1,4 +1,9 @@
+	.section	.rodata
+.LC0:
+	.string	"__main__"
+
 	.text
+
 	.globl	bubbleSort
 	.type	bubbleSort, @function
 bubbleSort:
@@ -562,7 +567,7 @@ main:
 L21:
 	# t1 = __name__ == "__main__"
 	movl	-8(%rbp), %eax
-	cmpl	"__main__", %eax
+	cmpl	$.LC0, %eax
 	sete	%al
 	movzbl	%al, %eax
 	movl	%eax, -9(%rbp)

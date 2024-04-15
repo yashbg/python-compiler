@@ -19,7 +19,13 @@ std::string cur_func_name;
 std::stack<std::string> arg_stack;
 
 void gen_x86_code() {
+  x86_code.push_back("\t.section\t.rodata");
+  x86_code.push_back(".LC0:");
+  x86_code.push_back("\t.string\t\"__main__\"");
+  x86_code.push_back("");
+
   x86_code.push_back("\t.text");
+  x86_code.push_back("");
   for (const auto &ac3_line : ac3_code) {
     gen_x86_line_code(ac3_line);
   }
@@ -408,6 +414,10 @@ std::string get_addr(const std::string &name) {
     return "$0";
   }
 
+  if (name == "\"__main__\"") {
+    return "$.LC0";
+  }
+
   int brace = name.find('[');
   if (brace != std::string::npos) {
     // array access
@@ -427,11 +437,6 @@ std::string get_addr(const std::string &name) {
     x86_code.push_back("\tmovq\t" + arr_addr + ", %rax");
     x86_code.push_back("\taddq\t%rax, %rdx");
     return "(%rdx)";
-  }
-
-  if (name == "\"__main__\"") {
-    // TODO
-    return name;
   }
   
   symtable_entry entry = lookup_var(name);
