@@ -8,7 +8,6 @@
 extern std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
 
 extern std::string get_3ac_str(const std::vector<std::string> &ac3_line);
-extern bool is_func(const std::string &name);
 
 std::vector<std::string> x86_code;
 std::vector<std::string> arg_regs = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};

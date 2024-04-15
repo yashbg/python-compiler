@@ -79,7 +79,6 @@
   int get_list_size(char* list_datatype, char* list);
   void generate_3AC_for_list(char* list_datatype, char* list);
   std::string strip_braces(const std::string &str);
-  bool is_func(const std::string &name);
   std::string get_func_ret_type(const std::string &name);
   int get_list_width(const std::string &type);
 
@@ -2895,22 +2894,6 @@ void check_method_args(const std::string &class_name, const std::string &method_
       yyerror(("Type mismatch in call to " + class_name + "." + method_name + "(): " + param_type + " required but " + arg_type + " was passed").c_str());
     }
   }
-}
-
-bool is_func(const std::string &name) {
-  if (class_scope) {
-    auto func_symtable_itr = cur_class_symtable_ptr->method_symtable_ptrs.find(name);
-    if (func_symtable_itr != cur_class_symtable_ptr->method_symtable_ptrs.end()) {
-      return true;
-    }
-  }
-
-  auto func_symtable_itr = gsymtable.func_symtable_ptrs.find(name);
-  if (func_symtable_itr != gsymtable.func_symtable_ptrs.end()) {
-    return true;
-  }
-
-  return false;
 }
 
 std::string get_func_ret_type(const std::string &name) {

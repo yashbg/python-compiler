@@ -226,3 +226,19 @@ int get_class_size(const std::string &name) {
 
   return size;
 }
+
+bool is_func(const std::string &name) {
+  if (class_scope) {
+    auto func_symtable_itr = cur_class_symtable_ptr->method_symtable_ptrs.find(name);
+    if (func_symtable_itr != cur_class_symtable_ptr->method_symtable_ptrs.end()) {
+      return true;
+    }
+  }
+
+  auto func_symtable_itr = gsymtable.func_symtable_ptrs.find(name);
+  if (func_symtable_itr != gsymtable.func_symtable_ptrs.end()) {
+    return true;
+  }
+
+  return false;
+}
