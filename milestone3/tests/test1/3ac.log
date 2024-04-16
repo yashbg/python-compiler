@@ -141,10 +141,28 @@ main:
 	t3[12] = 11
 	t3[16] = t2
 	data1 = t3
+	t4 = - 2
+	t5 = - 9
+	param 20
+	stackpointer +4
+	call allocmem , 1
+	stackpointer -4
+	t6 = popparam
+	t6[0] = t4
+	t6[4] = 45
+	t6[8] = 0
+	t6[12] = 11
+	t6[16] = t5
+	data2 = t6
 	param data1
 	param 5
 	stackpointer +12
 	call bubbleSort , 2
+	stackpointer -12
+	param data2
+	param 5
+	stackpointer +12
+	call insertionSort , 2
 	stackpointer -12
 	i = 0
 	i = 0
@@ -154,31 +172,49 @@ L21:
 	goto L23
 
 L22:
-	t4 = i * 4
-	t5 = data1[t4]
-	param t5
+	t7 = i * 4
+	t8 = data1[t7]
+	param t8
 	stackpointer +4
 	call print , 1
 	stackpointer -4
-	t6 = i
-	i = t6 + 1
+	t9 = i
+	i = t9 + 1
 	goto L21
 
 L23:
-	return
-	endfunc
+	i = 0
 
 L24:
-	t1 = __name__ == "__main__"
-	if t1 goto L25
+	if i<5 goto L25
 	goto L26
 
 L25:
+	t10 = i * 4
+	t11 = data2[t10]
+	param t11
+	stackpointer +4
+	call print , 1
+	stackpointer -4
+	t12 = i
+	i = t12 + 1
+	goto L24
+
+L26:
+	return
+	endfunc
+
+L27:
+	t1 = __name__ == "__main__"
+	if t1 goto L28
+	goto L29
+
+L28:
 	stackpointer +0
 	call main , 0
 	stackpointer -0
-	goto L27
+	goto L30
 
-L26:
+L29:
 
-L27:
+L30:

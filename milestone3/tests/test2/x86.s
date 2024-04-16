@@ -137,12 +137,11 @@ L1:
 	movl	-8(%rbp), %eax
 	cmpl	$.LC0, %eax
 	sete	%al
-	movzbl	%al, %eax
-	movl	%eax, -9(%rbp)
+	movb	%al, -9(%rbp)
 
 	# if t1 goto L2
-	movl	-9(%rbp), %eax
-	cmpl	$0, %eax
+	movb	-9(%rbp), %al
+	cmpb	$0, %al
 	jg	L2
 
 	# goto L3

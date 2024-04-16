@@ -35,8 +35,8 @@ L1:
 
 L2:
 	# swapped = False
-	movl	$0, %eax
-	movl	%eax, -17(%rbp)
+	movb	$0, %al
+	movb	%al, -17(%rbp)
 
 	# j = 0
 	movl	$0, %eax
@@ -111,12 +111,11 @@ L7:
 	movl	-41(%rbp), %eax
 	cmpl	-53(%rbp), %eax
 	setg	%al
-	movzbl	%al, %eax
-	movl	%eax, -54(%rbp)
+	movb	%al, -54(%rbp)
 
 	# if t9 goto L8
-	movl	-54(%rbp), %eax
-	cmpl	$0, %eax
+	movb	-54(%rbp), %al
+	cmpb	$0, %al
 	jg	L8
 
 	# goto L9
@@ -198,8 +197,8 @@ L8:
 	movl	%eax, (%rdx)
 
 	# swapped = True
-	movl	$1, %eax
-	movl	%eax, -17(%rbp)
+	movb	$1, %al
+	movb	%al, -17(%rbp)
 
 	# goto L10
 	jmp	L10
@@ -221,15 +220,14 @@ L10:
 L6:
 L11:
 	# t21 = not swapped
-	movl	-17(%rbp), %eax
-	cmpl	$0, %eax
+	movb	-17(%rbp), %al
+	cmpb	$0, %al
 	sete	%al
-	movzbl	%al, %eax
-	movl	%eax, -103(%rbp)
+	movb	%al, -103(%rbp)
 
 	# if t21 goto L12
-	movl	-103(%rbp), %eax
-	cmpl	$0, %eax
+	movb	-103(%rbp), %al
+	cmpb	$0, %al
 	jg	L12
 
 	# goto L13
@@ -326,6 +324,12 @@ L16:
 	movl	%eax, -40(%rbp)
 
 L18:
+	# t5 = j >= 0
+	movl	-40(%rbp), %eax
+	cmpl	$0, %eax
+	setge	%al
+	movb	%al, -41(%rbp)
+
 	# t6 = j * 4
 	movl	-40(%rbp), %eax
 	imull	$4, %eax
@@ -345,25 +349,23 @@ L18:
 	movl	-28(%rbp), %eax
 	cmpl	-49(%rbp), %eax
 	setl	%al
-	movzbl	%al, %eax
-	movl	%eax, -50(%rbp)
+	movb	%al, -50(%rbp)
 
 	# t9 = t5 and t8
-	cmpl	$0, -41(%rbp)
-	je	L28
-	cmpl	$0, -50(%rbp)
-	je	L28
+	cmpb	$0, -41(%rbp)
+	je	L31
+	cmpb	$0, -50(%rbp)
+	je	L31
 	movl	$1, %eax
-	jmp	L29
-L28:
+	jmp	L32
+L31:
 	movl	$0, %eax
-L29:
-	movzbl	%al, %eax
-	movl	%eax, -51(%rbp)
+L32:
+	movb	%al, -51(%rbp)
 
 	# if t9 goto L19
-	movl	-51(%rbp), %eax
-	cmpl	$0, %eax
+	movb	-51(%rbp), %al
+	cmpb	$0, %al
 	jg	L19
 
 	# goto L20
@@ -460,7 +462,7 @@ main:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
-	subq	$48, %rsp
+	subq	$80, %rsp
 
 	# t1 = - 2
 	movl	$2, %eax
@@ -518,22 +520,83 @@ main:
 	movq	-16(%rbp), %rax
 	movq	%rax, -24(%rbp)
 
+	# t4 = - 2
+	movl	$2, %eax
+	negl	%eax
+	movl	%eax, -28(%rbp)
+
+	# t5 = - 9
+	movl	$9, %eax
+	negl	%eax
+	movl	%eax, -32(%rbp)
+
+	# call allocmem , 1
+	movl	$20, %edi
+	call	malloc@PLT
+
+	# t6 = popparam
+	movq	%rax, -40(%rbp)
+
+	# t6[0] = t4
+	movq	-40(%rbp), %rax
+	leaq	0(%rax), %rdx
+
+	movl	-28(%rbp), %eax
+	movl	%eax, (%rdx)
+
+	# t6[4] = 45
+	movq	-40(%rbp), %rax
+	leaq	4(%rax), %rdx
+
+	movl	$45, %eax
+	movl	%eax, (%rdx)
+
+	# t6[8] = 0
+	movq	-40(%rbp), %rax
+	leaq	8(%rax), %rdx
+
+	movl	$0, %eax
+	movl	%eax, (%rdx)
+
+	# t6[12] = 11
+	movq	-40(%rbp), %rax
+	leaq	12(%rax), %rdx
+
+	movl	$11, %eax
+	movl	%eax, (%rdx)
+
+	# t6[16] = t5
+	movq	-40(%rbp), %rax
+	leaq	16(%rax), %rdx
+
+	movl	-32(%rbp), %eax
+	movl	%eax, (%rdx)
+
+	# data2 = t6
+	movq	-40(%rbp), %rax
+	movq	%rax, -48(%rbp)
+
 	# call bubbleSort , 2
 	movl	$5, %esi
 	movq	-24(%rbp), %rdi
 	call	bubbleSort
 
-	# i = 0
-	movl	$0, %eax
-	movl	%eax, -28(%rbp)
+	# call insertionSort , 2
+	movl	$5, %esi
+	movq	-48(%rbp), %rdi
+	call	insertionSort
 
 	# i = 0
 	movl	$0, %eax
-	movl	%eax, -28(%rbp)
+	movl	%eax, -52(%rbp)
+
+	# i = 0
+	movl	$0, %eax
+	movl	%eax, -52(%rbp)
 
 L21:
 	# if i<5 goto L22
-	movl	-28(%rbp), %eax
+	movl	-52(%rbp), %eax
 	cmpl	$5, %eax
 	jl	L22
 
@@ -541,40 +604,88 @@ L21:
 	jmp	L23
 
 L22:
-	# t4 = i * 4
-	movl	-28(%rbp), %eax
+	# t7 = i * 4
+	movl	-52(%rbp), %eax
 	imull	$4, %eax
-	movl	%eax, -32(%rbp)
+	movl	%eax, -56(%rbp)
 
-	# t5 = data1[t4]
-	movl	-32(%rbp), %eax
+	# t8 = data1[t7]
+	movl	-56(%rbp), %eax
 	cltq
 	movq	%rax, %rdx
 	movq	-24(%rbp), %rax
 	addq	%rax, %rdx
 
 	movl	(%rdx), %eax
-	movl	%eax, -36(%rbp)
+	movl	%eax, -60(%rbp)
 
 	# call print , 1
-	movl	-36(%rbp), %esi
+	movl	-60(%rbp), %esi
 	movl	$.LC1, %edi
 	movl	$0, %eax
 	call	printf@PLT
 
-	# t6 = i
-	movl	-28(%rbp), %eax
-	movl	%eax, -40(%rbp)
+	# t9 = i
+	movl	-52(%rbp), %eax
+	movl	%eax, -64(%rbp)
 
-	# i = t6 + 1
-	movl	-40(%rbp), %eax
+	# i = t9 + 1
+	movl	-64(%rbp), %eax
 	addl	$1, %eax
-	movl	%eax, -28(%rbp)
+	movl	%eax, -52(%rbp)
 
 	# goto L21
 	jmp	L21
 
 L23:
+	# i = 0
+	movl	$0, %eax
+	movl	%eax, -52(%rbp)
+
+L24:
+	# if i<5 goto L25
+	movl	-52(%rbp), %eax
+	cmpl	$5, %eax
+	jl	L25
+
+	# goto L26
+	jmp	L26
+
+L25:
+	# t10 = i * 4
+	movl	-52(%rbp), %eax
+	imull	$4, %eax
+	movl	%eax, -68(%rbp)
+
+	# t11 = data2[t10]
+	movl	-68(%rbp), %eax
+	cltq
+	movq	%rax, %rdx
+	movq	-48(%rbp), %rax
+	addq	%rax, %rdx
+
+	movl	(%rdx), %eax
+	movl	%eax, -72(%rbp)
+
+	# call print , 1
+	movl	-72(%rbp), %esi
+	movl	$.LC1, %edi
+	movl	$0, %eax
+	call	printf@PLT
+
+	# t12 = i
+	movl	-52(%rbp), %eax
+	movl	%eax, -76(%rbp)
+
+	# i = t12 + 1
+	movl	-76(%rbp), %eax
+	addl	$1, %eax
+	movl	%eax, -52(%rbp)
+
+	# goto L24
+	jmp	L24
+
+L26:
 	# return
 	leave
 	ret
@@ -582,28 +693,27 @@ L23:
 	# endfunc
 	.size	main, .-main
 
-L24:
+L27:
 	# t1 = __name__ == "__main__"
 	movl	-8(%rbp), %eax
 	cmpl	$.LC0, %eax
 	sete	%al
-	movzbl	%al, %eax
-	movl	%eax, -9(%rbp)
+	movb	%al, -9(%rbp)
 
-	# if t1 goto L25
-	movl	-9(%rbp), %eax
-	cmpl	$0, %eax
-	jg	L25
+	# if t1 goto L28
+	movb	-9(%rbp), %al
+	cmpb	$0, %al
+	jg	L28
 
-	# goto L26
-	jmp	L26
+	# goto L29
+	jmp	L29
 
-L25:
+L28:
 	# call main , 0
 	call	main
 
-	# goto L27
-	jmp	L27
+	# goto L30
+	jmp	L30
 
-L26:
-L27:
+L29:
+L30:
