@@ -83,7 +83,16 @@ void insert_attr(const std::string &name, const std::string &type) {
     entry = {type, yylineno, size, 0, 0, 0};
   }
 
-  entry.offset = cur_class_symtable_ptr->offset;
+  // inheritance
+  int ancestors_size = 0;
+  class_symtable *parent_symtable_ptr = cur_class_symtable_ptr->parent_symtable_ptr;
+  while (parent_symtable_ptr) {
+    ancestors_size += parent_symtable_ptr->offset;
+    
+    parent_symtable_ptr = parent_symtable_ptr->parent_symtable_ptr;
+  }
+
+  entry.offset = ancestors_size + cur_class_symtable_ptr->offset;
   cur_class_symtable_ptr->offset += size;
 
   cur_class_symtable_ptr->attr_entries[name] = entry;

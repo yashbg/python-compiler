@@ -18,6 +18,9 @@ def main():
   b: B = B()
   print(a.x)
   print(a.y)
+  print(b.x)
+  print(b.y)
+  print(b.z)
 
 
 if __name__ == '__main__':

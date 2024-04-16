@@ -61,7 +61,7 @@ B.__init__:
 
 	# self.z = 5
 	movq	-16(%rbp), %rax
-	leaq	0(%rax), %rdx
+	leaq	8(%rax), %rdx
 
 	movl	$5, %eax
 	movl	%eax, (%rdx)
@@ -137,6 +137,36 @@ main:
 	# call print , 1
 	movq	-20(%rbp), %rax
 	leaq	4(%rax), %rdx
+
+	movl	(%rdx), %esi
+	movl	$.LC1, %edi
+	movl	$0, %eax
+	call	printf@PLT
+
+	# param b.x
+	# call print , 1
+	movq	-40(%rbp), %rax
+	leaq	0(%rax), %rdx
+
+	movl	(%rdx), %esi
+	movl	$.LC1, %edi
+	movl	$0, %eax
+	call	printf@PLT
+
+	# param b.y
+	# call print , 1
+	movq	-40(%rbp), %rax
+	leaq	4(%rax), %rdx
+
+	movl	(%rdx), %esi
+	movl	$.LC1, %edi
+	movl	$0, %eax
+	call	printf@PLT
+
+	# param b.z
+	# call print , 1
+	movq	-40(%rbp), %rax
+	leaq	8(%rax), %rdx
 
 	movl	(%rdx), %esi
 	movl	$.LC1, %edi

@@ -47,6 +47,18 @@ main:
 	stackpointer +4
 	call print , 1
 	stackpointer -4
+	param b.x
+	stackpointer +4
+	call print , 1
+	stackpointer -4
+	param b.y
+	stackpointer +4
+	call print , 1
+	stackpointer -4
+	param b.z
+	stackpointer +4
+	call print , 1
+	stackpointer -4
 	return
 	endfunc
 
