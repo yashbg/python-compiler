@@ -179,7 +179,15 @@ void add_func(const std::string &name, const std::vector<std::pair<std::string, 
 local_symtable * lookup_func(const std::string &name) {
   int dot = name.find('.');
   if (dot != std::string::npos) {
-    std::string class_name = name.substr(0, dot);
+    std::string obj_name = name.substr(0, dot);
+    std::string class_name;
+    if (is_class(obj_name)) {
+      class_name = obj_name;
+    }
+    else {
+      class_name = lookup_var(obj_name).type;
+    }
+
     std::string method_name = name.substr(dot + 1);
     return lookup_method(class_name, method_name);
   }
