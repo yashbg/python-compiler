@@ -13,7 +13,7 @@ bubbleSort:
 	pushq	%rbp
 	movq	%rsp, %rbp
 	subq	$112, %rsp
-	movl	%edi, -8(%rbp)
+	movq	%rdi, -8(%rbp)
 	movl	%esi, -12(%rbp)
 
 	# i = 0
@@ -265,7 +265,7 @@ insertionSort:
 	pushq	%rbp
 	movq	%rsp, %rbp
 	subq	$96, %rsp
-	movl	%edi, -8(%rbp)
+	movq	%rdi, -8(%rbp)
 	movl	%esi, -12(%rbp)
 
 	# i = 0

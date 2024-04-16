@@ -12,7 +12,8 @@ extern std::string get_type(const std::string &str);
 extern int get_size(const std::string &type);
 
 std::vector<std::string> x86_code;
-std::vector<std::string> arg_regs = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
+std::vector<std::string> long_arg_regs = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
+std::vector<std::string> quad_arg_regs = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
 
 std::string cur_label;
 std::string cur_func_name;
@@ -196,7 +197,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
 
     x86_code.push_back("\tcall\t" + arg1);
 
-    int num_regs = arg_regs.size();
+    int num_regs = long_arg_regs.size();
     if (num_args > num_regs) {
       int size = 8 * (num_args - num_regs);
       x86_code.push_back("\taddq\t$" + std::to_string(size) + ", %rsp");
@@ -487,21 +488,32 @@ int align_offset(int offset) {
 void store_args(const std::string &func_name) {
   local_symtable *func_symtable_ptr = lookup_func(func_name);
   int num_args = func_symtable_ptr->params.size();
-  int num_regs = arg_regs.size();
+  int num_regs = long_arg_regs.size();
   for (int i = 0; i < num_args; i++) {
     std::string param = func_symtable_ptr->params[i].first;
+    int size = get_size(get_type(param));
     if (i < num_regs) {
-      x86_code.push_back("\tmovl\t" + arg_regs[i] + ", " + get_addr(param));
+      if (size == 8) {
+        x86_code.push_back("\tmovq\t" + quad_arg_regs[i] + ", " + get_addr(param));
+        continue;
+      }
+
+      x86_code.push_back("\tmovl\t" + long_arg_regs[i] + ", " + get_addr(param));
       continue;
     }
 
     int offset = 16 + 8 * (i - num_regs);
+    if (size == 8) {
+      x86_code.push_back("\tmovq\t" + std::to_string(offset) + "(%rbp), " + get_addr(param));
+      continue;
+    }
+    
     x86_code.push_back("\tmovl\t" + std::to_string(offset) + "(%rbp), " + get_addr(param));
   }
 }
 
 void pass_args(int num_args) {
-  int num_regs = arg_regs.size();
+  int num_regs = long_arg_regs.size();
   if (num_args > num_regs) {
     for (int i = 0; i < num_args - num_regs; i++) {
       std::string arg = arg_stack.top();
@@ -514,7 +526,7 @@ void pass_args(int num_args) {
 
   for (int i = 0; i < num_args; i++) {
     std::string arg = arg_stack.top();
-    std::string arg_reg = arg_regs[num_args - i - 1];
+    std::string arg_reg = long_arg_regs[num_args - i - 1];
     x86_code.push_back("\tmovl\t" + get_addr(arg) + ", " + arg_reg);
     arg_stack.pop();
   }
