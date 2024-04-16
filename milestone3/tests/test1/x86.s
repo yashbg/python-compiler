@@ -449,7 +449,7 @@ main:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
-	subq	$64, %rsp
+	subq	$48, %rsp
 
 	# t1 = - 2
 	movl	$2, %eax
@@ -502,78 +502,22 @@ main:
 	movq	-16(%rbp), %rax
 	movq	%rax, -24(%rbp)
 
-	# t4 = - 2
-	movl	$2, %eax
-	negl	%eax
-	movl	%eax, -28(%rbp)
-
-	# t5 = - 9
-	movl	$9, %eax
-	negl	%eax
-	movl	%eax, -32(%rbp)
-
-	# call allocmem , 1
-	movl	$20, %edi
-	call	malloc@PLT
-
-	# t6 = popparam
-	movq	%rax, -40(%rbp)
-
-	# t6[0] = t4
-	movq	-40(%rbp), %rax
-	leaq	0(%rax), %rdx
-	movl	-28(%rbp), %eax
-	movl	%eax, (%rdx)
-
-	# t6[4] = 45
-	movq	-40(%rbp), %rax
-	leaq	4(%rax), %rdx
-	movl	$45, %eax
-	movl	%eax, (%rdx)
-
-	# t6[8] = 0
-	movq	-40(%rbp), %rax
-	leaq	8(%rax), %rdx
-	movl	$0, %eax
-	movl	%eax, (%rdx)
-
-	# t6[12] = 11
-	movq	-40(%rbp), %rax
-	leaq	12(%rax), %rdx
-	movl	$11, %eax
-	movl	%eax, (%rdx)
-
-	# t6[16] = t5
-	movq	-40(%rbp), %rax
-	leaq	16(%rax), %rdx
-	movl	-32(%rbp), %eax
-	movl	%eax, (%rdx)
-
-	# data2 = t6
-	movq	-40(%rbp), %rax
-	movq	%rax, -48(%rbp)
-
 	# call bubbleSort , 2
 	movl	$5, %esi
 	movq	-24(%rbp), %rdi
 	call	bubbleSort
 
-	# call insertionSort , 2
-	movl	$5, %esi
-	movq	-48(%rbp), %rdi
-	call	insertionSort
+	# i = 0
+	movl	$0, %eax
+	movl	%eax, -28(%rbp)
 
 	# i = 0
 	movl	$0, %eax
-	movl	%eax, -52(%rbp)
-
-	# i = 0
-	movl	$0, %eax
-	movl	%eax, -52(%rbp)
+	movl	%eax, -28(%rbp)
 
 L21:
 	# if i<5 goto L22
-	movl	-52(%rbp), %eax
+	movl	-28(%rbp), %eax
 	cmpl	$5, %eax
 	jl	L22
 
@@ -581,34 +525,34 @@ L21:
 	jmp	L23
 
 L22:
-	# t7 = i * 4
-	movl	-52(%rbp), %eax
+	# t4 = i * 4
+	movl	-28(%rbp), %eax
 	imull	$4, %eax
-	movl	%eax, -56(%rbp)
+	movl	%eax, -32(%rbp)
 
-	# t8 = data1[t7]
-	movl	-56(%rbp), %eax
+	# t5 = data1[t4]
+	movl	-32(%rbp), %eax
 	cltq
 	movq	%rax, %rdx
 	movq	-24(%rbp), %rax
 	addq	%rax, %rdx
 	movl	(%rdx), %eax
-	movl	%eax, -60(%rbp)
+	movl	%eax, -36(%rbp)
 
 	# call print , 1
-	movl	-60(%rbp), %esi
+	movl	-36(%rbp), %esi
 	movl	$.LC1, %edi
 	movl	$0, %eax
 	call	printf@PLT
 
-	# t9 = i
-	movl	-52(%rbp), %eax
-	movl	%eax, -64(%rbp)
+	# t6 = i
+	movl	-28(%rbp), %eax
+	movl	%eax, -40(%rbp)
 
-	# i = t9 + 1
-	movl	-64(%rbp), %eax
+	# i = t6 + 1
+	movl	-40(%rbp), %eax
 	addl	$1, %eax
-	movl	%eax, -52(%rbp)
+	movl	%eax, -28(%rbp)
 
 	# goto L21
 	jmp	L21

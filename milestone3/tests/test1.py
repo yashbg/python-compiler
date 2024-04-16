@@ -26,10 +26,10 @@ def insertionSort(arr: list[int], n: int) -> None:
 
 def main():
   data1: list[int] = [-2, 45, 0, 11, -9]
-  data2: list[int] = [-2, 45, 0, 11, -9]
+  # data2: list[int] = [-2, 45, 0, 11, -9]
 
   bubbleSort(data1, 5)
-  insertionSort(data2, 5)
+  # insertionSort(data2, 5)
 
   i: int = 0
   for i in range(5):
