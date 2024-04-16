@@ -162,24 +162,27 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     // call arg1, op
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
 
-    std::string top_arg;
     if (arg1 == "print") {
-      top_arg = arg_stack.top();
-    }
+      arg1 = "printf@PLT";
+      std::string arg = arg_stack.top();
 
-    int num_args = std::stoi(op);
-    pass_args(num_args);
+      x86_code.push_back("\tmovl\t" + get_addr(arg) + ", %esi");
+      x86_code.push_back("\tmovl\t$.LC1, %edi");
+      x86_code.push_back("\tmovl\t$0, %eax");
+
+      arg_stack.pop();
+
+      x86_code.push_back("\tcall\t" + arg1);
+      x86_code.push_back("");
+      return;
+    }
 
     if (arg1 == "allocmem") {
       arg1 = "malloc@PLT";
     }
-    else if (arg1 == "print") {
-      arg1 = "printf@PLT";
 
-      x86_code.back() = "\tmovl\t" + get_addr(top_arg) + ", %esi";
-      x86_code.push_back("\tmovl\t$.LC1, %edi");
-      x86_code.push_back("\tmovl\t$0, %eax");
-    }
+    int num_args = std::stoi(op);
+    pass_args(num_args);
 
     x86_code.push_back("\tcall\t" + arg1);
 
