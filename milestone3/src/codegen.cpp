@@ -14,6 +14,7 @@ extern int get_size(const std::string &type);
 std::vector<std::string> x86_code;
 std::vector<std::string> long_arg_regs = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
 std::vector<std::string> quad_arg_regs = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+std::vector<std::string> byte_arg_regs = {"%dil", "%sil", "%dl", "%cl", "%r8b", "%r9b"};
 
 std::string cur_label;
 std::string cur_func_name;
@@ -54,7 +55,12 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
       x86_code.push_back("");
       return;
     }
-
+    if (size == 1) {
+      x86_code.push_back("\tmovb\t" + arg1_addr + ", " + "%al");
+      x86_code.push_back("\tmovb\t%al, " + result_addr);
+      x86_code.push_back("");
+      return;
+    }
     x86_code.push_back("\tmovl\t" + arg1_addr + ", " + "%eax");
     x86_code.push_back("\tmovl\t%eax, " + result_addr);
     x86_code.push_back("");
@@ -157,6 +163,12 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
       return;
     }
 
+    if (size == 1) {
+      x86_code.push_back("\tmovb\t" + arg1_addr + ", " + "%al");
+      x86_code.push_back("");
+      return;
+    }
+
     x86_code.push_back("\tmovl\t" + arg1_addr + ", " + "%eax");
     x86_code.push_back("");
     return;
@@ -178,6 +190,12 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     int size = get_size(get_type(result));
     if (size == 8) {
       x86_code.push_back("\tmovq\t%rax, " + get_addr(result));
+      x86_code.push_back("");
+      return;
+    }
+
+    if (size == 1) {
+      x86_code.push_back("\tmovb\t%al, " + get_addr(result));
       x86_code.push_back("");
       return;
     }
@@ -568,7 +586,10 @@ void store_args(const std::string &func_name) {
         x86_code.push_back("\tmovq\t" + quad_arg_regs[i] + ", " + get_addr(param));
         continue;
       }
-
+      if (size == 1) {
+        x86_code.push_back("\tmovb\t" + byte_arg_regs[i] + ", " + get_addr(param));
+        continue;
+      }
       x86_code.push_back("\tmovl\t" + long_arg_regs[i] + ", " + get_addr(param));
       continue;
     }
@@ -578,7 +599,10 @@ void store_args(const std::string &func_name) {
       x86_code.push_back("\tmovq\t" + std::to_string(offset) + "(%rbp), " + get_addr(param));
       continue;
     }
-
+    if (size == 1) {
+      x86_code.push_back("\tmovb\t" + std::to_string(offset) + "(%rbp), " + get_addr(param));
+      continue;
+    }
     x86_code.push_back("\tmovl\t" + std::to_string(offset) + "(%rbp), " + get_addr(param));
   }
 }
@@ -606,7 +630,12 @@ void pass_args(int num_args) {
       arg_stack.pop();
       continue;
     }
-
+    if (size == 1) {
+      std::string arg_reg = byte_arg_regs[num_args - i - 1];
+      x86_code.push_back("\tmovb\t" + get_addr(arg) + ", " + arg_reg);
+      arg_stack.pop();
+      continue;
+    }
     std::string arg_reg = long_arg_regs[num_args - i - 1];
     x86_code.push_back("\tmovl\t" + get_addr(arg) + ", " + arg_reg);
     arg_stack.pop();
