@@ -39,13 +39,11 @@ main:
 	call B.__init__ , 1
 	stackpointer -8
 	b = t4
-	x = a.x
-	y = a.y
-	param x
+	param a.x
 	stackpointer +4
 	call print , 1
 	stackpointer -4
-	param y
+	param a.y
 	stackpointer +4
 	call print , 1
 	stackpointer -4

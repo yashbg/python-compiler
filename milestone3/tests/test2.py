@@ -16,10 +16,8 @@ class B(A):
 def main():
   a: A = A()
   b: B = B()
-  x: int = a.x
-  y: int = a.y
-  print(x)
-  print(y)
+  print(a.x)
+  print(a.y)
 
 
 if __name__ == '__main__':

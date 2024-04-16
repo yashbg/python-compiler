@@ -119,28 +119,20 @@ main:
 	movq	-32(%rbp), %rax
 	movq	%rax, -40(%rbp)
 
-	# x = a.x
+	# call print , 1
 	movq	-20(%rbp), %rax
 	leaq	0(%rax), %rdx
 
-	movl	(%rdx), %eax
-	movl	%eax, -44(%rbp)
-
-	# y = a.y
-	movq	-20(%rbp), %rax
-	leaq	4(%rax), %rdx
-
-	movl	(%rdx), %eax
-	movl	%eax, -48(%rbp)
-
-	# call print , 1
-	movl	-44(%rbp), %esi
+	movl	(%rdx), %esi
 	movl	$.LC1, %edi
 	movl	$0, %eax
 	call	printf@PLT
 
 	# call print , 1
-	movl	-48(%rbp), %esi
+	movq	-20(%rbp), %rax
+	leaq	4(%rax), %rdx
+
+	movl	(%rdx), %esi
 	movl	$.LC1, %edi
 	movl	$0, %eax
 	call	printf@PLT

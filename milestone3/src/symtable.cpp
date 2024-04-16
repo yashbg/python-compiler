@@ -49,6 +49,14 @@ void insert_var(const std::string &name, const std::string &type) {
 }
 
 symtable_entry lookup_var(const std::string &name) {
+  int dot = name.find('.');
+  if (dot != std::string::npos) {
+    std::string obj_name = name.substr(0, dot);
+    std::string class_name = lookup_var(obj_name).type;
+    std::string attr_name = name.substr(dot + 1);
+    return lookup_attr(class_name, attr_name);
+  }
+
   if (func_scope) {
     auto entry_itr = cur_func_symtable_ptr->var_entries.find(name);
     if (entry_itr != cur_func_symtable_ptr->var_entries.end()) {

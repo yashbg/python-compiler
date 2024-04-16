@@ -1,6 +1,4 @@
 token,lexeme,type,ret_type,size,lineno,offset
-NAME,y,int,,4,21,44
-NAME,x,int,,4,20,40
 NAME,b,B,,8,19,32
 NAME,t4,B,,8,19,24
 NAME,t3,int,,4,19,20
