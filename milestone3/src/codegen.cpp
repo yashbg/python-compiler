@@ -8,6 +8,8 @@
 extern std::vector<std::vector<std::string>> ac3_code; // 3AC instructions (op, arg1, arg2, result)
 
 extern std::string get_3ac_str(const std::vector<std::string> &ac3_line);
+extern std::string get_type(const std::string &str);
+extern int get_size(const std::string &type);
 
 std::vector<std::string> x86_code;
 std::vector<std::string> arg_regs = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
@@ -43,6 +45,14 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     std::string arg1_addr = get_addr(arg1);
     std::string result_addr = get_addr(result);
+
+    int size = get_size(get_type(result));
+    if (size == 8) {
+      x86_code.push_back("\tmovq\t" + arg1_addr + ", " + "%rax");
+      x86_code.push_back("\tmovq\t%rax, " + result_addr);
+      x86_code.push_back("");
+      return;
+    }
 
     x86_code.push_back("\tmovl\t" + arg1_addr + ", " + "%eax");
     x86_code.push_back("\tmovl\t%eax, " + result_addr);

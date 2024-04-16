@@ -2769,6 +2769,14 @@ std::string get_type(const std::string &str) {
     return str;
   }
 
+  int brace = str.find('[');
+  if (brace != std::string::npos) {
+    // array access
+    std::string arr = str.substr(0, brace);
+    std::string arr_type = lookup_var(arr).type;
+    return arr_type.substr(5, arr_type.size() - 6);
+  }
+
   int dot = str.find('.');
   if (dot != std::string::npos) {
     int paren = str.find('(');

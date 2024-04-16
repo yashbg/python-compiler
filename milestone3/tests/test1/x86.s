@@ -499,8 +499,8 @@ main:
 	movl	%eax, (%rdx)
 
 	# data1 = t3
-	movl	-16(%rbp), %eax
-	movl	%eax, -24(%rbp)
+	movq	-16(%rbp), %rax
+	movq	%rax, -24(%rbp)
 
 	# t4 = - 2
 	movl	$2, %eax
@@ -550,8 +550,8 @@ main:
 	movl	%eax, (%rdx)
 
 	# data2 = t6
-	movl	-40(%rbp), %eax
-	movl	%eax, -48(%rbp)
+	movq	-40(%rbp), %rax
+	movq	%rax, -48(%rbp)
 
 	# call bubbleSort , 2
 	movl	$5, %esi
