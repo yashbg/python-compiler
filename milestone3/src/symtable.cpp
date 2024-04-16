@@ -249,3 +249,7 @@ bool is_func(const std::string &name) {
 
   return false;
 }
+
+bool is_class(const std::string &name) {
+  return gsymtable.class_symtable_ptrs.find(name) != gsymtable.class_symtable_ptrs.end();
+}

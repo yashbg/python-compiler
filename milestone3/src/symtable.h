@@ -59,3 +59,4 @@ local_symtable * lookup_method(const std::string &class_name, const std::string 
 
 int get_class_size(const std::string &name);
 bool is_func(const std::string &name);
+bool is_class(const std::string &name);

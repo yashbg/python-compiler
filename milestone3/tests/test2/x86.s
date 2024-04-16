@@ -6,6 +6,8 @@
 
 	.text
 
+	.globl	A.__init__
+	.type	A.__init__, @function
 A.__init__:
 	# beginfunc
 	pushq	%rbp
@@ -32,8 +34,10 @@ A.__init__:
 	ret
 
 	# endfunc
-	.size	, .-
+	.size	A.__init__, .-A.__init__
 
+	.globl	B.__init__
+	.type	B.__init__, @function
 B.__init__:
 	# beginfunc
 	pushq	%rbp
@@ -67,7 +71,7 @@ B.__init__:
 	ret
 
 	# endfunc
-	.size	, .-
+	.size	B.__init__, .-B.__init__
 
 	.globl	main
 	.type	main, @function

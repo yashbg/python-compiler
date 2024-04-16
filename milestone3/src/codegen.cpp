@@ -93,7 +93,16 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     // result:
     cur_label = result;
 
-    if (is_func(result)) {
+    bool func = false;
+    int dot = result.find('.');
+    if (dot != std::string::npos) {
+      std::string class_name = result.substr(0, dot);
+      if (is_class(class_name)) {
+        func = true;
+      }
+    }
+
+    if (func || is_func(result)) {
       cur_func_name = result;
       
       x86_code.push_back("\t.globl\t" + result);

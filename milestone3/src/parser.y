@@ -81,8 +81,6 @@
   std::string strip_braces(const std::string &str);
   std::string get_func_ret_type(const std::string &name);
   int get_list_width(const std::string &type);
-
-  bool is_class(const std::string &name);
 %}
 
 %union { char tokenname[1024]; }
@@ -2741,10 +2739,6 @@ std::string get_type(const std::string &str) {
     return "str";
   }
 
-  if (is_func(str)) {
-    return get_func_ret_type(str);
-  }
-
   if (is_class(str)) {
     return str;
   }
@@ -2753,7 +2747,7 @@ std::string get_type(const std::string &str) {
   if (brace != std::string::npos) {
     // array access
     std::string arr = str.substr(0, brace);
-    std::string arr_type = lookup_var(arr).type;
+    std::string arr_type = get_type(arr);
     return arr_type.substr(5, arr_type.size() - 6);
   }
 
@@ -2777,6 +2771,10 @@ std::string get_type(const std::string &str) {
 
     std::string class_name = lookup_var(str.substr(0, dot)).type;
     return lookup_attr(class_name, attr).type;
+  }
+
+  if (is_func(str)) {
+    return get_func_ret_type(str);
   }
 
   return lookup_var(str).type;
@@ -2891,8 +2889,4 @@ std::string get_func_ret_type(const std::string &name) {
 
 int get_list_width(const std::string &type) {
   return get_size(type.substr(5, type.size() - 6));
-}
-
-bool is_class(const std::string &name) {
-  return gsymtable.class_symtable_ptrs.find(name) != gsymtable.class_symtable_ptrs.end();
 }
