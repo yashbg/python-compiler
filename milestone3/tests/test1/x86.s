@@ -474,6 +474,7 @@ main:
 	negl	%eax
 	movl	%eax, -8(%rbp)
 
+	# param 20
 	# call allocmem , 1
 	movl	$20, %edi
 	call	malloc@PLT
@@ -530,6 +531,7 @@ main:
 	negl	%eax
 	movl	%eax, -32(%rbp)
 
+	# param 20
 	# call allocmem , 1
 	movl	$20, %edi
 	call	malloc@PLT
@@ -576,11 +578,15 @@ main:
 	movq	-40(%rbp), %rax
 	movq	%rax, -48(%rbp)
 
+	# param data1
+	# param 5
 	# call bubbleSort , 2
 	movl	$5, %esi
 	movq	-24(%rbp), %rdi
 	call	bubbleSort
 
+	# param data2
+	# param 5
 	# call insertionSort , 2
 	movl	$5, %esi
 	movq	-48(%rbp), %rdi
@@ -619,6 +625,7 @@ L22:
 	movl	(%rdx), %eax
 	movl	%eax, -60(%rbp)
 
+	# param t8
 	# call print , 1
 	movl	-60(%rbp), %esi
 	movl	$.LC1, %edi
@@ -667,6 +674,7 @@ L25:
 	movl	(%rdx), %eax
 	movl	%eax, -72(%rbp)
 
+	# param t11
 	# call print , 1
 	movl	-72(%rbp), %esi
 	movl	$.LC1, %edi

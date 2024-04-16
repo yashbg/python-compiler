@@ -207,6 +207,8 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   
   if (op == "param") {
     // param arg1
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
+
     arg_stack.push(arg1);
     return;
   }

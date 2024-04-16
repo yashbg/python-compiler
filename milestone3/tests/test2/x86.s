@@ -85,6 +85,7 @@ main:
 	movl	$8, %eax
 	movl	%eax, -4(%rbp)
 
+	# param t1
 	# call allocmem , 1
 	movl	-4(%rbp), %edi
 	call	malloc@PLT
@@ -92,6 +93,7 @@ main:
 	# t2 = popparam
 	movq	%rax, -12(%rbp)
 
+	# param t2
 	# call A.__init__ , 1
 	movq	-12(%rbp), %rdi
 	call	A.__init__
@@ -104,6 +106,7 @@ main:
 	movl	$12, %eax
 	movl	%eax, -24(%rbp)
 
+	# param t3
 	# call allocmem , 1
 	movl	-24(%rbp), %edi
 	call	malloc@PLT
@@ -111,6 +114,7 @@ main:
 	# t4 = popparam
 	movq	%rax, -32(%rbp)
 
+	# param t4
 	# call B.__init__ , 1
 	movq	-32(%rbp), %rdi
 	call	B.__init__
@@ -119,6 +123,7 @@ main:
 	movq	-32(%rbp), %rax
 	movq	%rax, -40(%rbp)
 
+	# param a.x
 	# call print , 1
 	movq	-20(%rbp), %rax
 	leaq	0(%rax), %rdx
@@ -128,6 +133,7 @@ main:
 	movl	$0, %eax
 	call	printf@PLT
 
+	# param a.y
 	# call print , 1
 	movq	-20(%rbp), %rax
 	leaq	4(%rax), %rdx
