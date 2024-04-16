@@ -149,6 +149,10 @@ insertionSort:
 	popq	%rbp
 	ret
 	.size	insertionSort, .-insertionSort
+	.section	.rodata
+.LC0:
+	.string	"%d\n"
+	.text
 	.globl	main
 	.type	main, @function
 main:
@@ -180,12 +184,46 @@ main:
 	movl	%edx, %esi
 	movq	%rax, %rdi
 	call	insertionSort
+	movl	$0, -76(%rbp)
+	jmp	.L18
+.L19:
+	movl	-76(%rbp), %eax
+	cltq
+	movl	-64(%rbp,%rax,4), %eax
+	movl	%eax, %esi
+	leaq	.LC0(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	addl	$1, -76(%rbp)
+.L18:
+	movl	-76(%rbp), %eax
+	cmpl	-68(%rbp), %eax
+	jl	.L19
+	movl	$10, %edi
+	call	putchar@PLT
+	movl	$0, -72(%rbp)
+	jmp	.L20
+.L21:
+	movl	-72(%rbp), %eax
+	cltq
+	movl	-32(%rbp,%rax,4), %eax
+	movl	%eax, %esi
+	leaq	.LC0(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	addl	$1, -72(%rbp)
+.L20:
+	movl	-72(%rbp), %eax
+	cmpl	-68(%rbp), %eax
+	jl	.L21
 	movl	$0, %eax
 	movq	-8(%rbp), %rdx
 	subq	%fs:40, %rdx
-	je	.L19
+	je	.L23
 	call	__stack_chk_fail@PLT
-.L19:
+.L23:
 	leave
 	ret
 	.size	main, .-main

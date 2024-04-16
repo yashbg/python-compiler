@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 void bubbleSort(int array[], int n) {
     int i, j;
     for (i = 0; i < n; i++) {
@@ -36,6 +38,15 @@ int main() {
 
     bubbleSort(data1, n);
     insertionSort(data2, n);
+
+    for (int i = 0; i < n; i++) {
+        printf("%d\n", data1[i]);
+    }
+
+    printf("\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\n", data2[i]);
+    }
 
     return 0;
 }

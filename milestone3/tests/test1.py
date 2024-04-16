@@ -31,6 +31,13 @@ def main():
   bubbleSort(data1, 5)
   insertionSort(data2, 5)
 
+  i: int = 0
+  for i in range(5):
+    print(data1[i])
+  
+  # i = 0
+  # for i in range(5):
+  #   print(data2[i])
 
 if __name__ == "__main__":
   main()

@@ -1,6 +1,8 @@
 	.section	.rodata
 .LC0:
 	.string	"__main__"
+.LC1:
+	.string	"%d\n"
 
 	.text
 
@@ -336,14 +338,14 @@ L18:
 
 	# t9 = t5 and t8
 	cmpl	$0, -41(%rbp)
-	je	L25
+	je	L28
 	cmpl	$0, -50(%rbp)
-	je	L25
+	je	L28
 	movl	$1, %eax
-	jmp	L26
-L25:
+	jmp	L29
+L28:
 	movl	$0, %eax
-L26:
+L29:
 	movzbl	%al, %eax
 	movl	%eax, -51(%rbp)
 
@@ -443,7 +445,7 @@ main:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
-	subq	$48, %rsp
+	subq	$64, %rsp
 
 	# t1 = - 2
 	movl	$2, %eax
@@ -557,6 +559,53 @@ main:
 	movl	-48(%rbp), %edi
 	call	insertionSort
 
+	# i = 0
+	movl	$0, %eax
+	movl	%eax, -52(%rbp)
+
+L21:
+	# if i<5 goto L22
+	movl	-52(%rbp), %eax
+	cmpl	$5, %eax
+	jl	L22
+
+	# goto L23
+	jmp	L23
+
+L22:
+	# t7 = i * 4
+	movl	-52(%rbp), %eax
+	imull	$4, %eax
+	movl	%eax, -56(%rbp)
+
+	# t8 = data1[t7]
+	movl	-56(%rbp), %eax
+	cltq
+	movq	%rax, %rdx
+	movq	-24(%rbp), %rax
+	addq	%rax, %rdx
+	movl	(%rdx), %eax
+	movl	%eax, -60(%rbp)
+
+	# call print , 1
+	movl	-60(%rbp), %esi
+	movl	$.LC1, %edi
+	movl	$0, %eax
+	call	printf@PLT
+
+	# t9 = i
+	movl	-52(%rbp), %eax
+	movl	%eax, -64(%rbp)
+
+	# i = t9 + 1
+	movl	-64(%rbp), %eax
+	addl	$1, %eax
+	movl	%eax, -52(%rbp)
+
+	# goto L21
+	jmp	L21
+
+L23:
 	# return
 	leave
 	ret
@@ -564,7 +613,7 @@ main:
 	# endfunc
 	.size	main, .-main
 
-L21:
+L24:
 	# t1 = __name__ == "__main__"
 	movl	-8(%rbp), %eax
 	cmpl	$.LC0, %eax
@@ -572,20 +621,20 @@ L21:
 	movzbl	%al, %eax
 	movl	%eax, -9(%rbp)
 
-	# if t1 goto L22
+	# if t1 goto L25
 	movl	-9(%rbp), %eax
 	cmpl	$0, %eax
-	jg	L22
+	jg	L25
 
-	# goto L23
-	jmp	L23
+	# goto L26
+	jmp	L26
 
-L22:
+L25:
 	# call main , 0
 	call	main
 
-	# goto L24
-	jmp	L24
+	# goto L27
+	jmp	L27
 
-L23:
-L24:
+L26:
+L27:

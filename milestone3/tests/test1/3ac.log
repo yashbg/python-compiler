@@ -163,20 +163,38 @@ main:
 	stackpointer +12
 	call insertionSort , 2
 	stackpointer -12
-	return
-	endfunc
+	i = 0
 
 L21:
-	t1 = __name__ == "__main__"
-	if t1 goto L22
+	if i<5 goto L22
 	goto L23
 
 L22:
+	t7 = i * 4
+	t8 = data1[t7]
+	param t8
+	stackpointer +4
+	call print , 1
+	stackpointer -4
+	t9 = i
+	i = t9 + 1
+	goto L21
+
+L23:
+	return
+	endfunc
+
+L24:
+	t1 = __name__ == "__main__"
+	if t1 goto L25
+	goto L26
+
+L25:
 	stackpointer +0
 	call main , 0
 	stackpointer -0
-	goto L24
+	goto L27
 
-L23:
+L26:
 
-L24:
+L27:

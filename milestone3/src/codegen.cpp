@@ -21,6 +21,8 @@ void gen_x86_code() {
   x86_code.push_back("\t.section\t.rodata");
   x86_code.push_back(".LC0:");
   x86_code.push_back("\t.string\t\"__main__\"");
+  x86_code.push_back(".LC1:");
+  x86_code.push_back("\t.string\t\"%d\\n\"");
   x86_code.push_back("");
 
   x86_code.push_back("\t.text");
@@ -159,11 +161,24 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   if (result == "call") {
     // call arg1, op
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
+
+    std::string top_arg;
+    if (arg1 == "print") {
+      top_arg = arg_stack.top();
+    }
+
     int num_args = std::stoi(op);
     pass_args(num_args);
 
     if (arg1 == "allocmem") {
       arg1 = "malloc@PLT";
+    }
+    else if (arg1 == "print") {
+      arg1 = "printf@PLT";
+
+      x86_code.back() = "\tmovl\t" + get_addr(top_arg) + ", %esi";
+      x86_code.push_back("\tmovl\t$.LC1, %edi");
+      x86_code.push_back("\tmovl\t$0, %eax");
     }
 
     x86_code.push_back("\tcall\t" + arg1);
