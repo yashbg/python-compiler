@@ -424,6 +424,26 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     x86_code.push_back("");
     return;
   }
+  if(op == "<="){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
+    x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
+    x86_code.push_back("\tcmpl\t" + get_addr(arg2) + ", %eax");
+    x86_code.push_back("\tsetle\t%al");
+    x86_code.push_back("\tmovzbl\t%al, %eax");
+    x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
+    x86_code.push_back("");
+    return;
+  }
+  if(op == ">="){
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
+    x86_code.push_back("\tmovl\t" + get_addr(arg1) + ", %eax");
+    x86_code.push_back("\tcmpl\t" + get_addr(arg2) + ", %eax");
+    x86_code.push_back("\tsetge\t%al");
+    x86_code.push_back("\tmovzbl\t%al, %eax");
+    x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
+    x86_code.push_back("");
+    return;
+  }
   if(op == "<<"){
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     x86_code.push_back("\tmovl\t" + get_addr(arg2) + ", %eax"); 
