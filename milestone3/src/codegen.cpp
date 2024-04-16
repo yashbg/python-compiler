@@ -474,6 +474,7 @@ std::string get_addr(const std::string &name) {
     if (is_int_literal(offset)) {
       x86_code.push_back("\tmovq\t" + arr_addr + ", %rax");
       x86_code.push_back("\tleaq\t" + offset + "(%rax), %rdx");
+      x86_code.push_back("");
       return "(%rdx)";
     }
 
@@ -483,6 +484,23 @@ std::string get_addr(const std::string &name) {
     x86_code.push_back("\tmovq\t%rax, %rdx");
     x86_code.push_back("\tmovq\t" + arr_addr + ", %rax");
     x86_code.push_back("\taddq\t%rax, %rdx");
+    x86_code.push_back("");
+    return "(%rdx)";
+  }
+
+  int dot = name.find('.');
+  if (dot != std::string::npos) {
+    // object attribute access
+    std::string obj = name.substr(0, dot);
+    std::string attr = name.substr(dot + 1);
+    std::string obj_addr = get_addr(obj);
+
+    std::string class_name = lookup_var(obj).type;
+    int offset = lookup_attr(class_name, attr).offset;
+
+    x86_code.push_back("\tmovq\t" + obj_addr + ", %rax");
+    x86_code.push_back("\tleaq\t" + std::to_string(offset) + "(%rax), %rdx");
+    x86_code.push_back("");
     return "(%rdx)";
   }
   

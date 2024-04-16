@@ -160,6 +160,13 @@ void add_func(const std::string &name, const std::vector<std::pair<std::string, 
 }
 
 local_symtable * lookup_func(const std::string &name) {
+  int dot = name.find('.');
+  if (dot != std::string::npos) {
+    std::string class_name = name.substr(0, dot);
+    std::string method_name = name.substr(dot + 1);
+    return lookup_method(class_name, method_name);
+  }
+
   auto func_symtable_itr = gsymtable.func_symtable_ptrs.find(name);
   if (func_symtable_itr != gsymtable.func_symtable_ptrs.end()) {
     return func_symtable_itr->second;

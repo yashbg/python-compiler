@@ -1,4 +1,4 @@
 token,lexeme,type,ret_type,size,lineno,offset
-NAME,y,float,,4,8,4
+NAME,y,int,,4,8,4
 NAME,x,int,,4,5,0
 NAME,__init__,,None,,3,

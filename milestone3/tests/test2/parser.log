@@ -153,7 +153,7 @@ not_test and_not_test_list
 and_test or_and_test_list
 %empty
 or_test if_or_test_else_test_opt
-FLOAT_NUMBER
+INTEGER
 %empty
 atom trailer_list
 %empty
@@ -339,7 +339,7 @@ test
 %empty
 test_or_star_expr comma_test_or_star_expr_list comma_opt
 %empty
-FLOAT_NUMBER
+INTEGER
 %empty
 atom trailer_list
 %empty
@@ -433,8 +433,7 @@ not_test and_not_test_list
 and_test or_and_test_list
 %empty
 or_test if_or_test_else_test_opt
-%empty
-STRING string_list
+INTEGER
 %empty
 atom trailer_list
 %empty

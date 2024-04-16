@@ -510,12 +510,6 @@ annassign:
   ':' test
   {
     in_var_decl = false;
-
-    // if (attr_type_rem) {
-    //   temp_types[attr_decl] = $2;
-
-    //   attr_type_rem = false;
-    // }
   }
   equal_test_opt
   {
@@ -1877,20 +1871,6 @@ atom_expr:
       if($2[0] != '.'){
         yyerror("Syntax error: 'self' cannot be indexed");
       }
-
-      // symtable_entry entry = lookup_attr(class_name, std::string($2).substr(1));
-      // std::string t = new_temp(); //TODO  -- store size of x in self.x
-      // gen("=", std::to_string(entry.size), "", t);
-      // std::string t2 = new_temp(); // TODO -- store address of x in self.x
-      // gen("+", "t1", t, t2);
-      // std::string t3 = "*" + t2;
-      // strcpy($$, t3.c_str());    // t3 = *(address of self.x)
-
-      // std::string t = new_temp();
-      // gen("=", std::string($1) + $2, "", t);
-
-      // attr_decl = t;
-      // attr_type_rem = true;
 
       strcpy($$, (std::string($1) + $2).c_str());
     }

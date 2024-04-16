@@ -83,6 +83,7 @@ L7:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
+
 	movl	(%rdx), %eax
 	movl	%eax, -41(%rbp)
 
@@ -102,6 +103,7 @@ L7:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
+
 	movl	(%rdx), %eax
 	movl	%eax, -53(%rbp)
 
@@ -132,6 +134,7 @@ L8:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
+
 	movl	(%rdx), %eax
 	movl	%eax, -62(%rbp)
 
@@ -160,6 +163,7 @@ L8:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
+
 	movl	(%rdx), %eax
 	movl	%eax, -86(%rbp)
 
@@ -169,6 +173,7 @@ L8:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
+
 	movl	-86(%rbp), %eax
 	movl	%eax, (%rdx)
 
@@ -188,6 +193,7 @@ L8:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
+
 	movl	-66(%rbp), %eax
 	movl	%eax, (%rdx)
 
@@ -297,6 +303,7 @@ L16:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
+
 	movl	(%rdx), %eax
 	movl	%eax, -24(%rbp)
 
@@ -330,6 +337,7 @@ L18:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
+
 	movl	(%rdx), %eax
 	movl	%eax, -49(%rbp)
 
@@ -383,6 +391,7 @@ L19:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
+
 	movl	(%rdx), %eax
 	movl	%eax, -71(%rbp)
 
@@ -392,6 +401,7 @@ L19:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
+
 	movl	-71(%rbp), %eax
 	movl	%eax, (%rdx)
 
@@ -420,6 +430,7 @@ L20:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
+
 	movl	-28(%rbp), %eax
 	movl	%eax, (%rdx)
 
@@ -471,30 +482,35 @@ main:
 	# t3[0] = t1
 	movq	-16(%rbp), %rax
 	leaq	0(%rax), %rdx
+
 	movl	-4(%rbp), %eax
 	movl	%eax, (%rdx)
 
 	# t3[4] = 45
 	movq	-16(%rbp), %rax
 	leaq	4(%rax), %rdx
+
 	movl	$45, %eax
 	movl	%eax, (%rdx)
 
 	# t3[8] = 0
 	movq	-16(%rbp), %rax
 	leaq	8(%rax), %rdx
+
 	movl	$0, %eax
 	movl	%eax, (%rdx)
 
 	# t3[12] = 11
 	movq	-16(%rbp), %rax
 	leaq	12(%rax), %rdx
+
 	movl	$11, %eax
 	movl	%eax, (%rdx)
 
 	# t3[16] = t2
 	movq	-16(%rbp), %rax
 	leaq	16(%rax), %rdx
+
 	movl	-8(%rbp), %eax
 	movl	%eax, (%rdx)
 
@@ -536,6 +552,7 @@ L22:
 	movq	%rax, %rdx
 	movq	-24(%rbp), %rax
 	addq	%rax, %rdx
+
 	movl	(%rdx), %eax
 	movl	%eax, -36(%rbp)
 
