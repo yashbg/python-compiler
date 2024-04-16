@@ -141,6 +141,13 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     std::string arg1_addr = get_addr(arg1);
 
+    int size = get_size(get_type(arg1));
+    if (size == 8) {
+      x86_code.push_back("\tmovq\t" + arg1_addr + ", " + "%rax");
+      x86_code.push_back("");
+      return;
+    }
+
     x86_code.push_back("\tmovl\t" + arg1_addr + ", " + "%eax");
     x86_code.push_back("");
     return;
@@ -158,6 +165,14 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   if (op == "popparam" && arg1 == "return_val") {
     // result = popparam
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
+
+    int size = get_size(get_type(result));
+    if (size == 8) {
+      x86_code.push_back("\tmovq\t%rax, " + get_addr(result));
+      x86_code.push_back("");
+      return;
+    }
+
     x86_code.push_back("\tmovl\t%eax, " + get_addr(result));
     x86_code.push_back("");
     return;
@@ -507,7 +522,7 @@ void store_args(const std::string &func_name) {
       x86_code.push_back("\tmovq\t" + std::to_string(offset) + "(%rbp), " + get_addr(param));
       continue;
     }
-    
+
     x86_code.push_back("\tmovl\t" + std::to_string(offset) + "(%rbp), " + get_addr(param));
   }
 }
@@ -515,6 +530,7 @@ void store_args(const std::string &func_name) {
 void pass_args(int num_args) {
   int num_regs = long_arg_regs.size();
   if (num_args > num_regs) {
+    // TODO: stack frame alignment?
     for (int i = 0; i < num_args - num_regs; i++) {
       std::string arg = arg_stack.top();
       x86_code.push_back("\tpushq\t" + get_addr(arg));
@@ -526,6 +542,15 @@ void pass_args(int num_args) {
 
   for (int i = 0; i < num_args; i++) {
     std::string arg = arg_stack.top();
+
+    int size = get_size(get_type(arg));
+    if (size == 8) {
+      std::string arg_reg = quad_arg_regs[num_args - i - 1];
+      x86_code.push_back("\tmovq\t" + get_addr(arg) + ", " + arg_reg);
+      arg_stack.pop();
+      continue;
+    }
+
     std::string arg_reg = long_arg_regs[num_args - i - 1];
     x86_code.push_back("\tmovl\t" + get_addr(arg) + ", " + arg_reg);
     arg_stack.pop();
