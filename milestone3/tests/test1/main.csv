@@ -1,5 +1,5 @@
 token,lexeme,type,ret_type,size,lineno,offset
-NAME,t9,int,,4,42,60
+NAME,t9,int,,4,41,60
 NAME,t8,int,,4,36,56
 NAME,t7,int,,4,36,52
 NAME,data2,list[int],,8,31,40

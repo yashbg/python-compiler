@@ -863,6 +863,7 @@ for_stmt:
       true_stack.push(true_label);
       false_stack.push(false_label);
       loop_stack_false.push(false_label);
+      gen("=", "0", "", n1);
       std::string t = n1 + "<" + in;
       gen("", ":", "", cond_label);
       gen(t, "goto", true_label, "if");

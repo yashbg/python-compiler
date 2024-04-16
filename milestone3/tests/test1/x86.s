@@ -20,6 +20,10 @@ bubbleSort:
 	movl	$0, %eax
 	movl	%eax, -16(%rbp)
 
+	# i = 0
+	movl	$0, %eax
+	movl	%eax, -16(%rbp)
+
 L1:
 	# if i<n goto L2
 	movl	-16(%rbp), %eax
@@ -558,6 +562,10 @@ main:
 	movl	$5, %esi
 	movl	-48(%rbp), %edi
 	call	insertionSort
+
+	# i = 0
+	movl	$0, %eax
+	movl	%eax, -52(%rbp)
 
 	# i = 0
 	movl	$0, %eax

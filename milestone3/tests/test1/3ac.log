@@ -3,6 +3,7 @@ bubbleSort:
 	array = popparam
 	n = popparam
 	i = 0
+	i = 0
 
 L1:
 	if i<n goto L2
@@ -163,6 +164,7 @@ main:
 	stackpointer +12
 	call insertionSort , 2
 	stackpointer -12
+	i = 0
 	i = 0
 
 L21:
