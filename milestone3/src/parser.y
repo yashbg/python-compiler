@@ -142,16 +142,18 @@ funcdef:
   {
     func_scope = true;
 
-    if (class_scope && std::string($2) == "__init__") {
+    std::string func_name = $2;
+    if ((!class_scope && func_name == "main")
+        || (class_scope && func_name == "__init__")) {
       func_return_type = "None";
     }
     
-    add_func($2, func_params, func_return_type, yylineno);
+    add_func(func_name, func_params, func_return_type, yylineno);
     if (class_scope) {
-      cur_func_symtable_ptr = lookup_method(class_name, $2);
+      cur_func_symtable_ptr = lookup_method(class_name, func_name);
     }
     else {
-      cur_func_symtable_ptr = lookup_func($2);
+      cur_func_symtable_ptr = lookup_func(func_name);
     }
 
     if (class_scope) {
@@ -159,13 +161,13 @@ funcdef:
       insert_var(func_params[0].first, class_name);
     }
 
-    if (!($2 == "len" || $2 == "range" || $2 == "print")) {
+    if (!(func_name == "len" || func_name == "range" || func_name == "print")) {
       if(class_scope == true){
-        std::string t = class_name + "." + $2;
+        std::string t = class_name + "." + func_name;
         gen("", ":", "", t);
       }
       else {
-        gen("", ":", "", $2);
+        gen("", ":", "", func_name);
       }
 
       gen("", "", "", "beginfunc");
@@ -1950,13 +1952,9 @@ atom_expr:
         gen(std::to_string(1 + func_args.size()), std::string($1) + ".__init__", ",", "call");
         gen("stackpointer", "-" + std::to_string(stack_offset), "", "");
 
-        std::string temp = new_temp();
-        insert_var(temp, $1);
-        gen("popparam", "return_val", "", temp);
-
         func_args.clear();
 
-        strcpy($$, temp.c_str());
+        strcpy($$, tempstr.c_str());
       }
       else if (!(str == "len" || str == "range" || str == "print")) {
         // function call

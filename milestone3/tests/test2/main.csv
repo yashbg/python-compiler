@@ -1,9 +1,9 @@
 token,lexeme,type,ret_type,size,lineno,offset
-NAME,b,B,,8,21,48
-NAME,t5,B,,8,21,32
-NAME,t4,int,,4,21,28
-NAME,a,A,,8,18,20
-NAME,t3,A,,8,18,12
+NAME,y,int,,4,21,44
+NAME,x,int,,4,20,40
+NAME,b,B,,8,19,32
+NAME,t4,B,,8,19,24
+NAME,t3,int,,4,19,20
+NAME,a,A,,8,18,12
 NAME,t2,A,,8,18,4
-NAME,t6,B,,8,21,40
 NAME,t1,int,,4,18,0

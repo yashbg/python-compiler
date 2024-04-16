@@ -79,7 +79,7 @@ main:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
-	subq	$64, %rsp
+	subq	$48, %rsp
 
 	# t1 = 8
 	movl	$8, %eax
@@ -96,34 +96,54 @@ main:
 	movq	-12(%rbp), %rdi
 	call	A.__init__
 
-	# t3 = popparam
+	# a = t2
+	movq	-12(%rbp), %rax
 	movq	%rax, -20(%rbp)
 
-	# a = t3
-	movq	-20(%rbp), %rax
-	movq	%rax, -28(%rbp)
-
-	# t4 = 12
+	# t3 = 12
 	movl	$12, %eax
-	movl	%eax, -32(%rbp)
+	movl	%eax, -24(%rbp)
 
 	# call allocmem , 1
-	movl	-32(%rbp), %edi
+	movl	-24(%rbp), %edi
 	call	malloc@PLT
 
-	# t5 = popparam
-	movq	%rax, -40(%rbp)
+	# t4 = popparam
+	movq	%rax, -32(%rbp)
 
 	# call B.__init__ , 1
-	movq	-40(%rbp), %rdi
+	movq	-32(%rbp), %rdi
 	call	B.__init__
 
-	# t6 = popparam
-	movq	%rax, -48(%rbp)
+	# b = t4
+	movq	-32(%rbp), %rax
+	movq	%rax, -40(%rbp)
 
-	# b = t6
-	movq	-48(%rbp), %rax
-	movq	%rax, -56(%rbp)
+	# x = a.x
+	movq	-20(%rbp), %rax
+	leaq	0(%rax), %rdx
+
+	movl	(%rdx), %eax
+	movl	%eax, -44(%rbp)
+
+	# y = a.y
+	movq	-20(%rbp), %rax
+	leaq	4(%rax), %rdx
+
+	movl	(%rdx), %eax
+	movl	%eax, -48(%rbp)
+
+	# call print , 1
+	movl	-44(%rbp), %esi
+	movl	$.LC1, %edi
+	movl	$0, %eax
+	call	printf@PLT
+
+	# call print , 1
+	movl	-48(%rbp), %esi
+	movl	$.LC1, %edi
+	movl	$0, %eax
+	call	printf@PLT
 
 	# return
 	leave

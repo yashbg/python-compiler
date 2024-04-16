@@ -27,20 +27,28 @@ main:
 	stackpointer +8
 	call A.__init__ , 1
 	stackpointer -8
-	t3 = popparam
-	a = t3
-	t4 = 12
-	param t4
+	a = t2
+	t3 = 12
+	param t3
 	stackpointer +4
 	call allocmem , 1
 	stackpointer -4
-	t5 = popparam
-	param t5
+	t4 = popparam
+	param t4
 	stackpointer +8
 	call B.__init__ , 1
 	stackpointer -8
-	t6 = popparam
-	b = t6
+	b = t4
+	x = a.x
+	y = a.y
+	param x
+	stackpointer +4
+	call print , 1
+	stackpointer -4
+	param y
+	stackpointer +4
+	call print , 1
+	stackpointer -4
 	return
 	endfunc
 
