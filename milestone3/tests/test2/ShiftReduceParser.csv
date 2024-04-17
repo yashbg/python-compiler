@@ -1,3 +1,4 @@
 token,lexeme,type,ret_type,size,lineno,offset
-NAME,srname,str,,8,7,0
+NAME,srname,str,,8,6,0
+NAME,update_name,,None,,6,
 NAME,__init__,,None,,3,

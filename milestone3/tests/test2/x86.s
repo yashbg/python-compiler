@@ -1,6 +1,8 @@
 	.section	.rodata
-LC8:
+LC9:
 	.string	"Shift-Reduce"
+LC8:
+	.string	"SR"
 LC7:
 	.string	"CLR"
 LC5:
@@ -11,7 +13,7 @@ LC4:
 	.string	"CLR name:"
 LC2:
 	.string	"False"
-LC9:
+LC10:
 	.string	"__main__"
 LC1:
 	.string	"True"
@@ -46,27 +48,19 @@ ShiftReduceParser.__init__:
 	# endfunc
 	.size	ShiftReduceParser.__init__, .-ShiftReduceParser.__init__
 
-	.globl	LR0Parser.__init__
-	.type	LR0Parser.__init__, @function
-LR0Parser.__init__:
+	.globl	ShiftReduceParser.update_name
+	.type	ShiftReduceParser.update_name, @function
+ShiftReduceParser.update_name:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
 	subq	$32, %rsp
-	movq	%rdi, -32(%rbp)
+	movq	%rdi, -24(%rbp)
 	movq	%rsi, -16(%rbp)
-	movq	%rdx, -24(%rbp)
 
-	# self.srname = parentname_
-	movq	-32(%rbp), %r10
+	# self.srname = name_
+	movq	-24(%rbp), %r10
 	leaq	0(%r10), %r11
-
-	movq	-24(%rbp), %rax
-	movq	%rax, (%r11)
-
-	# self.lr0name = myname_
-	movq	-32(%rbp), %r10
-	leaq	8(%r10), %r11
 
 	movq	-16(%rbp), %rax
 	movq	%rax, (%r11)
@@ -76,7 +70,7 @@ LR0Parser.__init__:
 	ret
 
 	# endfunc
-	.size	LR0Parser.__init__, .-LR0Parser.__init__
+	.size	ShiftReduceParser.update_name, .-ShiftReduceParser.update_name
 
 	.globl	CLRParser.__init__
 	.type	CLRParser.__init__, @function
@@ -89,7 +83,7 @@ CLRParser.__init__:
 	movq	%rsi, -16(%rbp)
 	movq	%rdx, -24(%rbp)
 
-	# self.srname = parentname_
+	# self.srname = srname_
 	movq	-32(%rbp), %r10
 	leaq	0(%r10), %r11
 
@@ -228,7 +222,7 @@ main:
 	# param t2
 	# param "LALR"
 	# param "CLR"
-	# param "Shift-Reduce"
+	# param "SR"
 	# call LALRParser.__init__ , 4
 	movq	$LC8, %rcx
 	movq	$LC7, %rdx
@@ -236,11 +230,18 @@ main:
 	movq	-12(%rbp), %rdi
 	call	LALRParser.__init__
 
-	# obj = t2
+	# parser = t2
 	movq	-12(%rbp), %rax
 	movq	%rax, -20(%rbp)
 
-	# param obj
+	# param parser
+	# param "Shift-Reduce"
+	# call ShiftReduceParser.update_name , 2
+	movq	$LC9, %rsi
+	movq	-20(%rbp), %rdi
+	call	ShiftReduceParser.update_name
+
+	# param parser
 	# call LALRParser.print_name , 1
 	movq	-20(%rbp), %rdi
 	call	LALRParser.print_name
@@ -255,7 +256,7 @@ main:
 L1:
 	# t1 = __name__ == "__main__"
 	movq	-8(%rbp), %rax
-	movq	$LC9, %rdx
+	movq	$LC10, %rdx
 	cmpq	%rdx, %rax
 	sete	%al
 	movb	%al, -9(%rbp)

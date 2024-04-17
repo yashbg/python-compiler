@@ -1,0 +1,3 @@
+token,lexeme,type,ret_type,size,lineno,offset
+NAME,name_,str,,8,6,8
+NAME,self,ShiftReduceParser,,8,6,16

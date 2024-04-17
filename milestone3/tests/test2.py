@@ -2,19 +2,15 @@ class ShiftReduceParser:
 
   def __init__(self, name_: str):
     self.srname: str = name_
-
-
-class LR0Parser(ShiftReduceParser):
-
-  def __init__(self, myname_: str, parentname_: str):
-    self.srname = parentname_
-    self.lr0name: str = myname_
+  
+  def update_name(self, name_: str):
+    self.srname = name_
 
 
 class CLRParser(ShiftReduceParser):
 
-  def __init__(self, myname_: str, parentname_: str):
-    self.srname = parentname_
+  def __init__(self, myname_: str, srname_: str):
+    self.srname = srname_
     self.clrname: str = myname_
 
 
@@ -35,8 +31,9 @@ class LALRParser(CLRParser):
 
 
 def main():
-  obj: LALRParser = LALRParser("LALR", "CLR", "Shift-Reduce")
-  obj.print_name()
+  parser: LALRParser = LALRParser("LALR", "CLR", "SR")
+  parser.update_name("Shift-Reduce")
+  parser.print_name()
 
 
 if __name__ == "__main__":

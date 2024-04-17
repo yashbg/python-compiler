@@ -6,13 +6,11 @@ ShiftReduceParser.__init__:
 	return
 	endfunc
 
-LR0Parser.__init__:
+ShiftReduceParser.update_name:
 	beginfunc
 	self = popparam
-	myname_ = popparam
-	parentname_ = popparam
-	self.srname = parentname_
-	self.lr0name = myname_
+	name_ = popparam
+	self.srname = name_
 	return
 	endfunc
 
@@ -20,8 +18,8 @@ CLRParser.__init__:
 	beginfunc
 	self = popparam
 	myname_ = popparam
-	parentname_ = popparam
-	self.srname = parentname_
+	srname_ = popparam
+	self.srname = srname_
 	self.clrname = myname_
 	return
 	endfunc
@@ -79,12 +77,17 @@ main:
 	param t2
 	param "LALR"
 	param "CLR"
-	param "Shift-Reduce"
+	param "SR"
 	stackpointer +32
 	call LALRParser.__init__ , 4
 	stackpointer -32
-	obj = t2
-	param obj
+	parser = t2
+	param parser
+	param "Shift-Reduce"
+	stackpointer +16
+	call ShiftReduceParser.update_name , 2
+	stackpointer -16
+	param parser
 	stackpointer +8
 	call LALRParser.print_name , 1
 	stackpointer -8
