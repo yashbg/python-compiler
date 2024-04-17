@@ -58,8 +58,9 @@ main:
 
 L1:
 	# t1 = __name__ == "__main__"
-	movl	-8(%rbp), %eax
-	cmpl	$LC2, %eax
+	movq	-8(%rbp), %rax
+	movq	$LC2, %rdx
+	cmpq	%rdx, %rax
 	sete	%al
 	movb	%al, -9(%rbp)
 
