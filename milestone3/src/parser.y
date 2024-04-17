@@ -2,7 +2,6 @@
   #include <iostream>
   #include <string>
   #include <vector>
-  #include <map>
   #include <unordered_map>
   #include <utility>
   #include <cstring>
@@ -2151,15 +2150,15 @@ atom:
   {
     parser_logfile << "STRING string_list" << std::endl;
 
-    int len = strlen($1);
-    for(int i = 0; i < len - 1; i++){
-      $1[i] = $1[i + 1];
-    }
-    $1[len - 2] = '\0';
+    std::string str = $1;
+    str = str.substr(1, str.size() - 2);
+    str = "\"" + str + "\"";
     
-    strcpy($$, (("\"" + std::string($1) + "\"").c_str()));
+    strcpy($$, str.c_str());
 
     atom_token = "STRING";
+
+    add_str_literal(str);
   }
 | NONE
   {

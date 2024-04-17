@@ -1,7 +1,7 @@
 	.section	.rodata
-.LC0:
+LC1:
 	.string	"__main__"
-.LC1:
+LC0:
 	.string	"%d\n"
 
 	.text
@@ -129,7 +129,7 @@ main:
 	leaq	0(%rax), %rdx
 
 	movl	(%rdx), %esi
-	movl	$.LC1, %edi
+	movl	$LC0, %edi
 	movl	$0, %eax
 	call	printf@PLT
 
@@ -139,7 +139,7 @@ main:
 	leaq	4(%rax), %rdx
 
 	movl	(%rdx), %esi
-	movl	$.LC1, %edi
+	movl	$LC0, %edi
 	movl	$0, %eax
 	call	printf@PLT
 
@@ -149,7 +149,7 @@ main:
 	leaq	0(%rax), %rdx
 
 	movl	(%rdx), %esi
-	movl	$.LC1, %edi
+	movl	$LC0, %edi
 	movl	$0, %eax
 	call	printf@PLT
 
@@ -159,7 +159,7 @@ main:
 	leaq	4(%rax), %rdx
 
 	movl	(%rdx), %esi
-	movl	$.LC1, %edi
+	movl	$LC0, %edi
 	movl	$0, %eax
 	call	printf@PLT
 
@@ -169,7 +169,7 @@ main:
 	leaq	8(%rax), %rdx
 
 	movl	(%rdx), %esi
-	movl	$.LC1, %edi
+	movl	$LC0, %edi
 	movl	$0, %eax
 	call	printf@PLT
 
@@ -183,7 +183,7 @@ main:
 L1:
 	# t1 = __name__ == "__main__"
 	movl	-8(%rbp), %eax
-	cmpl	$.LC0, %eax
+	cmpl	$LC1, %eax
 	sete	%al
 	movb	%al, -9(%rbp)
 

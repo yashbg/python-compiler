@@ -28,7 +28,6 @@ struct class_symtable {
   int offset = 0;
 };
 
-// TODO: add keywords
 struct global_symtable {
   std::unordered_map<std::string, symtable_entry> var_entries; // identifier -> symtable_entry
   std::unordered_map<std::string, local_symtable *> func_symtable_ptrs; // identifier -> local_symtable *
@@ -41,6 +40,8 @@ extern local_symtable *cur_func_symtable_ptr;
 extern class_symtable *cur_class_symtable_ptr;
 extern bool func_scope;
 extern bool class_scope;
+
+extern std::unordered_map<std::string, std::string> str_literal_labels;
 
 void insert_var(const std::string &name, const std::string &type);
 symtable_entry lookup_var(const std::string &name);
@@ -60,3 +61,5 @@ local_symtable * lookup_method(const std::string &class_name, const std::string 
 int get_class_size(const std::string &name);
 bool is_func(const std::string &name);
 bool is_class(const std::string &name);
+
+void add_str_literal(const std::string &str);

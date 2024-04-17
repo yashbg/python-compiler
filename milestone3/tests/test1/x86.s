@@ -1,7 +1,7 @@
 	.section	.rodata
-.LC0:
+LC1:
 	.string	"__main__"
-.LC1:
+LC0:
 	.string	"%d\n"
 
 	.text
@@ -628,7 +628,7 @@ L22:
 	# param t8
 	# call print , 1
 	movl	-60(%rbp), %esi
-	movl	$.LC1, %edi
+	movl	$LC0, %edi
 	movl	$0, %eax
 	call	printf@PLT
 
@@ -677,7 +677,7 @@ L25:
 	# param t11
 	# call print , 1
 	movl	-72(%rbp), %esi
-	movl	$.LC1, %edi
+	movl	$LC0, %edi
 	movl	$0, %eax
 	call	printf@PLT
 
@@ -704,7 +704,7 @@ L26:
 L27:
 	# t1 = __name__ == "__main__"
 	movl	-8(%rbp), %eax
-	cmpl	$.LC0, %eax
+	cmpl	$LC1, %eax
 	sete	%al
 	movb	%al, -9(%rbp)
 

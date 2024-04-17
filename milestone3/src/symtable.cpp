@@ -23,6 +23,8 @@ class_symtable *cur_class_symtable_ptr = nullptr;
 bool func_scope = false;
 bool class_scope = false;
 
+std::unordered_map<std::string, std::string> str_literal_labels;
+
 void insert_var(const std::string &name, const std::string &type) {
   // TODO: handle redeclarations
   int size = get_size(type);
@@ -277,4 +279,14 @@ bool is_func(const std::string &name) {
 
 bool is_class(const std::string &name) {
   return gsymtable.class_symtable_ptrs.find(name) != gsymtable.class_symtable_ptrs.end();
+}
+
+void add_str_literal(const std::string &str) {
+  auto label_itr = str_literal_labels.find(str);
+  if (label_itr != str_literal_labels.end()) {
+    return;
+  }
+
+  std::string label = "LC" + std::to_string(str_literal_labels.size());
+  str_literal_labels[str] = label;
 }

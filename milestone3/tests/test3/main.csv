@@ -1,0 +1,3 @@
+token,lexeme,type,ret_type,size,lineno,offset
+NAME,a,int,,4,4,8
+NAME,s,str,,8,3,0

@@ -23,10 +23,12 @@ std::stack<std::string> arg_stack;
 
 void gen_x86_code() {
   x86_code.push_back("\t.section\t.rodata");
-  x86_code.push_back(".LC0:");
-  x86_code.push_back("\t.string\t\"__main__\"");
-  x86_code.push_back(".LC1:");
-  x86_code.push_back("\t.string\t\"%d\\n\"");
+
+  for (auto &label : str_literal_labels) {
+    x86_code.push_back(label.second + ":");
+    x86_code.push_back("\t.string\t" + label.first);
+  }
+
   x86_code.push_back("");
 
   x86_code.push_back("\t.text");
@@ -222,7 +224,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
       std::string arg = arg_stack.top();
 
       x86_code.push_back("\tmovl\t" + get_addr(arg) + ", %esi");
-      x86_code.push_back("\tmovl\t$.LC1, %edi");
+      x86_code.push_back("\tmovl\t$" + str_literal_labels["\"%d\\n\""] + ", %edi");
       x86_code.push_back("\tmovl\t$0, %eax");
 
       arg_stack.pop();
@@ -519,8 +521,8 @@ std::string get_addr(const std::string &name) {
     return "$0";
   }
 
-  if (name == "\"__main__\"") {
-    return "$.LC0";
+  if (name[0] == '"') {
+    return "$" + str_literal_labels[name];
   }
 
   int brace = name.find('[');

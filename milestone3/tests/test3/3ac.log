@@ -1,0 +1,25 @@
+main:
+	beginfunc
+	s = "Hello, World!"
+	a = 5
+	param a
+	stackpointer +4
+	call print , 1
+	stackpointer -4
+	return
+	endfunc
+
+L1:
+	t1 = __name__ == "__main__"
+	if t1 goto L2
+	goto L3
+
+L2:
+	stackpointer +0
+	call main , 0
+	stackpointer -0
+	goto L4
+
+L3:
+
+L4:
