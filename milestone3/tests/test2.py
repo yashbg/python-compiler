@@ -21,13 +21,22 @@ def main():
   a: A = A()
   b: B = B()
 
+  print("Before update:")
   print("a:")
   print(a.x)
   print(a.y)
   print("")
+  
+  print("b:")
+  print(b.x)
+  print(b.y)
+  print(b.z)
+  print("")
 
   a.update()
+  b.update()
 
+  print("After update:")
   print("a:")
   print(a.x)
   print(a.y)

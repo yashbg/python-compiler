@@ -2028,6 +2028,8 @@ atom_expr:
         std::string method = std::string($2).substr(1, paren - 1);
         check_method_args(class_name, method);
 
+        class_name = get_method_class(class_name, method);
+
         // pass object as first argument
         gen("param", $1, "", "");
 

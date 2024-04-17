@@ -1,16 +1,20 @@
 	.section	.rodata
-LC4:
-	.string	""
-LC3:
-	.string	"a:"
+LC7:
+	.string	"After update:"
 LC5:
+	.string	""
+LC4:
+	.string	"a:"
+LC6:
 	.string	"b:"
 LC2:
 	.string	"False"
-LC6:
+LC8:
 	.string	"__main__"
 LC1:
 	.string	"True"
+LC3:
+	.string	"Before update:"
 LC0:
 	.string	"%d\n"
 
@@ -163,9 +167,14 @@ main:
 	movq	-32(%rbp), %rax
 	movq	%rax, -40(%rbp)
 
-	# param "a:"
+	# param "Before update:"
 	# call print , 1
 	movq	$LC3, %rdi
+	call	puts@PLT
+
+	# param "a:"
+	# call print , 1
+	movq	$LC4, %rdi
 	call	puts@PLT
 
 	# param a.x
@@ -190,7 +199,47 @@ main:
 
 	# param ""
 	# call print , 1
-	movq	$LC4, %rdi
+	movq	$LC5, %rdi
+	call	puts@PLT
+
+	# param "b:"
+	# call print , 1
+	movq	$LC6, %rdi
+	call	puts@PLT
+
+	# param b.x
+	# call print , 1
+	movq	-40(%rbp), %r10
+	leaq	0(%r10), %r11
+
+	movl	(%r11), %esi
+	movq	$LC0, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+
+	# param b.y
+	# call print , 1
+	movq	-40(%rbp), %r10
+	leaq	4(%r10), %r11
+
+	movl	(%r11), %esi
+	movq	$LC0, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+
+	# param b.z
+	# call print , 1
+	movq	-40(%rbp), %r10
+	leaq	8(%r10), %r11
+
+	movl	(%r11), %esi
+	movq	$LC0, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+
+	# param ""
+	# call print , 1
+	movq	$LC5, %rdi
 	call	puts@PLT
 
 	# param a
@@ -198,9 +247,19 @@ main:
 	movq	-20(%rbp), %rdi
 	call	A.update
 
+	# param b
+	# call A.update , 1
+	movq	-40(%rbp), %rdi
+	call	A.update
+
+	# param "After update:"
+	# call print , 1
+	movq	$LC7, %rdi
+	call	puts@PLT
+
 	# param "a:"
 	# call print , 1
-	movq	$LC3, %rdi
+	movq	$LC4, %rdi
 	call	puts@PLT
 
 	# param a.x
@@ -225,12 +284,12 @@ main:
 
 	# param ""
 	# call print , 1
-	movq	$LC4, %rdi
+	movq	$LC5, %rdi
 	call	puts@PLT
 
 	# param "b:"
 	# call print , 1
-	movq	$LC5, %rdi
+	movq	$LC6, %rdi
 	call	puts@PLT
 
 	# param b.x
@@ -273,7 +332,7 @@ main:
 L1:
 	# t1 = __name__ == "__main__"
 	movq	-8(%rbp), %rax
-	movq	$LC6, %rdx
+	movq	$LC8, %rdx
 	cmpq	%rdx, %rax
 	sete	%al
 	movb	%al, -9(%rbp)

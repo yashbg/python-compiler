@@ -47,6 +47,10 @@ main:
 	call B.__init__ , 1
 	stackpointer -8
 	b = t4
+	param "Before update:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 	param "a:"
 	stackpointer +8
 	call print , 1
@@ -63,9 +67,37 @@ main:
 	stackpointer +8
 	call print , 1
 	stackpointer -8
+	param "b:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
+	param b.x
+	stackpointer +4
+	call print , 1
+	stackpointer -4
+	param b.y
+	stackpointer +4
+	call print , 1
+	stackpointer -4
+	param b.z
+	stackpointer +4
+	call print , 1
+	stackpointer -4
+	param ""
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 	param a
 	stackpointer +8
 	call A.update , 1
+	stackpointer -8
+	param b
+	stackpointer +8
+	call A.update , 1
+	stackpointer -8
+	param "After update:"
+	stackpointer +8
+	call print , 1
 	stackpointer -8
 	param "a:"
 	stackpointer +8

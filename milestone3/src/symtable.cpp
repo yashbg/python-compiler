@@ -203,6 +203,7 @@ local_symtable * lookup_func(const std::string &name) {
 
 void add_class(const std::string &name, class_symtable *parent_symtable_ptr) {
   class_symtable *class_symtable_ptr = new class_symtable;
+  class_symtable_ptr->name = name;
   class_symtable_ptr->parent_symtable_ptr = parent_symtable_ptr;
   gsymtable.class_symtable_ptrs[name] = class_symtable_ptr;
 }
@@ -277,6 +278,27 @@ bool is_func(const std::string &name) {
 
 bool is_class(const std::string &name) {
   return gsymtable.class_symtable_ptrs.find(name) != gsymtable.class_symtable_ptrs.end();
+}
+
+std::string get_method_class(const std::string &class_name, const std::string &method_name) {
+  class_symtable *class_symtable_ptr = lookup_class(class_name);
+  auto method_symtable_itr = class_symtable_ptr->method_symtable_ptrs.find(method_name);
+  if (method_symtable_itr != class_symtable_ptr->method_symtable_ptrs.end()) {
+    return class_name;
+  }
+
+  // inheritance
+  class_symtable *parent_symtable_ptr = class_symtable_ptr->parent_symtable_ptr;
+  while (parent_symtable_ptr) {
+    method_symtable_itr = parent_symtable_ptr->method_symtable_ptrs.find(method_name);
+    if (method_symtable_itr != parent_symtable_ptr->method_symtable_ptrs.end()) {
+      return parent_symtable_ptr->name;
+    }
+    
+    parent_symtable_ptr = parent_symtable_ptr->parent_symtable_ptr;
+  }
+
+  return class_name;
 }
 
 void add_str_literal(const std::string &str) {

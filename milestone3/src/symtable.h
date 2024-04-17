@@ -21,6 +21,7 @@ struct local_symtable {
 };
 
 struct class_symtable {
+  std::string name;
   class_symtable *parent_symtable_ptr;
   std::unordered_map<std::string, symtable_entry> attr_entries; // identifier -> symtable_entry
   std::unordered_map<std::string, local_symtable *> method_symtable_ptrs; // identifier -> local_symtable *
@@ -60,5 +61,6 @@ local_symtable * lookup_method(const std::string &class_name, const std::string 
 int get_class_size(const std::string &name);
 bool is_func(const std::string &name);
 bool is_class(const std::string &name);
+std::string get_method_class(const std::string &class_name, const std::string &method_name);
 
 void add_str_literal(const std::string &str);
