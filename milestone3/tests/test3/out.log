@@ -1,6 +1,11 @@
 Hello, World!
+String 1:
 abc
-abcdef
+String 2:
+xyz
+== != check:
 Strings are not equal
-String 1 is greater than String 2
-String 1 is greater than or equal to String 2
+< > check:
+String 1 is less than String 2
+<= >= check:
+String 1 is less than or equal to String 2

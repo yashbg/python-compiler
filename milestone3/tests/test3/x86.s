@@ -1,30 +1,40 @@
 	.section	.rodata
-LC10:
-	.string	"String 1 is less than or equal to String 2"
-LC9:
-	.string	"String 1 is greater than String 2"
-LC8:
-	.string	"String 1 is less than String 2"
-LC6:
-	.string	"Strings are equal"
-LC7:
-	.string	"Strings are not equal"
-LC5:
-	.string	"abcdef"
-LC4:
-	.string	"abc"
-LC3:
-	.string	"Hello, World!"
-LC11:
-	.string	"String 1 is greater than or equal to String 2"
-LC2:
-	.string	"False"
-LC12:
+LC17:
 	.string	"__main__"
+LC16:
+	.string	"String 1 is greater than or equal to String 2"
+LC15:
+	.string	"String 1 is less than or equal to String 2"
+LC13:
+	.string	"String 1 is greater than String 2"
 LC1:
 	.string	"True"
+LC2:
+	.string	"False"
+LC3:
+	.string	"Hello, World!"
+LC4:
+	.string	"abc"
+LC6:
+	.string	"String 1:"
+LC7:
+	.string	"String 2:"
+LC14:
+	.string	"<= >= check:"
 LC0:
 	.string	"%d\n"
+LC9:
+	.string	"Strings are equal"
+LC5:
+	.string	"xyz"
+LC10:
+	.string	"Strings are not equal"
+LC11:
+	.string	"< > check:"
+LC8:
+	.string	"== != check:"
+LC12:
+	.string	"String 1 is less than String 2"
 
 	.text
 
@@ -73,9 +83,14 @@ main:
 	movq	$LC4, %rax
 	movq	%rax, -24(%rbp)
 
-	# s2 = "abcdef"
+	# s2 = "xyz"
 	movq	$LC5, %rax
 	movq	%rax, -32(%rbp)
+
+	# param "String 1:"
+	# call print , 1
+	movq	$LC6, %rdi
+	call	puts@PLT
 
 	# param s1
 	# call foo , 1
@@ -85,6 +100,11 @@ main:
 	# t2 = popparam
 	movq	%rax, -40(%rbp)
 
+	# param "String 2:"
+	# call print , 1
+	movq	$LC7, %rdi
+	call	puts@PLT
+
 	# param s2
 	# call foo , 1
 	movq	-32(%rbp), %rdi
@@ -92,6 +112,11 @@ main:
 
 	# t3 = popparam
 	movq	%rax, -48(%rbp)
+
+	# param "== != check:"
+	# call print , 1
+	movq	$LC8, %rdi
+	call	puts@PLT
 
 L1:
 	# t4 = s1 == s2
@@ -112,7 +137,7 @@ L1:
 L2:
 	# param "Strings are equal"
 	# call foo , 1
-	movq	$LC6, %rdi
+	movq	$LC9, %rdi
 	call	foo
 
 	# t5 = popparam
@@ -141,7 +166,7 @@ L5:
 L6:
 	# param "Strings are not equal"
 	# call foo , 1
-	movq	$LC7, %rdi
+	movq	$LC10, %rdi
 	call	foo
 
 	# t7 = popparam
@@ -152,6 +177,11 @@ L6:
 
 L7:
 L4:
+	# param "< > check:"
+	# call print , 1
+	movq	$LC11, %rdi
+	call	puts@PLT
+
 L8:
 	# t8 = s1 < s2
 	leaq	-24(%rbp), %rdx
@@ -174,7 +204,7 @@ L8:
 L9:
 	# param "String 1 is less than String 2"
 	# call foo , 1
-	movq	$LC8, %rdi
+	movq	$LC12, %rdi
 	call	foo
 
 	# t9 = popparam
@@ -206,7 +236,7 @@ L12:
 L13:
 	# param "String 1 is greater than String 2"
 	# call foo , 1
-	movq	$LC9, %rdi
+	movq	$LC13, %rdi
 	call	foo
 
 	# t11 = popparam
@@ -217,6 +247,11 @@ L13:
 
 L14:
 L11:
+	# param "<= >= check:"
+	# call print , 1
+	movq	$LC14, %rdi
+	call	puts@PLT
+
 L15:
 	# t12 = s1 <= s2
 	leaq	-24(%rbp), %rdx
@@ -239,7 +274,7 @@ L15:
 L16:
 	# param "String 1 is less than or equal to String 2"
 	# call foo , 1
-	movq	$LC10, %rdi
+	movq	$LC15, %rdi
 	call	foo
 
 	# t13 = popparam
@@ -271,7 +306,7 @@ L19:
 L20:
 	# param "String 1 is greater than or equal to String 2"
 	# call foo , 1
-	movq	$LC11, %rdi
+	movq	$LC16, %rdi
 	call	foo
 
 	# t15 = popparam
@@ -292,7 +327,7 @@ L18:
 L22:
 	# t1 = __name__ == "__main__"
 	movq	-8(%rbp), %rax
-	movq	$LC12, %rdx
+	movq	$LC17, %rdx
 	cmpq	%rdx, %rax
 	sete	%al
 	movb	%al, -9(%rbp)

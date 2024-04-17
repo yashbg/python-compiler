@@ -6,8 +6,8 @@ def main():
   s: str = "Hello, World!"
   foo(s)
 
-  s1: str = "cde"
-  s2: str = "abc"
+  s1: str = "abc"
+  s2: str = "xyz"
 
   print("String 1:")
   foo(s1)

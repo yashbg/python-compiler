@@ -17,17 +17,29 @@ main:
 	stackpointer -8
 	t1 = popparam
 	s1 = "abc"
-	s2 = "abcdef"
+	s2 = "xyz"
+	param "String 1:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 	param s1
 	stackpointer +8
 	call foo , 1
 	stackpointer -8
 	t2 = popparam
+	param "String 2:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 	param s2
 	stackpointer +8
 	call foo , 1
 	stackpointer -8
 	t3 = popparam
+	param "== != check:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 
 L1:
 	t4 = s1 == s2
@@ -60,6 +72,10 @@ L6:
 L7:
 
 L4:
+	param "< > check:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 
 L8:
 	t8 = s1 < s2
@@ -92,6 +108,10 @@ L13:
 L14:
 
 L11:
+	param "<= >= check:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 
 L15:
 	t12 = s1 <= s2
