@@ -525,13 +525,15 @@ annassign:
         int element_number = get_list_element_count($4);
         int list_size = get_list_size($2, $4);
         curr_list_size = list_size;
-        gen("param", std::to_string(list_size), "", "");
+        gen("param", std::to_string(list_size + 4), "", "");
         gen("stackpointer", "+4","" , "");
         gen("1", "allocmem", "," , "call");
         gen("stackpointer", "-4","" , "");
         std::string t = new_temp();
         insert_var(t, var_type);
         gen("popparam", "return_val", "", t);
+        gen("=", std::to_string(element_number), "", t + "[0]");
+        gen("+", t, "4", t);
         generate_3AC_for_list($2, $4);
 
         list_len = calc_list_len($4);
@@ -2011,10 +2013,15 @@ atom_expr:
           }
 
           // TODO: len of function parameters
-          std::string len = std::to_string(entry.list_len);
+          
+          // std::string len = std::to_string(entry.list_len);
+          std::string arr_name = std::string($2).substr(1, std::string($2).size() - 2);
+          std::string neg_index = new_temp();
+          insert_var(neg_index, "int");
+          gen("=", "-4", "", neg_index);
           std::string t = new_temp();
           insert_var(t, "int");
-          gen("=", len, "", t);
+          gen("=", arr_name + "[" + neg_index + "]", "", t);
 
           strcpy($$, t.c_str());
         }
