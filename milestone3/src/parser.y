@@ -2018,7 +2018,7 @@ atom_expr:
           std::string arr_name = std::string($2).substr(1, std::string($2).size() - 2);
           std::string neg_index = new_temp();
           insert_var(neg_index, "int");
-          gen("=", "-4", "", neg_index);
+          gen("-", "4", "", neg_index);
           std::string t = new_temp();
           insert_var(t, "int");
           gen("=", arr_name + "[" + neg_index + "]", "", t);
