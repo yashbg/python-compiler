@@ -114,6 +114,8 @@ int main(int argc, char *argv[]) {
   gen_x86_code();
   dump_x86_code(output_dir);
 
+  std::cout << "x86_64 code saved to " << output_dir << "x86.s" << std::endl;
+
   return 0;
 }
 

@@ -36,16 +36,19 @@ def main():
     print("Plese enter a positive integer")
   else:
     print("Fibonacci sequence:")
+    print("")
     i : int = 0
     print("Recursive function")
     while i < nterms:
       print(recur_fibo(i))
       i = i + 1
-    i = 0
+    print("")
     print("Iterative function")
+    i = 0
     while i < nterms:
       print(iter_fibo(i))
       i = i + 1
+    print("")
     print("Catalan sequence:")
     i = 0
     while i < nterms:

@@ -1,13 +1,15 @@
 	.section	.rodata
-LC6:
+LC7:
 	.string	"Linear search: element is not present"
-LC5:
+LC6:
 	.string	"Linear search: element is present at index:"
+LC5:
+	.string	""
 LC4:
 	.string	"Binary search: element is not present"
 LC2:
 	.string	"False"
-LC7:
+LC8:
 	.string	"__main__"
 LC1:
 	.string	"True"
@@ -491,6 +493,11 @@ L21:
 	movl	-45(%rbp), %eax
 	movl	%eax, -49(%rbp)
 
+	# param ""
+	# call print , 1
+	movq	$LC5, %rdi
+	call	puts@PLT
+
 L22:
 	# t8 = - 1
 	movl	$1, %eax
@@ -514,7 +521,7 @@ L22:
 L23:
 	# param "Linear search: element is present at index:"
 	# call print , 1
-	movq	$LC5, %rdi
+	movq	$LC6, %rdi
 	call	puts@PLT
 
 	# param result2
@@ -530,7 +537,7 @@ L23:
 L24:
 	# param "Linear search: element is not present"
 	# call print , 1
-	movq	$LC6, %rdi
+	movq	$LC7, %rdi
 	call	puts@PLT
 
 L25:
@@ -544,7 +551,7 @@ L25:
 L26:
 	# t1 = __name__ == "__main__"
 	movq	-8(%rbp), %rax
-	movq	$LC7, %rdx
+	movq	$LC8, %rdx
 	cmpq	%rdx, %rax
 	sete	%al
 	movb	%al, -9(%rbp)

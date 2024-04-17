@@ -1,6 +1,6 @@
 token,lexeme,type,ret_type,size,lineno,offset
-NAME,t9,bool,,1,34,53
-NAME,t8,int,,4,34,49
+NAME,t9,bool,,1,35,53
+NAME,t8,int,,4,35,49
 NAME,result2,int,,4,34,45
 NAME,t7,int,,4,34,41
 NAME,t5,int,,4,28,36

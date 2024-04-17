@@ -150,6 +150,10 @@ L21:
 	stackpointer +8
 	call print , 1
 	stackpointer -8
+	param ""
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 	i = 0
 	param "Recursive function"
 	stackpointer +8
@@ -176,11 +180,15 @@ L24:
 	goto L23
 
 L25:
-	i = 0
+	param ""
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 	param "Iterative function"
 	stackpointer +8
 	call print , 1
 	stackpointer -8
+	i = 0
 
 L26:
 	t5 = i < nterms
@@ -202,6 +210,10 @@ L27:
 	goto L26
 
 L28:
+	param ""
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 	param "Catalan sequence:"
 	stackpointer +8
 	call print , 1

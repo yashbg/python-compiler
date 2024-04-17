@@ -1,19 +1,21 @@
 	.section	.rodata
-LC5:
-	.string	"Recursive function"
 LC6:
+	.string	"Recursive function"
+LC7:
 	.string	"Iterative function"
+LC5:
+	.string	""
 LC4:
 	.string	"Fibonacci sequence:"
 LC3:
 	.string	"Plese enter a positive integer"
 LC2:
 	.string	"False"
-LC8:
+LC9:
 	.string	"__main__"
 LC1:
 	.string	"True"
-LC7:
+LC8:
 	.string	"Catalan sequence:"
 LC0:
 	.string	"%d\n"
@@ -398,13 +400,18 @@ L21:
 	movq	$LC4, %rdi
 	call	puts@PLT
 
+	# param ""
+	# call print , 1
+	movq	$LC5, %rdi
+	call	puts@PLT
+
 	# i = 0
 	movl	$0, %eax
 	movl	%eax, -9(%rbp)
 
 	# param "Recursive function"
 	# call print , 1
-	movq	$LC5, %rdi
+	movq	$LC6, %rdi
 	call	puts@PLT
 
 L23:
@@ -451,14 +458,19 @@ L24:
 	jmp	L23
 
 L25:
-	# i = 0
-	movl	$0, %eax
-	movl	%eax, -9(%rbp)
+	# param ""
+	# call print , 1
+	movq	$LC5, %rdi
+	call	puts@PLT
 
 	# param "Iterative function"
 	# call print , 1
-	movq	$LC6, %rdi
+	movq	$LC7, %rdi
 	call	puts@PLT
+
+	# i = 0
+	movl	$0, %eax
+	movl	%eax, -9(%rbp)
 
 L26:
 	# t5 = i < nterms
@@ -504,9 +516,14 @@ L27:
 	jmp	L26
 
 L28:
+	# param ""
+	# call print , 1
+	movq	$LC5, %rdi
+	call	puts@PLT
+
 	# param "Catalan sequence:"
 	# call print , 1
-	movq	$LC7, %rdi
+	movq	$LC8, %rdi
 	call	puts@PLT
 
 	# i = 0
@@ -568,7 +585,7 @@ L22:
 L32:
 	# t1 = __name__ == "__main__"
 	movq	-8(%rbp), %rax
-	movq	$LC8, %rdx
+	movq	$LC9, %rdx
 	cmpq	%rdx, %rax
 	sete	%al
 	movb	%al, -9(%rbp)

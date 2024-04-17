@@ -161,6 +161,10 @@ L21:
 	stackpointer -12
 	t7 = popparam
 	result2 = t7
+	param ""
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 
 L22:
 	t8 = - 1

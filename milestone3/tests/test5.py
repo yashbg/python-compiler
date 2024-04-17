@@ -31,6 +31,7 @@ def main():
   else:
     print("Binary search: element is not present")
   result2: int = linearSearch(array, 4)
+  print("")
   if result2 != -1:
     print("Linear search: element is present at index:")
     print(result2)

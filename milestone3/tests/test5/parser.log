@@ -2231,6 +2231,78 @@ simple_stmt
 | stmt_list stmt
 NAME
 %empty
+%empty
+STRING string_list
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+%empty
+test comp_for_opt
+%empty
+%empty
+argument comma_argument_list comma_opt
+| arglist
+'(' arglist_opt ')'
+| trailer_list trailer
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+test
+%empty
+%empty
+test_or_star_expr comma_test_or_star_expr_list comma_opt
+%empty
+equal_testlist_star_expr_list
+| testlist_star_expr expr_stmt_suffix_choices
+expr_stmt
+%empty
+%empty
+small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
+simple_stmt
+| stmt_list stmt
+NAME
+%empty
 atom trailer_list
 %empty
 atom_expr doublestar_factor_opt
