@@ -228,11 +228,9 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
         x86_code.push_back("\tmovq\t" + get_addr(arg) + ", %rdi");
       }
       else if (get_type(arg) == "bool") {
-        arg1 = "printf@PLT";
-        
-        x86_code.push_back("\tmovzbl\t" + get_addr(arg) + ", %esi");
-        x86_code.push_back("\tmovq\t$" + str_literal_labels["\"%d\\n\""] + ", %rdi");
-        x86_code.push_back("\tmovl\t$0, %eax");
+        arg1 = "puts@PLT";
+        if(arg == "0") x86_code.push_back("\tmovq\t$" + str_literal_labels["\"True\""] + ", %rdi");
+        else x86_code.push_back("\tmovq\t$" + str_literal_labels["\"False\""] + ", %rdi");
       }
       else {
         arg1 = "printf@PLT";
