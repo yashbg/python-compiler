@@ -3,6 +3,10 @@ class A:
   def __init__(self):
     self.x: int = 1
     self.y: int = 3
+  
+  def update(self):
+    self.x = 2
+    self.y = 4
 
 
 class B(A):
@@ -16,6 +20,8 @@ class B(A):
 def main():
   a: A = A()
   b: B = B()
+
+  a.update()
 
   print("a:")
   print(a.x)

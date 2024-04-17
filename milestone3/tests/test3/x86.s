@@ -1,8 +1,12 @@
 	.section	.rodata
+LC3:
+	.string	"Hello, World!"
 LC2:
+	.string	"False"
+LC4:
 	.string	"__main__"
 LC1:
-	.string	"Hello, World!"
+	.string	"True"
 LC0:
 	.string	"%d\n"
 
@@ -38,7 +42,7 @@ main:
 	subq	$16, %rsp
 
 	# s = "Hello, World!"
-	movq	$LC1, %rax
+	movq	$LC3, %rax
 	movq	%rax, -8(%rbp)
 
 	# param s
@@ -59,7 +63,7 @@ main:
 L1:
 	# t1 = __name__ == "__main__"
 	movq	-8(%rbp), %rax
-	movq	$LC2, %rdx
+	movq	$LC4, %rdx
 	cmpq	%rdx, %rax
 	sete	%al
 	movb	%al, -9(%rbp)

@@ -1876,21 +1876,8 @@ atom_expr:
 
     atom_expr.clear();
     
-    std::string str = $1;
-    if(str == "self"){
-      if(class_scope == false){
-        yyerror("Syntax error: 'self' is only valid inside a class method");
-      }
-      if(func_scope == false){
-        yyerror("Syntax error: 'self' is only valid inside a class method");
-      }
-      if($2[0] != '.'){
-        yyerror("Syntax error: 'self' cannot be indexed");
-      }
-
-      strcpy($$, (std::string($1) + $2).c_str());
-    }
-    else if ($2[0] == '\0') {
+    std::string atom = $1;
+    if ($2[0] == '\0') {
       // no trailer
       strcpy($$, $1);
     }
@@ -1972,7 +1959,7 @@ atom_expr:
 
         strcpy($$, tempstr.c_str());
       }
-      else if (!(str == "len" || str == "range" || str == "print")) {
+      else if (!(atom == "len" || atom == "range" || atom == "print")) {
         // function call
         check_func_args($1);
 
@@ -2002,13 +1989,13 @@ atom_expr:
         
         func_args.clear();
       }
-      else if (str == "len" || str == "print") {
+      else if (atom == "len" || atom == "print") {
         if (func_args.size() != 1) {
-          yyerror(("Syntax error: " + str + "() takes exactly one argument").c_str());
+          yyerror(("Syntax error: " + atom + "() takes exactly one argument").c_str());
         }
 
         std::string arg = func_args[0];
-        if (str == "len") {
+        if (atom == "len") {
           symtable_entry entry = lookup_var(arg);
           if (entry.type.substr(0, 4) != "list") {
             yyerror("Type error: argument to len() must be a list");
@@ -2027,7 +2014,7 @@ atom_expr:
 
           strcpy($$, t.c_str());
         }
-        else if (str == "print") {
+        else if (atom == "print") {
           int size = get_size(get_type(arg));
           gen("param", arg, "", "");
           gen("stackpointer", "+" + std::to_string(size), "", "");

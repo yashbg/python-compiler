@@ -1,11 +1,15 @@
 	.section	.rodata
 LC4:
-	.string	"__main__"
-LC2:
 	.string	""
-LC1:
-	.string	"Sorted array using bubble sort:"
 LC3:
+	.string	"Sorted array using bubble sort:"
+LC2:
+	.string	"False"
+LC6:
+	.string	"__main__"
+LC1:
+	.string	"True"
+LC5:
 	.string	"Sorted array using insertion sort:"
 LC0:
 	.string	"%d\n"
@@ -656,7 +660,7 @@ main:
 
 	# param "Sorted array using bubble sort:"
 	# call print , 1
-	movq	$LC1, %rdi
+	movq	$LC3, %rdi
 	call	puts@PLT
 
 	# i = 0
@@ -714,12 +718,12 @@ L22:
 L23:
 	# param ""
 	# call print , 1
-	movq	$LC2, %rdi
+	movq	$LC4, %rdi
 	call	puts@PLT
 
 	# param "Sorted array using insertion sort:"
 	# call print , 1
-	movq	$LC3, %rdi
+	movq	$LC5, %rdi
 	call	puts@PLT
 
 	# i = 0
@@ -781,7 +785,7 @@ L26:
 L27:
 	# t1 = __name__ == "__main__"
 	movq	-8(%rbp), %rax
-	movq	$LC4, %rdx
+	movq	$LC6, %rdx
 	cmpq	%rdx, %rax
 	sete	%al
 	movb	%al, -9(%rbp)

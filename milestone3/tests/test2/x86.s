@@ -1,12 +1,16 @@
 	.section	.rodata
 LC4:
-	.string	"__main__"
+	.string	""
 LC3:
+	.string	"a:"
+LC5:
 	.string	"b:"
 LC2:
-	.string	""
+	.string	"False"
+LC6:
+	.string	"__main__"
 LC1:
-	.string	"a:"
+	.string	"True"
 LC0:
 	.string	"%d\n"
 
@@ -41,6 +45,36 @@ A.__init__:
 
 	# endfunc
 	.size	A.__init__, .-A.__init__
+
+	.globl	A.update
+	.type	A.update, @function
+A.update:
+	# beginfunc
+	pushq	%rbp
+	movq	%rsp, %rbp
+	subq	$16, %rsp
+	movq	%rdi, -16(%rbp)
+
+	# self.x = 2
+	movq	-16(%rbp), %rax
+	leaq	0(%rax), %rdx
+
+	movl	$2, %eax
+	movl	%eax, (%rdx)
+
+	# self.y = 4
+	movq	-16(%rbp), %rax
+	leaq	4(%rax), %rdx
+
+	movl	$4, %eax
+	movl	%eax, (%rdx)
+
+	# return
+	leave
+	ret
+
+	# endfunc
+	.size	A.update, .-A.update
 
 	.globl	B.__init__
 	.type	B.__init__, @function
@@ -129,9 +163,14 @@ main:
 	movq	-32(%rbp), %rax
 	movq	%rax, -40(%rbp)
 
+	# param a
+	# call A.update , 1
+	movq	-20(%rbp), %rdi
+	call	A.update
+
 	# param "a:"
 	# call print , 1
-	movq	$LC1, %rdi
+	movq	$LC3, %rdi
 	call	puts@PLT
 
 	# param a.x
@@ -156,12 +195,12 @@ main:
 
 	# param ""
 	# call print , 1
-	movq	$LC2, %rdi
+	movq	$LC4, %rdi
 	call	puts@PLT
 
 	# param "b:"
 	# call print , 1
-	movq	$LC3, %rdi
+	movq	$LC5, %rdi
 	call	puts@PLT
 
 	# param b.x
@@ -204,7 +243,7 @@ main:
 L1:
 	# t1 = __name__ == "__main__"
 	movq	-8(%rbp), %rax
-	movq	$LC4, %rdx
+	movq	$LC6, %rdx
 	cmpq	%rdx, %rax
 	sete	%al
 	movb	%al, -9(%rbp)

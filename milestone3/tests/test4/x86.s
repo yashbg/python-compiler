@@ -1,15 +1,19 @@
 	.section	.rodata
-LC6:
-	.string	"__main__"
-LC3:
-	.string	"Recursive function"
-LC4:
-	.string	"Iterative function"
-LC2:
-	.string	"Fibonacci sequence:"
-LC1:
-	.string	"Plese enter a positive integer"
 LC5:
+	.string	"Recursive function"
+LC6:
+	.string	"Iterative function"
+LC4:
+	.string	"Fibonacci sequence:"
+LC3:
+	.string	"Plese enter a positive integer"
+LC2:
+	.string	"False"
+LC8:
+	.string	"__main__"
+LC1:
+	.string	"True"
+LC7:
 	.string	"Catalan sequence:"
 LC0:
 	.string	"%d\n"
@@ -382,7 +386,7 @@ L19:
 L20:
 	# param "Plese enter a positive integer"
 	# call print , 1
-	movq	$LC1, %rdi
+	movq	$LC3, %rdi
 	call	puts@PLT
 
 	# goto L22
@@ -391,7 +395,7 @@ L20:
 L21:
 	# param "Fibonacci sequence:"
 	# call print , 1
-	movq	$LC2, %rdi
+	movq	$LC4, %rdi
 	call	puts@PLT
 
 	# i = 0
@@ -400,7 +404,7 @@ L21:
 
 	# param "Recursive function"
 	# call print , 1
-	movq	$LC3, %rdi
+	movq	$LC5, %rdi
 	call	puts@PLT
 
 L23:
@@ -453,7 +457,7 @@ L25:
 
 	# param "Iterative function"
 	# call print , 1
-	movq	$LC4, %rdi
+	movq	$LC6, %rdi
 	call	puts@PLT
 
 L26:
@@ -502,7 +506,7 @@ L27:
 L28:
 	# param "Catalan sequence:"
 	# call print , 1
-	movq	$LC5, %rdi
+	movq	$LC7, %rdi
 	call	puts@PLT
 
 	# i = 0
@@ -564,7 +568,7 @@ L22:
 L32:
 	# t1 = __name__ == "__main__"
 	movq	-8(%rbp), %rax
-	movq	$LC6, %rdx
+	movq	$LC8, %rdx
 	cmpq	%rdx, %rax
 	sete	%al
 	movb	%al, -9(%rbp)
