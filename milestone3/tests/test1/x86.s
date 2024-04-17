@@ -18,22 +18,40 @@ bubbleSort:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
-	subq	$112, %rsp
+	subq	$128, %rsp
 	movq	%rdi, -8(%rbp)
-	movl	%esi, -12(%rbp)
+
+	# t1 = - 4
+	movl	$4, %eax
+	negl	%eax
+	movl	%eax, -12(%rbp)
+
+	# t2 = array[t1]
+	movl	-12(%rbp), %eax
+	cltq
+	movq	%rax, %rdx
+	movq	-8(%rbp), %rax
+	addq	%rax, %rdx
+
+	movl	(%rdx), %eax
+	movl	%eax, -16(%rbp)
+
+	# n = t2
+	movl	-16(%rbp), %eax
+	movl	%eax, -20(%rbp)
 
 	# i = 0
 	movl	$0, %eax
-	movl	%eax, -16(%rbp)
+	movl	%eax, -24(%rbp)
 
 	# i = 0
 	movl	$0, %eax
-	movl	%eax, -16(%rbp)
+	movl	%eax, -24(%rbp)
 
 L1:
 	# if i<n goto L2
-	movl	-16(%rbp), %eax
-	cmpl	-12(%rbp), %eax
+	movl	-24(%rbp), %eax
+	cmpl	-20(%rbp), %eax
 	jl	L2
 
 	# goto L3
@@ -42,35 +60,35 @@ L1:
 L2:
 	# swapped = False
 	movb	$0, %al
-	movb	%al, -17(%rbp)
+	movb	%al, -25(%rbp)
 
 	# j = 0
 	movl	$0, %eax
-	movl	%eax, -21(%rbp)
-
-	# t1 = - i
-	movl	-16(%rbp), %eax
-	negl	%eax
-	movl	%eax, -25(%rbp)
-
-	# t2 = t1 - 1
-	movl	-25(%rbp), %eax
-	subl	$1, %eax
 	movl	%eax, -29(%rbp)
 
-	# t3 = n + t2
-	movl	-12(%rbp), %eax
-	addl	-29(%rbp), %eax
+	# t3 = - i
+	movl	-24(%rbp), %eax
+	negl	%eax
 	movl	%eax, -33(%rbp)
+
+	# t4 = t3 - 1
+	movl	-33(%rbp), %eax
+	subl	$1, %eax
+	movl	%eax, -37(%rbp)
+
+	# t5 = n + t4
+	movl	-20(%rbp), %eax
+	addl	-37(%rbp), %eax
+	movl	%eax, -41(%rbp)
 
 	# j = 0
 	movl	$0, %eax
-	movl	%eax, -21(%rbp)
+	movl	%eax, -29(%rbp)
 
 L4:
-	# if j<t3 goto L5
-	movl	-21(%rbp), %eax
-	cmpl	-33(%rbp), %eax
+	# if j<t5 goto L5
+	movl	-29(%rbp), %eax
+	cmpl	-41(%rbp), %eax
 	jl	L5
 
 	# goto L6
@@ -78,49 +96,49 @@ L4:
 
 L5:
 L7:
-	# t4 = j * 4
-	movl	-21(%rbp), %eax
+	# t6 = j * 4
+	movl	-29(%rbp), %eax
 	imull	$4, %eax
-	movl	%eax, -37(%rbp)
-
-	# t5 = array[t4]
-	movl	-37(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
-
-	movl	(%rdx), %eax
-	movl	%eax, -41(%rbp)
-
-	# t6 = j + 1
-	movl	-21(%rbp), %eax
-	addl	$1, %eax
 	movl	%eax, -45(%rbp)
 
-	# t7 = t6 * 4
+	# t7 = array[t6]
 	movl	-45(%rbp), %eax
-	imull	$4, %eax
-	movl	%eax, -49(%rbp)
-
-	# t8 = array[t7]
-	movl	-49(%rbp), %eax
 	cltq
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
 
 	movl	(%rdx), %eax
+	movl	%eax, -49(%rbp)
+
+	# t8 = j + 1
+	movl	-29(%rbp), %eax
+	addl	$1, %eax
 	movl	%eax, -53(%rbp)
 
-	# t9 = t5 > t8
-	movl	-41(%rbp), %eax
-	cmpl	-53(%rbp), %eax
-	setg	%al
-	movb	%al, -54(%rbp)
+	# t9 = t8 * 4
+	movl	-53(%rbp), %eax
+	imull	$4, %eax
+	movl	%eax, -57(%rbp)
 
-	# if t9 goto L8
-	movb	-54(%rbp), %al
+	# t10 = array[t9]
+	movl	-57(%rbp), %eax
+	cltq
+	movq	%rax, %rdx
+	movq	-8(%rbp), %rax
+	addq	%rax, %rdx
+
+	movl	(%rdx), %eax
+	movl	%eax, -61(%rbp)
+
+	# t11 = t7 > t10
+	movl	-49(%rbp), %eax
+	cmpl	-61(%rbp), %eax
+	setg	%al
+	movb	%al, -62(%rbp)
+
+	# if t11 goto L8
+	movb	-62(%rbp), %al
 	cmpb	$0, %al
 	jg	L8
 
@@ -128,111 +146,111 @@ L7:
 	jmp	L9
 
 L8:
-	# t10 = j * 4
-	movl	-21(%rbp), %eax
+	# t12 = j * 4
+	movl	-29(%rbp), %eax
 	imull	$4, %eax
-	movl	%eax, -58(%rbp)
-
-	# t11 = array[t10]
-	movl	-58(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
-
-	movl	(%rdx), %eax
-	movl	%eax, -62(%rbp)
-
-	# temp = t11
-	movl	-62(%rbp), %eax
 	movl	%eax, -66(%rbp)
 
-	# t12 = j * 4
-	movl	-21(%rbp), %eax
-	imull	$4, %eax
-	movl	%eax, -70(%rbp)
-
-	# t14 = j + 1
-	movl	-21(%rbp), %eax
-	addl	$1, %eax
-	movl	%eax, -78(%rbp)
-
-	# t15 = t14 * 4
-	movl	-78(%rbp), %eax
-	imull	$4, %eax
-	movl	%eax, -82(%rbp)
-
-	# t16 = array[t15]
-	movl	-82(%rbp), %eax
+	# t13 = array[t12]
+	movl	-66(%rbp), %eax
 	cltq
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
 
 	movl	(%rdx), %eax
+	movl	%eax, -70(%rbp)
+
+	# temp = t13
+	movl	-70(%rbp), %eax
+	movl	%eax, -74(%rbp)
+
+	# t14 = j * 4
+	movl	-29(%rbp), %eax
+	imull	$4, %eax
+	movl	%eax, -78(%rbp)
+
+	# t16 = j + 1
+	movl	-29(%rbp), %eax
+	addl	$1, %eax
 	movl	%eax, -86(%rbp)
 
-	# array[t12] = t16
-	movl	-70(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
-
+	# t17 = t16 * 4
 	movl	-86(%rbp), %eax
-	movl	%eax, (%rdx)
-
-	# t17 = j + 1
-	movl	-21(%rbp), %eax
-	addl	$1, %eax
+	imull	$4, %eax
 	movl	%eax, -90(%rbp)
 
-	# t18 = t17 * 4
+	# t18 = array[t17]
 	movl	-90(%rbp), %eax
-	imull	$4, %eax
-	movl	%eax, -94(%rbp)
-
-	# array[t18] = temp
-	movl	-94(%rbp), %eax
 	cltq
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
 
-	movl	-66(%rbp), %eax
+	movl	(%rdx), %eax
+	movl	%eax, -94(%rbp)
+
+	# array[t14] = t18
+	movl	-78(%rbp), %eax
+	cltq
+	movq	%rax, %rdx
+	movq	-8(%rbp), %rax
+	addq	%rax, %rdx
+
+	movl	-94(%rbp), %eax
+	movl	%eax, (%rdx)
+
+	# t19 = j + 1
+	movl	-29(%rbp), %eax
+	addl	$1, %eax
+	movl	%eax, -98(%rbp)
+
+	# t20 = t19 * 4
+	movl	-98(%rbp), %eax
+	imull	$4, %eax
+	movl	%eax, -102(%rbp)
+
+	# array[t20] = temp
+	movl	-102(%rbp), %eax
+	cltq
+	movq	%rax, %rdx
+	movq	-8(%rbp), %rax
+	addq	%rax, %rdx
+
+	movl	-74(%rbp), %eax
 	movl	%eax, (%rdx)
 
 	# swapped = True
 	movb	$1, %al
-	movb	%al, -17(%rbp)
+	movb	%al, -25(%rbp)
 
 	# goto L10
 	jmp	L10
 
 L9:
 L10:
-	# t20 = j
-	movl	-21(%rbp), %eax
-	movl	%eax, -102(%rbp)
+	# t22 = j
+	movl	-29(%rbp), %eax
+	movl	%eax, -110(%rbp)
 
-	# j = t20 + 1
-	movl	-102(%rbp), %eax
+	# j = t22 + 1
+	movl	-110(%rbp), %eax
 	addl	$1, %eax
-	movl	%eax, -21(%rbp)
+	movl	%eax, -29(%rbp)
 
 	# goto L4
 	jmp	L4
 
 L6:
 L11:
-	# t21 = not swapped
-	movb	-17(%rbp), %al
+	# t23 = not swapped
+	movb	-25(%rbp), %al
 	cmpb	$0, %al
 	sete	%al
-	movb	%al, -103(%rbp)
+	movb	%al, -111(%rbp)
 
-	# if t21 goto L12
-	movb	-103(%rbp), %al
+	# if t23 goto L12
+	movb	-111(%rbp), %al
 	cmpb	$0, %al
 	jg	L12
 
@@ -248,14 +266,14 @@ L12:
 
 L13:
 L14:
-	# t22 = i
-	movl	-16(%rbp), %eax
-	movl	%eax, -107(%rbp)
+	# t24 = i
+	movl	-24(%rbp), %eax
+	movl	%eax, -115(%rbp)
 
-	# i = t22 + 1
-	movl	-107(%rbp), %eax
+	# i = t24 + 1
+	movl	-115(%rbp), %eax
 	addl	$1, %eax
-	movl	%eax, -16(%rbp)
+	movl	%eax, -24(%rbp)
 
 	# goto L1
 	jmp	L1
@@ -276,101 +294,119 @@ insertionSort:
 	movq	%rsp, %rbp
 	subq	$96, %rsp
 	movq	%rdi, -8(%rbp)
-	movl	%esi, -12(%rbp)
+
+	# t1 = - 4
+	movl	$4, %eax
+	negl	%eax
+	movl	%eax, -12(%rbp)
+
+	# t2 = arr[t1]
+	movl	-12(%rbp), %eax
+	cltq
+	movq	%rax, %rdx
+	movq	-8(%rbp), %rax
+	addq	%rax, %rdx
+
+	movl	(%rdx), %eax
+	movl	%eax, -16(%rbp)
+
+	# n = t2
+	movl	-16(%rbp), %eax
+	movl	%eax, -20(%rbp)
 
 	# i = 0
 	movl	$0, %eax
-	movl	%eax, -16(%rbp)
+	movl	%eax, -24(%rbp)
 
 	# i = 1
 	movl	$1, %eax
-	movl	%eax, -16(%rbp)
+	movl	%eax, -24(%rbp)
 
 L15:
 	# if i<n goto L16
-	movl	-16(%rbp), %eax
-	cmpl	-12(%rbp), %eax
+	movl	-24(%rbp), %eax
+	cmpl	-20(%rbp), %eax
 	jl	L16
 
 	# goto L17
 	jmp	L17
 
 L16:
-	# t1 = i * 4
-	movl	-16(%rbp), %eax
-	imull	$4, %eax
-	movl	%eax, -20(%rbp)
-
-	# t2 = arr[t1]
-	movl	-20(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
-
-	movl	(%rdx), %eax
-	movl	%eax, -24(%rbp)
-
-	# key = t2
+	# t3 = i * 4
 	movl	-24(%rbp), %eax
+	imull	$4, %eax
 	movl	%eax, -28(%rbp)
 
-	# t3 = - 1
-	movl	$1, %eax
-	negl	%eax
-	movl	%eax, -32(%rbp)
-
-	# t4 = i + t3
-	movl	-16(%rbp), %eax
-	addl	-32(%rbp), %eax
-	movl	%eax, -36(%rbp)
-
-	# j = t4
-	movl	-36(%rbp), %eax
-	movl	%eax, -40(%rbp)
-
-L18:
-	# t5 = j >= 0
-	movl	-40(%rbp), %eax
-	cmpl	$0, %eax
-	setge	%al
-	movb	%al, -41(%rbp)
-
-	# t6 = j * 4
-	movl	-40(%rbp), %eax
-	imull	$4, %eax
-	movl	%eax, -45(%rbp)
-
-	# t7 = arr[t6]
-	movl	-45(%rbp), %eax
+	# t4 = arr[t3]
+	movl	-28(%rbp), %eax
 	cltq
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
 
 	movl	(%rdx), %eax
-	movl	%eax, -49(%rbp)
+	movl	%eax, -32(%rbp)
 
-	# t8 = key < t7
-	movl	-28(%rbp), %eax
-	cmpl	-49(%rbp), %eax
+	# key = t4
+	movl	-32(%rbp), %eax
+	movl	%eax, -36(%rbp)
+
+	# t5 = - 1
+	movl	$1, %eax
+	negl	%eax
+	movl	%eax, -40(%rbp)
+
+	# t6 = i + t5
+	movl	-24(%rbp), %eax
+	addl	-40(%rbp), %eax
+	movl	%eax, -44(%rbp)
+
+	# j = t6
+	movl	-44(%rbp), %eax
+	movl	%eax, -48(%rbp)
+
+L18:
+	# t7 = j >= 0
+	movl	-48(%rbp), %eax
+	cmpl	$0, %eax
+	setge	%al
+	movb	%al, -49(%rbp)
+
+	# t8 = j * 4
+	movl	-48(%rbp), %eax
+	imull	$4, %eax
+	movl	%eax, -53(%rbp)
+
+	# t9 = arr[t8]
+	movl	-53(%rbp), %eax
+	cltq
+	movq	%rax, %rdx
+	movq	-8(%rbp), %rax
+	addq	%rax, %rdx
+
+	movl	(%rdx), %eax
+	movl	%eax, -57(%rbp)
+
+	# t10 = key < t9
+	movl	-36(%rbp), %eax
+	cmpl	-57(%rbp), %eax
 	setl	%al
-	movb	%al, -50(%rbp)
+	movb	%al, -58(%rbp)
 
-	# t9 = t5 and t8
-	cmpb	$0, -41(%rbp)
+	# t11 = t7 and t10
+	cmpb	$0, -49(%rbp)
 	je	L31
-	cmpb	$0, -50(%rbp)
+	cmpb	$0, -58(%rbp)
 	je	L31
 	movl	$1, %eax
 	jmp	L32
 L31:
 	movl	$0, %eax
 L32:
-	movb	%al, -51(%rbp)
+	movb	%al, -59(%rbp)
 
-	# if t9 goto L19
-	movb	-51(%rbp), %al
+	# if t11 goto L19
+	movb	-59(%rbp), %al
 	cmpb	$0, %al
 	jg	L19
 
@@ -378,78 +414,78 @@ L32:
 	jmp	L20
 
 L19:
-	# t10 = j + 1
-	movl	-40(%rbp), %eax
+	# t12 = j + 1
+	movl	-48(%rbp), %eax
 	addl	$1, %eax
-	movl	%eax, -55(%rbp)
+	movl	%eax, -63(%rbp)
 
-	# t11 = t10 * 4
-	movl	-55(%rbp), %eax
-	imull	$4, %eax
-	movl	%eax, -59(%rbp)
-
-	# t13 = j * 4
-	movl	-40(%rbp), %eax
+	# t13 = t12 * 4
+	movl	-63(%rbp), %eax
 	imull	$4, %eax
 	movl	%eax, -67(%rbp)
 
-	# t14 = arr[t13]
-	movl	-67(%rbp), %eax
+	# t15 = j * 4
+	movl	-48(%rbp), %eax
+	imull	$4, %eax
+	movl	%eax, -75(%rbp)
+
+	# t16 = arr[t15]
+	movl	-75(%rbp), %eax
 	cltq
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
 
 	movl	(%rdx), %eax
-	movl	%eax, -71(%rbp)
+	movl	%eax, -79(%rbp)
 
-	# arr[t11] = t14
-	movl	-59(%rbp), %eax
+	# arr[t13] = t16
+	movl	-67(%rbp), %eax
 	cltq
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
 
-	movl	-71(%rbp), %eax
+	movl	-79(%rbp), %eax
 	movl	%eax, (%rdx)
 
 	# j = j - 1
-	movl	-40(%rbp), %eax
+	movl	-48(%rbp), %eax
 	subl	$1, %eax
-	movl	%eax, -40(%rbp)
+	movl	%eax, -48(%rbp)
 
 	# goto L18
 	jmp	L18
 
 L20:
-	# t15 = j + 1
-	movl	-40(%rbp), %eax
+	# t17 = j + 1
+	movl	-48(%rbp), %eax
 	addl	$1, %eax
-	movl	%eax, -75(%rbp)
+	movl	%eax, -83(%rbp)
 
-	# t16 = t15 * 4
-	movl	-75(%rbp), %eax
+	# t18 = t17 * 4
+	movl	-83(%rbp), %eax
 	imull	$4, %eax
-	movl	%eax, -79(%rbp)
+	movl	%eax, -87(%rbp)
 
-	# arr[t16] = key
-	movl	-79(%rbp), %eax
+	# arr[t18] = key
+	movl	-87(%rbp), %eax
 	cltq
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rax, %rdx
 
-	movl	-28(%rbp), %eax
+	movl	-36(%rbp), %eax
 	movl	%eax, (%rdx)
 
-	# t18 = i
-	movl	-16(%rbp), %eax
-	movl	%eax, -87(%rbp)
+	# t20 = i
+	movl	-24(%rbp), %eax
+	movl	%eax, -95(%rbp)
 
-	# i = t18 + 1
-	movl	-87(%rbp), %eax
+	# i = t20 + 1
+	movl	-95(%rbp), %eax
 	addl	$1, %eax
-	movl	%eax, -16(%rbp)
+	movl	%eax, -24(%rbp)
 
 	# goto L15
 	jmp	L15
@@ -480,13 +516,25 @@ main:
 	negl	%eax
 	movl	%eax, -8(%rbp)
 
-	# param 20
+	# param 24
 	# call allocmem , 1
-	movl	$20, %edi
+	movl	$24, %edi
 	call	malloc@PLT
 
 	# t3 = popparam
 	movq	%rax, -16(%rbp)
+
+	# t3[0] = 5
+	movq	-16(%rbp), %rax
+	leaq	0(%rax), %rdx
+
+	movl	$5, %eax
+	movl	%eax, (%rdx)
+
+	# t3 = t3 + 4
+	movl	-16(%rbp), %eax
+	addl	$4, %eax
+	movl	%eax, -16(%rbp)
 
 	# t3[0] = t1
 	movq	-16(%rbp), %rax
@@ -537,13 +585,25 @@ main:
 	negl	%eax
 	movl	%eax, -32(%rbp)
 
-	# param 20
+	# param 24
 	# call allocmem , 1
-	movl	$20, %edi
+	movl	$24, %edi
 	call	malloc@PLT
 
 	# t6 = popparam
 	movq	%rax, -40(%rbp)
+
+	# t6[0] = 5
+	movq	-40(%rbp), %rax
+	leaq	0(%rax), %rdx
+
+	movl	$5, %eax
+	movl	%eax, (%rdx)
+
+	# t6 = t6 + 4
+	movl	-40(%rbp), %eax
+	addl	$4, %eax
+	movl	%eax, -40(%rbp)
 
 	# t6[0] = t4
 	movq	-40(%rbp), %rax
@@ -585,16 +645,12 @@ main:
 	movq	%rax, -48(%rbp)
 
 	# param data1
-	# param 5
-	# call bubbleSort , 2
-	movl	$5, %esi
+	# call bubbleSort , 1
 	movq	-24(%rbp), %rdi
 	call	bubbleSort
 
 	# param data2
-	# param 5
-	# call insertionSort , 2
-	movl	$5, %esi
+	# call insertionSort , 1
 	movq	-48(%rbp), %rdi
 	call	insertionSort
 

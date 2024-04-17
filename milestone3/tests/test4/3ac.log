@@ -1,0 +1,249 @@
+recur_fibo:
+	beginfunc
+	n = popparam
+
+L1:
+	t1 = n <= 1
+	if t1 goto L2
+	goto L3
+
+L2:
+	push n
+	return
+	goto L4
+
+L3:
+	t2 = - 1
+	t3 = n + t2
+	param t3
+	stackpointer +4
+	call recur_fibo , 1
+	stackpointer -4
+	t4 = popparam
+	t5 = - 2
+	t6 = n + t5
+	param t6
+	stackpointer +4
+	call recur_fibo , 1
+	stackpointer -4
+	t7 = popparam
+	t8 = t4 + t7
+	push t8
+	return
+
+L4:
+	return
+	endfunc
+
+iter_fibo:
+	beginfunc
+	n = popparam
+
+L5:
+	t1 = n <= 1
+	if t1 goto L6
+	goto L7
+
+L6:
+	push n
+	return
+	goto L8
+
+L7:
+	a = 1
+	b = 0
+	i = 0
+	i = 1
+
+L9:
+	if i<n goto L10
+	goto L11
+
+L10:
+	t2 = a + b
+	a = t2
+	t3 = - b
+	t4 = a + t3
+	b = t4
+	t5 = i
+	i = t5 + 1
+	goto L9
+
+L11:
+	push a
+	return
+
+L8:
+	return
+	endfunc
+
+catalan:
+	beginfunc
+	n = popparam
+
+L12:
+	t1 = n <= 1
+	if t1 goto L13
+	goto L14
+
+L13:
+	push 1
+	return
+	goto L15
+
+L14:
+
+L15:
+	res = 0
+	i = 0
+	i = 0
+
+L16:
+	if i<n goto L17
+	goto L18
+
+L17:
+	param i
+	stackpointer +4
+	call catalan , 1
+	stackpointer -4
+	t2 = popparam
+	t3 = - i
+	t4 = t3 - 1
+	t5 = n + t4
+	param t5
+	stackpointer +4
+	call catalan , 1
+	stackpointer -4
+	t6 = popparam
+	t7 = t2 * t6
+	t8 = res + t7
+	res = t8
+	t9 = i
+	i = t9 + 1
+	goto L16
+
+L18:
+	push res
+	return
+	return
+	endfunc
+
+main:
+	beginfunc
+	nterms = 10
+
+L19:
+	t1 = nterms <= 0
+	if t1 goto L20
+	goto L21
+
+L20:
+	param "Plese enter a positive integer"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
+	goto L22
+
+L21:
+	param "Fibonacci sequence:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
+	i = 0
+	param "Recursive function"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
+
+L23:
+	t2 = i < nterms
+	if t2 goto L24
+	goto L25
+
+L24:
+	param i
+	stackpointer +4
+	call recur_fibo , 1
+	stackpointer -4
+	t3 = popparam
+	param t3
+	stackpointer +4
+	call print , 1
+	stackpointer -4
+	t4 = i + 1
+	i = t4
+	goto L23
+
+L25:
+	i = 0
+	param "Iterative function"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
+
+L26:
+	t5 = i < nterms
+	if t5 goto L27
+	goto L28
+
+L27:
+	param i
+	stackpointer +4
+	call iter_fibo , 1
+	stackpointer -4
+	t6 = popparam
+	param t6
+	stackpointer +4
+	call print , 1
+	stackpointer -4
+	t7 = i + 1
+	i = t7
+	goto L26
+
+L28:
+	param "Catalan sequence:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
+	i = 0
+
+L29:
+	t8 = i < nterms
+	if t8 goto L30
+	goto L31
+
+L30:
+	param i
+	stackpointer +4
+	call catalan , 1
+	stackpointer -4
+	t9 = popparam
+	param t9
+	stackpointer +4
+	call print , 1
+	stackpointer -4
+	t10 = i + 1
+	i = t10
+	goto L29
+
+L31:
+
+L22:
+	return
+	endfunc
+
+L32:
+	t1 = __name__ == "__main__"
+	if t1 goto L33
+	goto L34
+
+L33:
+	stackpointer +0
+	call main , 0
+	stackpointer -0
+	goto L35
+
+L34:
+
+L35:
