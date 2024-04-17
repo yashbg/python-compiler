@@ -456,11 +456,19 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   if(op == "<"){
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     if(get_type(arg1) == "str"){
-      x86_code.push_back("\tmovq\t" + get_addr(arg1) + ", %rax");
-      x86_code.push_back("\tmovq\t" + get_addr(arg2) + ", %rdx");
-      x86_code.push_back("\tcmpq\t%rdx, %rax");
-      x86_code.push_back("\tsetl\t%al");
-      x86_code.push_back("\tmovb\t%al, " + get_addr(result));
+      // x86_code.push_back("\tmovq\t" + get_addr(arg1) + ", %rax");
+      // x86_code.push_back("\tmovq\t" + get_addr(arg2) + ", %rdx");
+      // x86_code.push_back("\tcmpq\t%rdx, %rax");
+      // x86_code.push_back("\tsetl\t%al");
+      // x86_code.push_back("\tmovb\t%al, " + get_addr(result));
+      x86_code.push_back("\tleaq\t" + get_addr(arg1) + ", %rdx");
+      x86_code.push_back("\tleaq\t" + get_addr(arg2) + ", %rax");
+      x86_code.push_back("\tmovq\t%rax, %rsi");
+      x86_code.push_back("\tmovq\t%rdx, %rdi");
+      x86_code.push_back("\tcall\tstrcmp@PLT");
+      x86_code.push_back("\ttestl\t %eax, %eax");
+      x86_code.push_back("\tsetl\t %al");
+      x86_code.push_back("\tmovb\t %al, " + get_addr(result));
       x86_code.push_back("");
       return;
     }
@@ -477,11 +485,14 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   if(op == ">"){
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     if(get_type(arg1) == "str"){
-      x86_code.push_back("\tmovq\t" + get_addr(arg1) + ", %rax");
-      x86_code.push_back("\tmovq\t" + get_addr(arg2) + ", %rdx");
-      x86_code.push_back("\tcmpq\t%rdx, %rax");
-      x86_code.push_back("\tsetg\t%al");
-      x86_code.push_back("\tmovb\t%al, " + get_addr(result));
+      x86_code.push_back("\tleaq\t" + get_addr(arg1) + ", %rdx");
+      x86_code.push_back("\tleaq\t" + get_addr(arg2) + ", %rax");
+      x86_code.push_back("\tmovq\t%rax, %rsi");
+      x86_code.push_back("\tmovq\t%rdx, %rdi");
+      x86_code.push_back("\tcall\t strcmp@PLT");
+      x86_code.push_back("\ttestl\t %eax, %eax");
+      x86_code.push_back("\tsetg\t %al");
+      x86_code.push_back("\tmovb\t %al, " + get_addr(result));
       x86_code.push_back("");
       return;
     }
@@ -498,11 +509,14 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   if(op == "<="){
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     if(get_type(arg1) == "str"){
-      x86_code.push_back("\tmovq\t" + get_addr(arg1) + ", %rax");
-      x86_code.push_back("\tmovq\t" + get_addr(arg2) + ", %rdx");
-      x86_code.push_back("\tcmpq\t%rdx, %rax");
-      x86_code.push_back("\tsetle\t%al");
-      x86_code.push_back("\tmovb\t%al, " + get_addr(result));
+      x86_code.push_back("\tleaq\t" + get_addr(arg1) + ", %rdx");
+      x86_code.push_back("\tleaq\t" + get_addr(arg2) + ", %rax");
+      x86_code.push_back("\tmovq\t%rax, %rsi");
+      x86_code.push_back("\tmovq\t%rdx, %rdi");
+      x86_code.push_back("\tcall\t strcmp@PLT");
+      x86_code.push_back("\ttestl\t %eax, %eax");
+      x86_code.push_back("\tsetle\t %al");
+      x86_code.push_back("\tmovb\t %al, " + get_addr(result));
       x86_code.push_back("");
       return;
     }
@@ -519,11 +533,14 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   if(op == ">="){
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     if(get_type(arg1) == "str"){
-      x86_code.push_back("\tmovq\t" + get_addr(arg1) + ", %rax");
-      x86_code.push_back("\tmovq\t" + get_addr(arg2) + ", %rdx");
-      x86_code.push_back("\tcmpq\t%rdx, %rax");
-      x86_code.push_back("\tsetge\t%al");
-      x86_code.push_back("\tmovb\t%al, " + get_addr(result));
+      x86_code.push_back("\tleaq\t" + get_addr(arg1) + ", %rdx");
+      x86_code.push_back("\tleaq\t" + get_addr(arg2) + ", %rax");
+      x86_code.push_back("\tmovq\t%rax, %rsi");
+      x86_code.push_back("\tmovq\t%rdx, %rdi");
+      x86_code.push_back("\tcall\t strcmp@PLT");
+      x86_code.push_back("\ttestl\t %eax, %eax");
+      x86_code.push_back("\tsetge\t %al");
+      x86_code.push_back("\tmovb\t %al, " + get_addr(result));
       x86_code.push_back("");
       return;
     }
