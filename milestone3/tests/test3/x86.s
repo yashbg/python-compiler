@@ -1,9 +1,25 @@
 	.section	.rodata
+LC10:
+	.string	"String 1 is less than or equal to String 2"
+LC9:
+	.string	"String 1 is greater than String 2"
+LC8:
+	.string	"String 1 is less than String 2"
+LC6:
+	.string	"Strings are equal"
+LC7:
+	.string	"Strings are not equal"
+LC5:
+	.string	"abcdef"
+LC4:
+	.string	"abc"
 LC3:
 	.string	"Hello, World!"
+LC11:
+	.string	"String 1 is greater than or equal to String 2"
 LC2:
 	.string	"False"
-LC4:
+LC12:
 	.string	"__main__"
 LC1:
 	.string	"True"
@@ -39,7 +55,7 @@ main:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
-	subq	$16, %rsp
+	subq	$112, %rsp
 
 	# s = "Hello, World!"
 	movq	$LC3, %rax
@@ -53,23 +69,40 @@ main:
 	# t1 = popparam
 	movq	%rax, -16(%rbp)
 
-	# return
-	leave
-	ret
+	# s1 = "abc"
+	movq	$LC4, %rax
+	movq	%rax, -24(%rbp)
 
-	# endfunc
-	.size	main, .-main
+	# s2 = "abcdef"
+	movq	$LC5, %rax
+	movq	%rax, -32(%rbp)
+
+	# param s1
+	# call foo , 1
+	movq	-24(%rbp), %rdi
+	call	foo
+
+	# t2 = popparam
+	movq	%rax, -40(%rbp)
+
+	# param s2
+	# call foo , 1
+	movq	-32(%rbp), %rdi
+	call	foo
+
+	# t3 = popparam
+	movq	%rax, -48(%rbp)
 
 L1:
-	# t1 = __name__ == "__main__"
-	movq	-8(%rbp), %rax
-	movq	$LC4, %rdx
+	# t4 = s1 == s2
+	movq	-24(%rbp), %rax
+	movq	-32(%rbp), %rdx
 	cmpq	%rdx, %rax
 	sete	%al
-	movb	%al, -9(%rbp)
+	movb	%al, -49(%rbp)
 
-	# if t1 goto L2
-	movb	-9(%rbp), %al
+	# if t4 goto L2
+	movb	-49(%rbp), %al
 	cmpb	$0, %al
 	jg	L2
 
@@ -77,11 +110,207 @@ L1:
 	jmp	L3
 
 L2:
-	# call main , 0
-	call	main
+	# param "Strings are equal"
+	# call foo , 1
+	movq	$LC6, %rdi
+	call	foo
+
+	# t5 = popparam
+	movq	%rax, -57(%rbp)
 
 	# goto L4
 	jmp	L4
 
 L3:
+L5:
+	# t6 = s1 != s2
+	movq	-24(%rbp), %rax
+	movq	-32(%rbp), %rdx
+	cmpq	%rdx, %rax
+	setne	%al
+	movb	%al, -58(%rbp)
+
+	# if t6 goto L6
+	movb	-58(%rbp), %al
+	cmpb	$0, %al
+	jg	L6
+
+	# goto L7
+	jmp	L7
+
+L6:
+	# param "Strings are not equal"
+	# call foo , 1
+	movq	$LC7, %rdi
+	call	foo
+
+	# t7 = popparam
+	movq	%rax, -66(%rbp)
+
+	# goto L4
+	jmp	L4
+
+L7:
 L4:
+L8:
+	# t8 = s1 < s2
+	leaq	-24(%rbp), %rdx
+	leaq	-32(%rbp), %rax
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	call	strcmp@PLT
+	testl	 %eax, %eax
+	setl	 %al
+	movb	 %al, -67(%rbp)
+
+	# if t8 goto L9
+	movb	-67(%rbp), %al
+	cmpb	$0, %al
+	jg	L9
+
+	# goto L10
+	jmp	L10
+
+L9:
+	# param "String 1 is less than String 2"
+	# call foo , 1
+	movq	$LC8, %rdi
+	call	foo
+
+	# t9 = popparam
+	movq	%rax, -75(%rbp)
+
+	# goto L11
+	jmp	L11
+
+L10:
+L12:
+	# t10 = s1 > s2
+	leaq	-24(%rbp), %rdx
+	leaq	-32(%rbp), %rax
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	call	 strcmp@PLT
+	testl	 %eax, %eax
+	setg	 %al
+	movb	 %al, -76(%rbp)
+
+	# if t10 goto L13
+	movb	-76(%rbp), %al
+	cmpb	$0, %al
+	jg	L13
+
+	# goto L14
+	jmp	L14
+
+L13:
+	# param "String 1 is greater than String 2"
+	# call foo , 1
+	movq	$LC9, %rdi
+	call	foo
+
+	# t11 = popparam
+	movq	%rax, -84(%rbp)
+
+	# goto L11
+	jmp	L11
+
+L14:
+L11:
+L15:
+	# t12 = s1 <= s2
+	leaq	-24(%rbp), %rdx
+	leaq	-32(%rbp), %rax
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	call	 strcmp@PLT
+	testl	 %eax, %eax
+	setle	 %al
+	movb	 %al, -85(%rbp)
+
+	# if t12 goto L16
+	movb	-85(%rbp), %al
+	cmpb	$0, %al
+	jg	L16
+
+	# goto L17
+	jmp	L17
+
+L16:
+	# param "String 1 is less than or equal to String 2"
+	# call foo , 1
+	movq	$LC10, %rdi
+	call	foo
+
+	# t13 = popparam
+	movq	%rax, -93(%rbp)
+
+	# goto L18
+	jmp	L18
+
+L17:
+L19:
+	# t14 = s1 >= s2
+	leaq	-24(%rbp), %rdx
+	leaq	-32(%rbp), %rax
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	call	 strcmp@PLT
+	testl	 %eax, %eax
+	setge	 %al
+	movb	 %al, -94(%rbp)
+
+	# if t14 goto L20
+	movb	-94(%rbp), %al
+	cmpb	$0, %al
+	jg	L20
+
+	# goto L21
+	jmp	L21
+
+L20:
+	# param "String 1 is greater than or equal to String 2"
+	# call foo , 1
+	movq	$LC11, %rdi
+	call	foo
+
+	# t15 = popparam
+	movq	%rax, -102(%rbp)
+
+	# goto L18
+	jmp	L18
+
+L21:
+L18:
+	# return
+	leave
+	ret
+
+	# endfunc
+	.size	main, .-main
+
+L22:
+	# t1 = __name__ == "__main__"
+	movq	-8(%rbp), %rax
+	movq	$LC12, %rdx
+	cmpq	%rdx, %rax
+	sete	%al
+	movb	%al, -9(%rbp)
+
+	# if t1 goto L23
+	movb	-9(%rbp), %al
+	cmpb	$0, %al
+	jg	L23
+
+	# goto L24
+	jmp	L24
+
+L23:
+	# call main , 0
+	call	main
+
+	# goto L25
+	jmp	L25
+
+L24:
+L25:

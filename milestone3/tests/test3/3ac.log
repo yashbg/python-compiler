@@ -16,20 +16,128 @@ main:
 	call foo , 1
 	stackpointer -8
 	t1 = popparam
-	return
-	endfunc
+	s1 = "abc"
+	s2 = "abcdef"
+	param s1
+	stackpointer +8
+	call foo , 1
+	stackpointer -8
+	t2 = popparam
+	param s2
+	stackpointer +8
+	call foo , 1
+	stackpointer -8
+	t3 = popparam
 
 L1:
-	t1 = __name__ == "__main__"
-	if t1 goto L2
+	t4 = s1 == s2
+	if t4 goto L2
 	goto L3
 
 L2:
-	stackpointer +0
-	call main , 0
-	stackpointer -0
+	param "Strings are equal"
+	stackpointer +8
+	call foo , 1
+	stackpointer -8
+	t5 = popparam
 	goto L4
 
 L3:
 
+L5:
+	t6 = s1 != s2
+	if t6 goto L6
+	goto L7
+
+L6:
+	param "Strings are not equal"
+	stackpointer +8
+	call foo , 1
+	stackpointer -8
+	t7 = popparam
+	goto L4
+
+L7:
+
 L4:
+
+L8:
+	t8 = s1 < s2
+	if t8 goto L9
+	goto L10
+
+L9:
+	param "String 1 is less than String 2"
+	stackpointer +8
+	call foo , 1
+	stackpointer -8
+	t9 = popparam
+	goto L11
+
+L10:
+
+L12:
+	t10 = s1 > s2
+	if t10 goto L13
+	goto L14
+
+L13:
+	param "String 1 is greater than String 2"
+	stackpointer +8
+	call foo , 1
+	stackpointer -8
+	t11 = popparam
+	goto L11
+
+L14:
+
+L11:
+
+L15:
+	t12 = s1 <= s2
+	if t12 goto L16
+	goto L17
+
+L16:
+	param "String 1 is less than or equal to String 2"
+	stackpointer +8
+	call foo , 1
+	stackpointer -8
+	t13 = popparam
+	goto L18
+
+L17:
+
+L19:
+	t14 = s1 >= s2
+	if t14 goto L20
+	goto L21
+
+L20:
+	param "String 1 is greater than or equal to String 2"
+	stackpointer +8
+	call foo , 1
+	stackpointer -8
+	t15 = popparam
+	goto L18
+
+L21:
+
+L18:
+	return
+	endfunc
+
+L22:
+	t1 = __name__ == "__main__"
+	if t1 goto L23
+	goto L24
+
+L23:
+	stackpointer +0
+	call main , 0
+	stackpointer -0
+	goto L25
+
+L24:
+
+L25:
