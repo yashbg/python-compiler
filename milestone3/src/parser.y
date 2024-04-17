@@ -35,7 +35,6 @@
 
   std::string atom_token;
   bool in_var_decl = false;
-  int list_len = 0;
   int local_temp_count = 1;
   int start_pos;
   int curr_list_size;
@@ -402,8 +401,6 @@ expr_stmt:
       insert_var($1, var_type);
     }
 
-    list_len = 0;
-
     if($3[0] != ':') {
       gen("=", $3, "", $1);
     }
@@ -535,8 +532,6 @@ annassign:
         gen("=", std::to_string(element_number), "", t + "[0]");
         gen("+", t, "4", t);
         generate_3AC_for_list($2, $4);
-
-        list_len = calc_list_len($4);
 
         strcpy($$, t.c_str());
 
@@ -2001,9 +1996,6 @@ atom_expr:
             yyerror("Type error: argument to len() must be a list");
           }
 
-          // TODO: len of function parameters
-          
-          // std::string len = std::to_string(entry.list_len);
           std::string arr_name = std::string($2).substr(1, std::string($2).size() - 2);
           std::string neg_index = new_temp();
           insert_var(neg_index, "int");

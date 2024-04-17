@@ -10,8 +10,6 @@ extern bool func_scope;
 extern bool class_scope;
 extern class_symtable *cur_class_symtable_ptr;
 
-extern int list_len;
-
 extern void yyerror(const char *);
 
 extern int get_size(const std::string &type);
@@ -30,10 +28,10 @@ void insert_var(const std::string &name, const std::string &type) {
   int size = get_size(type);
   symtable_entry entry;
   if (type.substr(0, 4) == "list") {
-    entry = {type, yylineno, size, list_len, get_list_width(type), 0};
+    entry = {type, yylineno, size, get_list_width(type), 0};
   }
   else {
-    entry = {type, yylineno, size, 0, 0, 0};
+    entry = {type, yylineno, size, 0, 0};
   }
 
   if (func_scope) {
@@ -79,10 +77,10 @@ void insert_attr(const std::string &name, const std::string &type) {
   int size = get_size(type);
   symtable_entry entry;
   if (type.substr(0, 4) == "list") {
-    entry = {type, yylineno, size, list_len, get_list_width(type), 0};
+    entry = {type, yylineno, size, get_list_width(type), 0};
   }
   else {
-    entry = {type, yylineno, size, 0, 0, 0};
+    entry = {type, yylineno, size, 0, 0};
   }
 
   // inheritance
@@ -155,10 +153,10 @@ void add_func(const std::string &name, const std::vector<std::pair<std::string, 
     int size = get_size(param.second);
     symtable_entry entry;
     if (param.second.substr(0, 4) == "list") {
-      entry = {param.second, yylineno, size, list_len, get_list_width(param.second), 0};
+      entry = {param.second, yylineno, size, get_list_width(param.second), 0};
     }
     else {
-      entry = {param.second, yylineno, size, 0, 0, 0};
+      entry = {param.second, yylineno, size, 0, 0};
     }
 
     entry.offset = func_symtable_ptr->offset;
