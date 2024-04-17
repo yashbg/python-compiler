@@ -58,10 +58,94 @@ or_test if_or_test_else_test_opt
 | ':' test
 %empty
 %empty
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+| ':' test
+%empty
+| comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+| ':' test
+%empty
+| comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+| ':' test
+%empty
+| comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt
 tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list
 | typedargslist
 '(' typedargslist_opt ')'
-NONE
+NAME
 %empty
 atom trailer_list
 %empty
@@ -104,504 +188,9 @@ and_expr xor_and_expr_list
 %empty
 xor_expr or_xor_expr_list
 %empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
+| LESSTHANEQUAL
 NAME
 %empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-NAME
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-%empty
-test comp_for_opt
-%empty
-%empty
-argument comma_argument_list comma_opt
-| arglist
-'(' arglist_opt ')'
-| trailer_list trailer
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-| '=' test
-':' test equal_test_opt
-testlist_star_expr annassign
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-| '=' test
-':' test equal_test_opt
-testlist_star_expr annassign
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-| stmt_list stmt
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-FALSE
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-| '=' test
-':' test equal_test_opt
-testlist_star_expr annassign
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-| '=' test
-':' test equal_test_opt
-testlist_star_expr annassign
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-| stmt_list stmt
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-'-'
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-| plus_or_minus_term_list plus_or_minus term
-'-'
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-| plus_or_minus_term_list plus_or_minus term
-term plus_or_minus_term_list
-NAME
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-subscript comma_subscript_list comma_opt
-'[' subscriptlist ']'
-| trailer_list trailer
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-| GREATERTHAN
-NAME
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-'+'
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-| plus_or_minus_term_list plus_or_minus term
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-subscript comma_subscript_list comma_opt
-'[' subscriptlist ']'
-| trailer_list trailer
 atom trailer_list
 %empty
 atom_expr doublestar_factor_opt
@@ -681,6 +270,12 @@ and_test or_and_test_list
 or_test if_or_test_else_test_opt
 NAME
 %empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+'+'
 NAME
 %empty
 atom trailer_list
@@ -688,6 +283,14 @@ atom trailer_list
 atom_expr doublestar_factor_opt
 | power
 %empty
+'-'
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+| plus_or_minus_term_list plus_or_minus term
 term plus_or_minus_term_list
 %empty
 arith_expr shift_arith_expr_list
@@ -709,14 +312,25 @@ or_test if_or_test_else_test_opt
 test
 %empty
 %empty
-subscript comma_subscript_list comma_opt
-'[' subscriptlist ']'
-| trailer_list trailer
+| comma_test_or_star_expr_list comma_opt
+test_or_star_expr comp_for_OR_comma_test_or_star_expr_list_comma_opt
+| testlist_comp
+'(' testlist_comp_opt ')'
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+| '/'
+INTEGER
+%empty
 atom trailer_list
 %empty
 atom_expr doublestar_factor_opt
 | power
 %empty
+factor star_or_slash_or_percent_or_doubleslash_factor_list
+| plus_or_minus_term_list plus_or_minus term
 term plus_or_minus_term_list
 %empty
 arith_expr shift_arith_expr_list
@@ -792,60 +406,9 @@ and_expr xor_and_expr_list
 %empty
 xor_expr or_xor_expr_list
 %empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-%empty
+| DOUBLEEQUAL
 NAME
 %empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-'+'
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-| plus_or_minus_term_list plus_or_minus term
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-subscript comma_subscript_list comma_opt
-'[' subscriptlist ']'
-| trailer_list trailer
 atom trailer_list
 %empty
 atom_expr doublestar_factor_opt
@@ -860,7 +423,7 @@ shift_expr and_shift_expr_list
 and_expr xor_and_expr_list
 %empty
 xor_expr or_xor_expr_list
-%empty
+| comp_op_expr_list comp_op expr
 expr comp_op_expr_list
 | comparison
 %empty
@@ -869,88 +432,6 @@ not_test and_not_test_list
 and_test or_and_test_list
 %empty
 or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-| equal_testlist_star_expr_list '=' testlist_star_expr
-equal_testlist_star_expr_list
-| testlist_star_expr expr_stmt_suffix_choices
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-| stmt_list stmt
-NAME
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-'+'
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-| plus_or_minus_term_list plus_or_minus term
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-subscript comma_subscript_list comma_opt
-'[' subscriptlist ']'
-| trailer_list trailer
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-%empty
 NAME
 %empty
 atom trailer_list
@@ -976,128 +457,12 @@ not_test and_not_test_list
 and_test or_and_test_list
 %empty
 or_test if_or_test_else_test_opt
-test
 %empty
 %empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-| equal_testlist_star_expr_list '=' testlist_star_expr
-equal_testlist_star_expr_list
-| testlist_star_expr expr_stmt_suffix_choices
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-| stmt_list stmt
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-%empty
-TRUE
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-| equal_testlist_star_expr_list '=' testlist_star_expr
-equal_testlist_star_expr_list
-| testlist_star_expr expr_stmt_suffix_choices
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-| stmt_list stmt
-| NEWLINE INDENT stmt stmt_list DEDENT
-%empty
-%empty
-IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt
-if_stmt
-| compound_stmt
-%empty
-| NEWLINE INDENT stmt stmt_list DEDENT
-%empty
-FOR exprlist IN testlist ':' suite else_colon_suite_opt
-| for_stmt
-| compound_stmt
-| stmt_list stmt
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-NOT not_test
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-BREAK
-break_stmt 
+test comma_test_list comma_opt
+| testlist
+RETURN testlist_opt
+| return_stmt
 | flow_stmt
 %empty
 %empty
@@ -1106,15 +471,284 @@ simple_stmt
 %empty
 | NEWLINE INDENT stmt stmt_list DEDENT
 %empty
+NAME
 %empty
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+test
+%empty
+%empty
+subscript comma_subscript_list comma_opt
+'[' subscriptlist ']'
+| trailer_list trailer
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+LESSTHAN
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+| comp_op_expr_list comp_op expr
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+test
+%empty
+%empty
+test_or_star_expr comma_test_or_star_expr_list comma_opt
+%empty
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+'+'
+INTEGER
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+| plus_or_minus_term_list plus_or_minus term
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+test
+%empty
+%empty
+test_or_star_expr comma_test_or_star_expr_list comma_opt
+| equal_testlist_star_expr_list '=' testlist_star_expr
+equal_testlist_star_expr_list
+| testlist_star_expr expr_stmt_suffix_choices
+expr_stmt
+%empty
+%empty
+small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
+simple_stmt
+%empty
+| NEWLINE INDENT stmt stmt_list DEDENT
+| elif_test_colon_suite_list ELIF test ':' suite
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+test
+%empty
+%empty
+test_or_star_expr comma_test_or_star_expr_list comma_opt
+%empty
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+'-'
+INTEGER
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+| plus_or_minus_term_list plus_or_minus term
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+test
+%empty
+%empty
+test_or_star_expr comma_test_or_star_expr_list comma_opt
+| equal_testlist_star_expr_list '=' testlist_star_expr
+equal_testlist_star_expr_list
+| testlist_star_expr expr_stmt_suffix_choices
+expr_stmt
+%empty
+%empty
+small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
+simple_stmt
+%empty
+| NEWLINE INDENT stmt stmt_list DEDENT
+| ELSE ':' suite
 IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt
 if_stmt
 | compound_stmt
 | stmt_list stmt
 | NEWLINE INDENT stmt stmt_list DEDENT
 %empty
-| for_stmt
+WHILE test ':' suite else_colon_suite_opt
+| while_stmt
 | compound_stmt
+%empty
+| '-'
+INTEGER
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+plus_or_minus_or_tilde factor
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+%empty
+%empty
+test comma_test_list comma_opt
+| testlist
+RETURN testlist_opt
+| return_stmt
+| flow_stmt
+%empty
+%empty
+small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
+simple_stmt
 | stmt_list stmt
 | NEWLINE INDENT stmt stmt_list DEDENT
 DEF NAME parameters arrow_test_opt ':' suite
@@ -1181,10 +815,38 @@ or_test if_or_test_else_test_opt
 | ':' test
 %empty
 %empty
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+| ':' test
+%empty
+| comma_tfpdef_equal_test_opt_list ',' tfpdef equal_test_opt
 tfpdef equal_test_opt comma_tfpdef_equal_test_opt_list
 | typedargslist
 '(' typedargslist_opt ')'
-NONE
+NAME
 %empty
 atom trailer_list
 %empty
@@ -1264,6 +926,40 @@ not_test and_not_test_list
 and_test or_and_test_list
 %empty
 or_test if_or_test_else_test_opt
+INTEGER
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+| '=' test
+':' test equal_test_opt
+testlist_star_expr annassign
+expr_stmt
+%empty
+%empty
+small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
+simple_stmt
+%empty
 NAME
 %empty
 NAME
@@ -1305,190 +1001,6 @@ atom_expr doublestar_factor_opt
 | power
 %empty
 term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-| '=' test
-':' test equal_test_opt
-testlist_star_expr annassign
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-| '=' test
-':' test equal_test_opt
-testlist_star_expr annassign
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-| stmt_list stmt
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
 NAME
 %empty
 NAME
@@ -1537,138 +1049,8 @@ and_expr xor_and_expr_list
 %empty
 xor_expr or_xor_expr_list
 %empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-| '=' test
-':' test equal_test_opt
-testlist_star_expr annassign
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-%empty
+| DOUBLEEQUAL
 NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-'-'
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-| plus_or_minus_term_list plus_or_minus term
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-| '=' test
-':' test equal_test_opt
-testlist_star_expr annassign
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-| stmt_list stmt
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-| GREATERTHANEQUAL
-INTEGER
 %empty
 atom trailer_list
 %empty
@@ -1688,249 +1070,12 @@ xor_expr or_xor_expr_list
 expr comp_op_expr_list
 | comparison
 %empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-LESSTHAN
-NAME
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-subscript comma_subscript_list comma_opt
-'[' subscriptlist ']'
-| trailer_list trailer
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-| comp_op_expr_list comp_op expr
-expr comp_op_expr_list
-| comparison
-| and_not_test_list AND not_test
 not_test and_not_test_list
 %empty
 and_test or_and_test_list
 %empty
 or_test if_or_test_else_test_opt
 NAME
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-'+'
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-| plus_or_minus_term_list plus_or_minus term
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-subscript comma_subscript_list comma_opt
-'[' subscriptlist ']'
-| trailer_list trailer
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-%empty
-NAME
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-subscript comma_subscript_list comma_opt
-'[' subscriptlist ']'
-| trailer_list trailer
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-| equal_testlist_star_expr_list '=' testlist_star_expr
-equal_testlist_star_expr_list
-| testlist_star_expr expr_stmt_suffix_choices
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-| MINEQUAL
-INTEGER
 %empty
 atom trailer_list
 %empty
@@ -1958,64 +1103,35 @@ or_test if_or_test_else_test_opt
 %empty
 %empty
 test comma_test_list comma_opt
-| testlist_star_expr augassign testlist
-expr_stmt
+| testlist
+RETURN testlist_opt
+| return_stmt
+| flow_stmt
 %empty
 %empty
 small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
 simple_stmt
-| stmt_list stmt
+%empty
 | NEWLINE INDENT stmt stmt_list DEDENT
 %empty
-WHILE test ':' suite else_colon_suite_opt
-| while_stmt
+%empty
+IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt
+if_stmt
+| compound_stmt
+%empty
+| NEWLINE INDENT stmt stmt_list DEDENT
+%empty
+| for_stmt
 | compound_stmt
 | stmt_list stmt
-NAME
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-'+'
+| '-'
 INTEGER
 %empty
 atom trailer_list
 %empty
 atom_expr doublestar_factor_opt
 | power
-| plus_or_minus_term_list plus_or_minus term
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-subscript comma_subscript_list comma_opt
-'[' subscriptlist ']'
-| trailer_list trailer
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
+plus_or_minus_or_tilde factor
 %empty
 term plus_or_minus_term_list
 %empty
@@ -2035,54 +1151,17 @@ not_test and_not_test_list
 and_test or_and_test_list
 %empty
 or_test if_or_test_else_test_opt
-test
 %empty
 %empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-| equal_testlist_star_expr_list '=' testlist_star_expr
-equal_testlist_star_expr_list
-| testlist_star_expr expr_stmt_suffix_choices
-expr_stmt
+test comma_test_list comma_opt
+| testlist
+RETURN testlist_opt
+| return_stmt
+| flow_stmt
 %empty
 %empty
 small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
 simple_stmt
-| stmt_list stmt
-| NEWLINE INDENT stmt stmt_list DEDENT
-%empty
-FOR exprlist IN testlist ':' suite else_colon_suite_opt
-| for_stmt
-| compound_stmt
 | stmt_list stmt
 | NEWLINE INDENT stmt stmt_list DEDENT
 DEF NAME parameters arrow_test_opt ':' suite
@@ -2178,276 +1257,12 @@ not_test and_not_test_list
 and_test or_and_test_list
 %empty
 or_test if_or_test_else_test_opt
-| '-'
 INTEGER
 %empty
 atom trailer_list
 %empty
 atom_expr doublestar_factor_opt
 | power
-plus_or_minus_or_tilde factor
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-| comma_test_or_star_expr_list ',' test_or_star_expr
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-| comma_test_or_star_expr_list ',' test_or_star_expr
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-| comma_test_or_star_expr_list ',' test_or_star_expr
-| '-'
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-plus_or_minus_or_tilde factor
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-| comma_test_or_star_expr_list ',' test_or_star_expr
-%empty
-| comma_test_or_star_expr_list comma_opt
-test_or_star_expr comp_for_OR_comma_test_or_star_expr_list_comma_opt
-| testlist_comp
-'[' testlist_comp_opt ']'
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-| '=' test
-':' test equal_test_opt
-testlist_star_expr annassign
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-NAME
-%empty
-NAME
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-subscript comma_subscript_list comma_opt
-'[' subscriptlist ']'
-| trailer_list trailer
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-| '-'
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-plus_or_minus_or_tilde factor
 %empty
 term plus_or_minus_term_list
 %empty
@@ -2550,14 +1365,93 @@ and_test or_and_test_list
 or_test if_or_test_else_test_opt
 test
 | comma_test_or_star_expr_list ',' test_or_star_expr
-| '-'
 INTEGER
 %empty
 atom trailer_list
 %empty
 atom_expr doublestar_factor_opt
 | power
-plus_or_minus_or_tilde factor
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+test
+| comma_test_or_star_expr_list ',' test_or_star_expr
+INTEGER
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+test
+| comma_test_or_star_expr_list ',' test_or_star_expr
+INTEGER
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+test
+| comma_test_or_star_expr_list ',' test_or_star_expr
+INTEGER
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
 %empty
 term plus_or_minus_term_list
 %empty
@@ -2616,7 +1510,149 @@ expr_stmt
 %empty
 small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
 simple_stmt
+%empty
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+test
+%empty
+%empty
+test_or_star_expr comma_test_or_star_expr_list comma_opt
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+INTEGER
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+| '=' test
+':' test equal_test_opt
+testlist_star_expr annassign
+expr_stmt
+%empty
+%empty
+small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
+simple_stmt
 | stmt_list stmt
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+test
+%empty
+%empty
+test_or_star_expr comma_test_or_star_expr_list comma_opt
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
 NAME
 %empty
 NAME
@@ -2647,50 +1683,7 @@ or_test if_or_test_else_test_opt
 %empty
 test comp_for_opt
 %empty
-%empty
-argument comma_argument_list comma_opt
-| arglist
-'(' arglist_opt ')'
-| trailer_list trailer
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-%empty
-equal_testlist_star_expr_list
-| testlist_star_expr expr_stmt_suffix_choices
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-| stmt_list stmt
-NAME
-%empty
-NAME
+INTEGER
 %empty
 atom trailer_list
 %empty
@@ -2717,7 +1710,71 @@ and_test or_and_test_list
 or_test if_or_test_else_test_opt
 %empty
 test comp_for_opt
+| comma_argument_list ',' argument
+INTEGER
 %empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+%empty
+test comp_for_opt
+| comma_argument_list ',' argument
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+'-'
+INTEGER
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+| plus_or_minus_term_list plus_or_minus term
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+%empty
+test comp_for_opt
+| comma_argument_list ',' argument
 %empty
 argument comma_argument_list comma_opt
 | arglist
@@ -2746,19 +1803,60 @@ not_test and_not_test_list
 and_test or_and_test_list
 %empty
 or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-%empty
-equal_testlist_star_expr_list
-| testlist_star_expr expr_stmt_suffix_choices
+| '=' test
+':' test equal_test_opt
+testlist_star_expr annassign
 expr_stmt
 %empty
 %empty
 small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
 simple_stmt
 | stmt_list stmt
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+| NOTEQUAL
+| '-'
+INTEGER
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+plus_or_minus_or_tilde factor
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+| comp_op_expr_list comp_op expr
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
 NAME
 %empty
 %empty
@@ -2830,9 +1928,42 @@ expr_stmt
 %empty
 small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
 simple_stmt
-| stmt_list stmt
+%empty
 NAME
 %empty
+NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+%empty
+test comp_for_opt
+%empty
+%empty
+argument comma_argument_list comma_opt
+| arglist
+'(' arglist_opt ')'
+| trailer_list trailer
 atom trailer_list
 %empty
 atom_expr doublestar_factor_opt
@@ -2860,108 +1991,22 @@ test
 %empty
 %empty
 test_or_star_expr comma_test_or_star_expr_list comma_opt
-NAME
 %empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-| '=' test
-':' test equal_test_opt
-testlist_star_expr annassign
+equal_testlist_star_expr_list
+| testlist_star_expr expr_stmt_suffix_choices
 expr_stmt
 %empty
 %empty
 small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
 simple_stmt
 | stmt_list stmt
-INTEGER
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-NAME
+| NEWLINE INDENT stmt stmt_list DEDENT
 %empty
 NAME
 %empty
-NAME
 %empty
-atom trailer_list
+STRING string_list
 %empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-subscript comma_subscript_list comma_opt
-'[' subscriptlist ']'
-| trailer_list trailer
 atom trailer_list
 %empty
 atom_expr doublestar_factor_opt
@@ -3030,46 +2075,13 @@ small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
 simple_stmt
 %empty
 | NEWLINE INDENT stmt stmt_list DEDENT
-%empty
-| for_stmt
+| ELSE ':' suite
+IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt
+if_stmt
 | compound_stmt
 | stmt_list stmt
 NAME
 %empty
-%empty
-STRING string_list
-%empty
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-%empty
-test comp_for_opt
-%empty
-%empty
-argument comma_argument_list comma_opt
-| arglist
-'(' arglist_opt ')'
-| trailer_list trailer
 atom trailer_list
 %empty
 atom_expr doublestar_factor_opt
@@ -3097,19 +2109,34 @@ test
 %empty
 %empty
 test_or_star_expr comma_test_or_star_expr_list comma_opt
-%empty
-equal_testlist_star_expr_list
-| testlist_star_expr expr_stmt_suffix_choices
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-| stmt_list stmt
 NAME
 %empty
+atom trailer_list
 %empty
-STRING string_list
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+NAME
+%empty
+NAME
 %empty
 atom trailer_list
 %empty
@@ -3137,47 +2164,6 @@ or_test if_or_test_else_test_opt
 %empty
 test comp_for_opt
 %empty
-%empty
-argument comma_argument_list comma_opt
-| arglist
-'(' arglist_opt ')'
-| trailer_list trailer
-atom trailer_list
-%empty
-atom_expr doublestar_factor_opt
-| power
-%empty
-term plus_or_minus_term_list
-%empty
-arith_expr shift_arith_expr_list
-%empty
-shift_expr and_shift_expr_list
-%empty
-and_expr xor_and_expr_list
-%empty
-xor_expr or_xor_expr_list
-%empty
-expr comp_op_expr_list
-| comparison
-%empty
-not_test and_not_test_list
-%empty
-and_test or_and_test_list
-%empty
-or_test if_or_test_else_test_opt
-test
-%empty
-%empty
-test_or_star_expr comma_test_or_star_expr_list comma_opt
-%empty
-equal_testlist_star_expr_list
-| testlist_star_expr expr_stmt_suffix_choices
-expr_stmt
-%empty
-%empty
-small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
-simple_stmt
-| stmt_list stmt
 INTEGER
 %empty
 atom trailer_list
@@ -3186,7 +2172,179 @@ atom_expr doublestar_factor_opt
 | power
 %empty
 term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+%empty
+test comp_for_opt
+| comma_argument_list ',' argument
+%empty
+argument comma_argument_list comma_opt
+| arglist
+'(' arglist_opt ')'
+| trailer_list trailer
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+| '=' test
+':' test equal_test_opt
+testlist_star_expr annassign
+expr_stmt
+%empty
+%empty
+small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
+simple_stmt
+| stmt_list stmt
 NAME
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+| NOTEQUAL
+| '-'
+INTEGER
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+plus_or_minus_or_tilde factor
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+| comp_op_expr_list comp_op expr
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+NAME
+%empty
+%empty
+STRING string_list
+%empty
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+%empty
+test comp_for_opt
+%empty
+%empty
+argument comma_argument_list comma_opt
+| arglist
+'(' arglist_opt ')'
+| trailer_list trailer
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
+test
+%empty
+%empty
+test_or_star_expr comma_test_or_star_expr_list comma_opt
+%empty
+equal_testlist_star_expr_list
+| testlist_star_expr expr_stmt_suffix_choices
+expr_stmt
+%empty
+%empty
+small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
+simple_stmt
 %empty
 NAME
 %empty
@@ -3215,12 +2373,57 @@ not_test and_not_test_list
 and_test or_and_test_list
 %empty
 or_test if_or_test_else_test_opt
+%empty
+test comp_for_opt
+%empty
+%empty
+argument comma_argument_list comma_opt
+| arglist
+'(' arglist_opt ')'
+| trailer_list trailer
+atom trailer_list
+%empty
+atom_expr doublestar_factor_opt
+| power
+%empty
+term plus_or_minus_term_list
+%empty
+arith_expr shift_arith_expr_list
+%empty
+shift_expr and_shift_expr_list
+%empty
+and_expr xor_and_expr_list
+%empty
+xor_expr or_xor_expr_list
+%empty
+expr comp_op_expr_list
+| comparison
+%empty
+not_test and_not_test_list
+%empty
+and_test or_and_test_list
+%empty
+or_test if_or_test_else_test_opt
 test
 %empty
 %empty
-subscript comma_subscript_list comma_opt
-'[' subscriptlist ']'
-| trailer_list trailer
+test_or_star_expr comma_test_or_star_expr_list comma_opt
+%empty
+equal_testlist_star_expr_list
+| testlist_star_expr expr_stmt_suffix_choices
+expr_stmt
+%empty
+%empty
+small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
+simple_stmt
+| stmt_list stmt
+| NEWLINE INDENT stmt stmt_list DEDENT
+%empty
+NAME
+%empty
+%empty
+STRING string_list
+%empty
 atom trailer_list
 %empty
 atom_expr doublestar_factor_opt
@@ -3289,8 +2492,9 @@ small_stmt semicolon_small_stmt_list semicolon_opt NEWLINE
 simple_stmt
 %empty
 | NEWLINE INDENT stmt stmt_list DEDENT
-%empty
-| for_stmt
+| ELSE ':' suite
+IF test ':' suite elif_test_colon_suite_list else_colon_suite_opt
+if_stmt
 | compound_stmt
 | stmt_list stmt
 | NEWLINE INDENT stmt stmt_list DEDENT

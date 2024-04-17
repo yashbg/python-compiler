@@ -1,0 +1,10 @@
+token,lexeme,type,ret_type,size,lineno,offset
+NAME,t4,int,,4,19,25
+NAME,t3,int,,4,19,21
+NAME,t2,int,,4,18,17
+NAME,b,int,,4,15,9
+NAME,a,int,,4,14,5
+NAME,t1,bool,,1,10,4
+NAME,t5,int,,4,19,29
+NAME,i,int,,4,16,13
+NAME,n,int,,4,9,0

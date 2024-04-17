@@ -18,7 +18,7 @@ def iter_fibo(n : int) -> int:
       b = a - b
     return a
 
-def catalan(n : int) -> int:  
+def catalan(n : int) -> int:
   #negative value
   if n <=1 :
     return 1

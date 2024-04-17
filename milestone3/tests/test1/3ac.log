@@ -1,7 +1,9 @@
 bubbleSort:
 	beginfunc
 	array = popparam
-	n = popparam
+	t1 = - 4
+	t2 = array[t1]
+	n = t2
 	i = 0
 	i = 0
 
@@ -12,54 +14,54 @@ L1:
 L2:
 	swapped = False
 	j = 0
-	t1 = - i
-	t2 = t1 - 1
-	t3 = n + t2
+	t3 = - i
+	t4 = t3 - 1
+	t5 = n + t4
 	j = 0
 
 L4:
-	if j<t3 goto L5
+	if j<t5 goto L5
 	goto L6
 
 L5:
 
 L7:
-	t4 = j * 4
-	t5 = array[t4]
-	t6 = j + 1
-	t7 = t6 * 4
-	t8 = array[t7]
-	t9 = t5 > t8
-	if t9 goto L8
+	t6 = j * 4
+	t7 = array[t6]
+	t8 = j + 1
+	t9 = t8 * 4
+	t10 = array[t9]
+	t11 = t7 > t10
+	if t11 goto L8
 	goto L9
 
 L8:
-	t10 = j * 4
-	t11 = array[t10]
-	temp = t11
 	t12 = j * 4
-	t14 = j + 1
-	t15 = t14 * 4
-	t16 = array[t15]
-	array[t12] = t16
-	t17 = j + 1
-	t18 = t17 * 4
-	array[t18] = temp
+	t13 = array[t12]
+	temp = t13
+	t14 = j * 4
+	t16 = j + 1
+	t17 = t16 * 4
+	t18 = array[t17]
+	array[t14] = t18
+	t19 = j + 1
+	t20 = t19 * 4
+	array[t20] = temp
 	swapped = True
 	goto L10
 
 L9:
 
 L10:
-	t20 = j
-	j = t20 + 1
+	t22 = j
+	j = t22 + 1
 	goto L4
 
 L6:
 
 L11:
-	t21 = not swapped
-	if t21 goto L12
+	t23 = not swapped
+	if t23 goto L12
 	goto L13
 
 L12:
@@ -69,8 +71,8 @@ L12:
 L13:
 
 L14:
-	t22 = i
-	i = t22 + 1
+	t24 = i
+	i = t24 + 1
 	goto L1
 
 L3:
@@ -80,7 +82,9 @@ L3:
 insertionSort:
 	beginfunc
 	arr = popparam
-	n = popparam
+	t1 = - 4
+	t2 = arr[t1]
+	n = t2
 	i = 0
 	i = 1
 
@@ -89,37 +93,37 @@ L15:
 	goto L17
 
 L16:
-	t1 = i * 4
-	t2 = arr[t1]
-	key = t2
-	t3 = - 1
-	t4 = i + t3
-	j = t4
+	t3 = i * 4
+	t4 = arr[t3]
+	key = t4
+	t5 = - 1
+	t6 = i + t5
+	j = t6
 
 L18:
-	t5 = j >= 0
-	t6 = j * 4
-	t7 = arr[t6]
-	t8 = key < t7
-	t9 = t5 and t8
-	if t9 goto L19
+	t7 = j >= 0
+	t8 = j * 4
+	t9 = arr[t8]
+	t10 = key < t9
+	t11 = t7 and t10
+	if t11 goto L19
 	goto L20
 
 L19:
-	t10 = j + 1
-	t11 = t10 * 4
-	t13 = j * 4
-	t14 = arr[t13]
-	arr[t11] = t14
+	t12 = j + 1
+	t13 = t12 * 4
+	t15 = j * 4
+	t16 = arr[t15]
+	arr[t13] = t16
 	j = j - 1
 	goto L18
 
 L20:
-	t15 = j + 1
-	t16 = t15 * 4
-	arr[t16] = key
-	t18 = i
-	i = t18 + 1
+	t17 = j + 1
+	t18 = t17 * 4
+	arr[t18] = key
+	t20 = i
+	i = t20 + 1
 	goto L15
 
 L17:
@@ -130,11 +134,13 @@ main:
 	beginfunc
 	t1 = - 2
 	t2 = - 9
-	param 20
+	param 24
 	stackpointer +4
 	call allocmem , 1
 	stackpointer -4
 	t3 = popparam
+	t3[0] = 5
+	t3 = t3 + 4
 	t3[0] = t1
 	t3[4] = 45
 	t3[8] = 0
@@ -143,11 +149,13 @@ main:
 	data1 = t3
 	t4 = - 2
 	t5 = - 9
-	param 20
+	param 24
 	stackpointer +4
 	call allocmem , 1
 	stackpointer -4
 	t6 = popparam
+	t6[0] = 5
+	t6 = t6 + 4
 	t6[0] = t4
 	t6[4] = 45
 	t6[8] = 0
@@ -155,15 +163,13 @@ main:
 	t6[16] = t5
 	data2 = t6
 	param data1
-	param 5
-	stackpointer +12
-	call bubbleSort , 2
-	stackpointer -12
+	stackpointer +8
+	call bubbleSort , 1
+	stackpointer -8
 	param data2
-	param 5
-	stackpointer +12
-	call insertionSort , 2
-	stackpointer -12
+	stackpointer +8
+	call insertionSort , 1
+	stackpointer -8
 	param "Sorted array using bubble sort:"
 	stackpointer +8
 	call print , 1

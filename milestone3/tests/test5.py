@@ -1,8 +1,6 @@
 def binarySearch(array: list[int], x: int, low: int, high: int) -> int:
   while low <= high:
     mid: int = low + (high - low) / 2
-    print(array[mid])
-    print(x)
     # if mid == 1:
     #   low = high +1
     if array[mid] == x:

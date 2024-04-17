@@ -1,0 +1,7 @@
+token,lexeme,type,ret_type,size,lineno,offset
+NAME,t1,bool,,1,55,8
+NAME,__name__,str,,8,1,0
+NAME,catalan,,int,,21,
+NAME,main,,None,,32,
+NAME,iter_fibo,,int,,9,
+NAME,recur_fibo,,int,,3,
