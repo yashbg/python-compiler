@@ -163,6 +163,36 @@ main:
 	movq	-32(%rbp), %rax
 	movq	%rax, -40(%rbp)
 
+	# param "a:"
+	# call print , 1
+	movq	$LC3, %rdi
+	call	puts@PLT
+
+	# param a.x
+	# call print , 1
+	movq	-20(%rbp), %r10
+	leaq	0(%r10), %r11
+
+	movl	(%r11), %esi
+	movq	$LC0, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+
+	# param a.y
+	# call print , 1
+	movq	-20(%rbp), %r10
+	leaq	4(%r10), %r11
+
+	movl	(%r11), %esi
+	movq	$LC0, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+
+	# param ""
+	# call print , 1
+	movq	$LC4, %rdi
+	call	puts@PLT
+
 	# param a
 	# call A.update , 1
 	movq	-20(%rbp), %rdi
