@@ -21,6 +21,11 @@ def main():
   a: A = A()
   b: B = B()
 
+  print("a:")
+  print(a.x)
+  print(a.y)
+  print("")
+
   a.update()
 
   print("a:")
