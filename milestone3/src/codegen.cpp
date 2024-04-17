@@ -229,6 +229,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
       }
       else if (get_type(arg) == "bool") {
         arg1 = "puts@PLT";
+        
         if(arg == "0") x86_code.push_back("\tmovq\t$" + str_literal_labels["\"True\""] + ", %rdi");
         else x86_code.push_back("\tmovq\t$" + str_literal_labels["\"False\""] + ", %rdi");
       }

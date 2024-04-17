@@ -92,6 +92,7 @@ int main(int argc, char *argv[]) {
   insert_var("__name__", "str");
 
   add_str_literal("\"%d\\n\"");
+  
   add_str_literal("\"True\"");
   add_str_literal("\"False\"");
 
