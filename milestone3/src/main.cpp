@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
 void show_help() {
   std::cout << "Usage: ./main [-verbose] -input <input_file> -output <output_dir>" << std::endl
             << "  -input: Input file to parse." << std::endl
-            << "  -output: Output directory to dump the symbol tables and the 3AC." << std::endl
+            << "  -output: Output directory to dump x86_64 code, symbol tables and 3AC." << std::endl
             << "  -verbose: Show verbose output." << std::endl;
 }
 
