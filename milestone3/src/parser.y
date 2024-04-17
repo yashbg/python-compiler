@@ -1991,8 +1991,8 @@ atom_expr:
         }
 
         std::string arg = func_args[0];
-        symtable_entry entry = lookup_var(arg);
         if (str == "len") {
+          symtable_entry entry = lookup_var(arg);
           if (entry.type.substr(0, 4) != "list") {
             yyerror("Type error: argument to len() must be a list");
           }

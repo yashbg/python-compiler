@@ -14,15 +14,10 @@ main:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
-	subq	$16, %rsp
 
-	# s = "Hello, World!"
-	movq	$LC1, %rax
-	movq	%rax, -8(%rbp)
-
-	# param s
+	# param "Hello, World!"
 	# call print , 1
-	movq	-8(%rbp), %rdi
+	movq	$LC1, %rdi
 	call	puts@PLT
 
 	# return

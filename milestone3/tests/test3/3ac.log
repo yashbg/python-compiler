@@ -1,7 +1,6 @@
 main:
 	beginfunc
-	s = "Hello, World!"
-	param s
+	param "Hello, World!"
 	stackpointer +8
 	call print , 1
 	stackpointer -8
