@@ -1,3 +1,0 @@
-token,lexeme,type,ret_type,size,lineno,offset
-NAME,z,int,,4,20,8
-NAME,__init__,,None,,14,

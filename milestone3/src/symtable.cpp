@@ -6,10 +6,6 @@
 
 extern int yylineno;
 
-extern bool func_scope;
-extern bool class_scope;
-extern class_symtable *cur_class_symtable_ptr;
-
 extern void yyerror(const char *);
 
 extern int get_size(const std::string &type);
@@ -20,6 +16,7 @@ local_symtable *cur_func_symtable_ptr = nullptr;
 class_symtable *cur_class_symtable_ptr = nullptr;
 bool func_scope = false;
 bool class_scope = false;
+std::string class_name;
 
 std::unordered_map<std::string, std::string> str_literal_labels;
 

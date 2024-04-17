@@ -128,6 +128,16 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     std::string func_name = cur_label;
     cur_func_symtable_ptr = lookup_func(func_name);
 
+    int dot = func_name.find('.');
+    if (dot != std::string::npos) {
+      std::string str = func_name.substr(0, dot);
+      if (is_class(str)) {
+        class_name = str;
+        class_scope = true;
+        cur_class_symtable_ptr = lookup_class(class_name);
+      }
+    }
+
     x86_code.push_back("\tpushq\t%rbp");
     x86_code.push_back("\tmovq\t%rsp, %rbp");
 
@@ -145,6 +155,7 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     // endfunc
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     func_scope = false;
+    class_scope = false;
 
     x86_code.push_back("\t.size\t" + cur_func_name + ", .-" + cur_func_name);
     x86_code.push_back("");

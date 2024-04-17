@@ -1,19 +1,6 @@
-Before update:
-a:
-1
-3
-
-b:
-1
-3
-5
-
-After update:
-a:
-2
-4
-
-b:
-2
-4
-5
+SLR name:
+Shift-Reduce
+CLR name:
+CLR
+LALR name:
+LALR

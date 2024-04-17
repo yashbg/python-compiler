@@ -1,136 +1,93 @@
-A.__init__:
+ShiftReduceParser.__init__:
 	beginfunc
 	self = popparam
-	self.x = 1
-	self.y = 3
+	name_ = popparam
+	self.srname = name_
 	return
 	endfunc
 
-A.update:
+LR0Parser.__init__:
 	beginfunc
 	self = popparam
-	self.x = 2
-	self.y = 4
+	myname_ = popparam
+	parentname_ = popparam
+	self.srname = parentname_
+	self.lr0name = myname_
 	return
 	endfunc
 
-B.__init__:
+CLRParser.__init__:
 	beginfunc
 	self = popparam
-	self.x = 1
-	self.y = 3
-	self.z = 5
+	myname_ = popparam
+	parentname_ = popparam
+	self.srname = parentname_
+	self.clrname = myname_
+	return
+	endfunc
+
+LALRParser.__init__:
+	beginfunc
+	self = popparam
+	myname_ = popparam
+	clrname_ = popparam
+	srname_ = popparam
+	self.srname = srname_
+	self.clrname = clrname_
+	self.lalrname = myname_
+	return
+	endfunc
+
+LALRParser.print_name:
+	beginfunc
+	self = popparam
+	param "SLR name:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
+	param self.srname
+	stackpointer +8
+	call print , 1
+	stackpointer -8
+	param "CLR name:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
+	param self.clrname
+	stackpointer +8
+	call print , 1
+	stackpointer -8
+	param "LALR name:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
+	param self.lalrname
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 	return
 	endfunc
 
 main:
 	beginfunc
-	t1 = 8
+	t1 = 24
 	param t1
 	stackpointer +4
 	call allocmem , 1
 	stackpointer -4
 	t2 = popparam
 	param t2
+	param "LALR"
+	param "CLR"
+	param "Shift-Reduce"
+	stackpointer +32
+	call LALRParser.__init__ , 4
+	stackpointer -32
+	obj = t2
+	param obj
 	stackpointer +8
-	call A.__init__ , 1
+	call LALRParser.print_name , 1
 	stackpointer -8
-	a = t2
-	t3 = 12
-	param t3
-	stackpointer +4
-	call allocmem , 1
-	stackpointer -4
-	t4 = popparam
-	param t4
-	stackpointer +8
-	call B.__init__ , 1
-	stackpointer -8
-	b = t4
-	param "Before update:"
-	stackpointer +8
-	call print , 1
-	stackpointer -8
-	param "a:"
-	stackpointer +8
-	call print , 1
-	stackpointer -8
-	param a.x
-	stackpointer +4
-	call print , 1
-	stackpointer -4
-	param a.y
-	stackpointer +4
-	call print , 1
-	stackpointer -4
-	param ""
-	stackpointer +8
-	call print , 1
-	stackpointer -8
-	param "b:"
-	stackpointer +8
-	call print , 1
-	stackpointer -8
-	param b.x
-	stackpointer +4
-	call print , 1
-	stackpointer -4
-	param b.y
-	stackpointer +4
-	call print , 1
-	stackpointer -4
-	param b.z
-	stackpointer +4
-	call print , 1
-	stackpointer -4
-	param ""
-	stackpointer +8
-	call print , 1
-	stackpointer -8
-	param a
-	stackpointer +8
-	call A.update , 1
-	stackpointer -8
-	param b
-	stackpointer +8
-	call A.update , 1
-	stackpointer -8
-	param "After update:"
-	stackpointer +8
-	call print , 1
-	stackpointer -8
-	param "a:"
-	stackpointer +8
-	call print , 1
-	stackpointer -8
-	param a.x
-	stackpointer +4
-	call print , 1
-	stackpointer -4
-	param a.y
-	stackpointer +4
-	call print , 1
-	stackpointer -4
-	param ""
-	stackpointer +8
-	call print , 1
-	stackpointer -8
-	param "b:"
-	stackpointer +8
-	call print , 1
-	stackpointer -8
-	param b.x
-	stackpointer +4
-	call print , 1
-	stackpointer -4
-	param b.y
-	stackpointer +4
-	call print , 1
-	stackpointer -4
-	param b.z
-	stackpointer +4
-	call print , 1
-	stackpointer -4
 	return
 	endfunc
 

@@ -40,6 +40,7 @@ extern local_symtable *cur_func_symtable_ptr;
 extern class_symtable *cur_class_symtable_ptr;
 extern bool func_scope;
 extern bool class_scope;
+extern std::string class_name;
 
 extern std::unordered_map<std::string, std::string> str_literal_labels;
 

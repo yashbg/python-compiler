@@ -1,121 +1,209 @@
 	.section	.rodata
+LC8:
+	.string	"Shift-Reduce"
 LC7:
-	.string	"After update:"
+	.string	"CLR"
 LC5:
-	.string	""
+	.string	"LALR name:"
+LC3:
+	.string	"SLR name:"
 LC4:
-	.string	"a:"
-LC6:
-	.string	"b:"
+	.string	"CLR name:"
 LC2:
 	.string	"False"
-LC8:
+LC9:
 	.string	"__main__"
 LC1:
 	.string	"True"
-LC3:
-	.string	"Before update:"
+LC6:
+	.string	"LALR"
 LC0:
 	.string	"%d\n"
 
 	.text
 
-	.globl	A.__init__
-	.type	A.__init__, @function
-A.__init__:
+	.globl	ShiftReduceParser.__init__
+	.type	ShiftReduceParser.__init__, @function
+ShiftReduceParser.__init__:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
-	subq	$16, %rsp
-	movq	%rdi, -16(%rbp)
+	subq	$32, %rsp
+	movq	%rdi, -24(%rbp)
+	movq	%rsi, -16(%rbp)
 
-	# self.x = 1
-	movq	-16(%rbp), %r10
+	# self.srname = name_
+	movq	-24(%rbp), %r10
 	leaq	0(%r10), %r11
 
-	movl	$1, %eax
-	movl	%eax, (%r11)
-
-	# self.y = 3
-	movq	-16(%rbp), %r10
-	leaq	4(%r10), %r11
-
-	movl	$3, %eax
-	movl	%eax, (%r11)
+	movq	-16(%rbp), %rax
+	movq	%rax, (%r11)
 
 	# return
 	leave
 	ret
 
 	# endfunc
-	.size	A.__init__, .-A.__init__
+	.size	ShiftReduceParser.__init__, .-ShiftReduceParser.__init__
 
-	.globl	A.update
-	.type	A.update, @function
-A.update:
+	.globl	LR0Parser.__init__
+	.type	LR0Parser.__init__, @function
+LR0Parser.__init__:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
-	subq	$16, %rsp
-	movq	%rdi, -16(%rbp)
+	subq	$32, %rsp
+	movq	%rdi, -32(%rbp)
+	movq	%rsi, -16(%rbp)
+	movq	%rdx, -24(%rbp)
 
-	# self.x = 2
-	movq	-16(%rbp), %r10
+	# self.srname = parentname_
+	movq	-32(%rbp), %r10
 	leaq	0(%r10), %r11
 
-	movl	$2, %eax
-	movl	%eax, (%r11)
+	movq	-24(%rbp), %rax
+	movq	%rax, (%r11)
 
-	# self.y = 4
-	movq	-16(%rbp), %r10
-	leaq	4(%r10), %r11
+	# self.lr0name = myname_
+	movq	-32(%rbp), %r10
+	leaq	8(%r10), %r11
 
-	movl	$4, %eax
-	movl	%eax, (%r11)
+	movq	-16(%rbp), %rax
+	movq	%rax, (%r11)
 
 	# return
 	leave
 	ret
 
 	# endfunc
-	.size	A.update, .-A.update
+	.size	LR0Parser.__init__, .-LR0Parser.__init__
 
-	.globl	B.__init__
-	.type	B.__init__, @function
-B.__init__:
+	.globl	CLRParser.__init__
+	.type	CLRParser.__init__, @function
+CLRParser.__init__:
+	# beginfunc
+	pushq	%rbp
+	movq	%rsp, %rbp
+	subq	$32, %rsp
+	movq	%rdi, -32(%rbp)
+	movq	%rsi, -16(%rbp)
+	movq	%rdx, -24(%rbp)
+
+	# self.srname = parentname_
+	movq	-32(%rbp), %r10
+	leaq	0(%r10), %r11
+
+	movq	-24(%rbp), %rax
+	movq	%rax, (%r11)
+
+	# self.clrname = myname_
+	movq	-32(%rbp), %r10
+	leaq	8(%r10), %r11
+
+	movq	-16(%rbp), %rax
+	movq	%rax, (%r11)
+
+	# return
+	leave
+	ret
+
+	# endfunc
+	.size	CLRParser.__init__, .-CLRParser.__init__
+
+	.globl	LALRParser.__init__
+	.type	LALRParser.__init__, @function
+LALRParser.__init__:
+	# beginfunc
+	pushq	%rbp
+	movq	%rsp, %rbp
+	subq	$48, %rsp
+	movq	%rdi, -40(%rbp)
+	movq	%rsi, -16(%rbp)
+	movq	%rdx, -24(%rbp)
+	movq	%rcx, -32(%rbp)
+
+	# self.srname = srname_
+	movq	-40(%rbp), %r10
+	leaq	0(%r10), %r11
+
+	movq	-32(%rbp), %rax
+	movq	%rax, (%r11)
+
+	# self.clrname = clrname_
+	movq	-40(%rbp), %r10
+	leaq	8(%r10), %r11
+
+	movq	-24(%rbp), %rax
+	movq	%rax, (%r11)
+
+	# self.lalrname = myname_
+	movq	-40(%rbp), %r10
+	leaq	16(%r10), %r11
+
+	movq	-16(%rbp), %rax
+	movq	%rax, (%r11)
+
+	# return
+	leave
+	ret
+
+	# endfunc
+	.size	LALRParser.__init__, .-LALRParser.__init__
+
+	.globl	LALRParser.print_name
+	.type	LALRParser.print_name, @function
+LALRParser.print_name:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
 	subq	$16, %rsp
 	movq	%rdi, -16(%rbp)
 
-	# self.x = 1
+	# param "SLR name:"
+	# call print , 1
+	movq	$LC3, %rdi
+	call	puts@PLT
+
+	# param self.srname
+	# call print , 1
 	movq	-16(%rbp), %r10
 	leaq	0(%r10), %r11
 
-	movl	$1, %eax
-	movl	%eax, (%r11)
+	movq	(%r11), %rdi
+	call	puts@PLT
 
-	# self.y = 3
-	movq	-16(%rbp), %r10
-	leaq	4(%r10), %r11
+	# param "CLR name:"
+	# call print , 1
+	movq	$LC4, %rdi
+	call	puts@PLT
 
-	movl	$3, %eax
-	movl	%eax, (%r11)
-
-	# self.z = 5
+	# param self.clrname
+	# call print , 1
 	movq	-16(%rbp), %r10
 	leaq	8(%r10), %r11
 
-	movl	$5, %eax
-	movl	%eax, (%r11)
+	movq	(%r11), %rdi
+	call	puts@PLT
+
+	# param "LALR name:"
+	# call print , 1
+	movq	$LC5, %rdi
+	call	puts@PLT
+
+	# param self.lalrname
+	# call print , 1
+	movq	-16(%rbp), %r10
+	leaq	16(%r10), %r11
+
+	movq	(%r11), %rdi
+	call	puts@PLT
 
 	# return
 	leave
 	ret
 
 	# endfunc
-	.size	B.__init__, .-B.__init__
+	.size	LALRParser.print_name, .-LALRParser.print_name
 
 	.globl	main
 	.type	main, @function
@@ -123,10 +211,10 @@ main:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
-	subq	$48, %rsp
+	subq	$32, %rsp
 
-	# t1 = 8
-	movl	$8, %eax
+	# t1 = 24
+	movl	$24, %eax
 	movl	%eax, -4(%rbp)
 
 	# param t1
@@ -138,189 +226,24 @@ main:
 	movq	%rax, -12(%rbp)
 
 	# param t2
-	# call A.__init__ , 1
+	# param "LALR"
+	# param "CLR"
+	# param "Shift-Reduce"
+	# call LALRParser.__init__ , 4
+	movq	$LC8, %rcx
+	movq	$LC7, %rdx
+	movq	$LC6, %rsi
 	movq	-12(%rbp), %rdi
-	call	A.__init__
+	call	LALRParser.__init__
 
-	# a = t2
+	# obj = t2
 	movq	-12(%rbp), %rax
 	movq	%rax, -20(%rbp)
 
-	# t3 = 12
-	movl	$12, %eax
-	movl	%eax, -24(%rbp)
-
-	# param t3
-	# call allocmem , 1
-	movl	-24(%rbp), %edi
-	call	malloc@PLT
-
-	# t4 = popparam
-	movq	%rax, -32(%rbp)
-
-	# param t4
-	# call B.__init__ , 1
-	movq	-32(%rbp), %rdi
-	call	B.__init__
-
-	# b = t4
-	movq	-32(%rbp), %rax
-	movq	%rax, -40(%rbp)
-
-	# param "Before update:"
-	# call print , 1
-	movq	$LC3, %rdi
-	call	puts@PLT
-
-	# param "a:"
-	# call print , 1
-	movq	$LC4, %rdi
-	call	puts@PLT
-
-	# param a.x
-	# call print , 1
-	movq	-20(%rbp), %r10
-	leaq	0(%r10), %r11
-
-	movl	(%r11), %esi
-	movq	$LC0, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-	# param a.y
-	# call print , 1
-	movq	-20(%rbp), %r10
-	leaq	4(%r10), %r11
-
-	movl	(%r11), %esi
-	movq	$LC0, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-	# param ""
-	# call print , 1
-	movq	$LC5, %rdi
-	call	puts@PLT
-
-	# param "b:"
-	# call print , 1
-	movq	$LC6, %rdi
-	call	puts@PLT
-
-	# param b.x
-	# call print , 1
-	movq	-40(%rbp), %r10
-	leaq	0(%r10), %r11
-
-	movl	(%r11), %esi
-	movq	$LC0, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-	# param b.y
-	# call print , 1
-	movq	-40(%rbp), %r10
-	leaq	4(%r10), %r11
-
-	movl	(%r11), %esi
-	movq	$LC0, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-	# param b.z
-	# call print , 1
-	movq	-40(%rbp), %r10
-	leaq	8(%r10), %r11
-
-	movl	(%r11), %esi
-	movq	$LC0, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-	# param ""
-	# call print , 1
-	movq	$LC5, %rdi
-	call	puts@PLT
-
-	# param a
-	# call A.update , 1
+	# param obj
+	# call LALRParser.print_name , 1
 	movq	-20(%rbp), %rdi
-	call	A.update
-
-	# param b
-	# call A.update , 1
-	movq	-40(%rbp), %rdi
-	call	A.update
-
-	# param "After update:"
-	# call print , 1
-	movq	$LC7, %rdi
-	call	puts@PLT
-
-	# param "a:"
-	# call print , 1
-	movq	$LC4, %rdi
-	call	puts@PLT
-
-	# param a.x
-	# call print , 1
-	movq	-20(%rbp), %r10
-	leaq	0(%r10), %r11
-
-	movl	(%r11), %esi
-	movq	$LC0, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-	# param a.y
-	# call print , 1
-	movq	-20(%rbp), %r10
-	leaq	4(%r10), %r11
-
-	movl	(%r11), %esi
-	movq	$LC0, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-	# param ""
-	# call print , 1
-	movq	$LC5, %rdi
-	call	puts@PLT
-
-	# param "b:"
-	# call print , 1
-	movq	$LC6, %rdi
-	call	puts@PLT
-
-	# param b.x
-	# call print , 1
-	movq	-40(%rbp), %r10
-	leaq	0(%r10), %r11
-
-	movl	(%r11), %esi
-	movq	$LC0, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-	# param b.y
-	# call print , 1
-	movq	-40(%rbp), %r10
-	leaq	4(%r10), %r11
-
-	movl	(%r11), %esi
-	movq	$LC0, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-	# param b.z
-	# call print , 1
-	movq	-40(%rbp), %r10
-	leaq	8(%r10), %r11
-
-	movl	(%r11), %esi
-	movq	$LC0, %rdi
-	movl	$0, %eax
-	call	printf@PLT
+	call	LALRParser.print_name
 
 	# return
 	leave
@@ -332,7 +255,7 @@ main:
 L1:
 	# t1 = __name__ == "__main__"
 	movq	-8(%rbp), %rax
-	movq	$LC8, %rdx
+	movq	$LC9, %rdx
 	cmpq	%rdx, %rax
 	sete	%al
 	movb	%al, -9(%rbp)

@@ -1,0 +1,3 @@
+token,lexeme,type,ret_type,size,lineno,offset
+NAME,clrname,str,,8,21,8
+NAME,__init__,,None,,16,

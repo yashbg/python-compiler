@@ -1,2 +1,2 @@
 token,lexeme,type,ret_type,size,lineno,offset
-NAME,self,A,,8,3,8
+NAME,self,LALRParser,,8,28,8

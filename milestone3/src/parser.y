@@ -69,7 +69,6 @@
   std::stack<std::string> end_stack;
   std::stack<std::string> loop_stack;
   std::stack<std::string> loop_stack_false;
-  std::string class_name;
 
   int get_size(const std::string &type);
   int get_list_element_count(char* list);

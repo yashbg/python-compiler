@@ -1,7 +1,4 @@
 token,lexeme,type,ret_type,size,lineno,offset
-NAME,b,B,,8,24,32
-NAME,t4,B,,8,24,24
-NAME,t3,int,,4,24,20
-NAME,a,A,,8,22,12
-NAME,t2,A,,8,22,4
-NAME,t1,int,,4,22,0
+NAME,obj,LALRParser,,8,39,12
+NAME,t2,LALRParser,,8,39,4
+NAME,t1,int,,4,39,0
