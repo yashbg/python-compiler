@@ -848,6 +848,11 @@ for_stmt:
     if( n2 != "range")
       yyerror("Invalid iterator");
     else {
+      
+      std::string arg_type1 = get_type($6);
+      if (!(arg_type1 == "int")) {
+        type_err_op("iterator", arg_type1);
+      }
       cond_label = new_label();
       true_label = new_label();
       false_label = new_label();
@@ -888,6 +893,14 @@ for_stmt:
     if( n2 != "range")
       yyerror("Invalid iterator");
     else {
+      std::string arg_type1 = get_type($6);
+      std::string arg_type2 = get_type($8);
+      if (!(arg_type1 == "int")) {
+        type_err_op("iterator", arg_type1);
+      }
+      if (!(arg_type2 == "int")) {
+        type_err_op("iterator", arg_type2);
+      }
       cond_label = new_label();
       true_label = new_label();
       false_label = new_label();
