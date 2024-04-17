@@ -20,16 +20,10 @@ main:
 	movq	$LC1, %rax
 	movq	%rax, -8(%rbp)
 
-	# a = 5
-	movl	$5, %eax
-	movl	%eax, -12(%rbp)
-
-	# param a
+	# param s
 	# call print , 1
-	movl	-12(%rbp), %esi
-	movl	$LC0, %edi
-	movl	$0, %eax
-	call	printf@PLT
+	movq	-8(%rbp), %rdi
+	call	puts@PLT
 
 	# return
 	leave

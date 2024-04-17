@@ -220,12 +220,20 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
 
     if (arg1 == "print") {
-      arg1 = "printf@PLT";
       std::string arg = arg_stack.top();
 
-      x86_code.push_back("\tmovl\t" + get_addr(arg) + ", %esi");
-      x86_code.push_back("\tmovl\t$" + str_literal_labels["\"%d\\n\""] + ", %edi");
-      x86_code.push_back("\tmovl\t$0, %eax");
+      if (get_type(arg) == "str") {
+        arg1 = "puts@PLT";
+        
+        x86_code.push_back("\tmovq\t" + get_addr(arg) + ", %rdi");
+      }
+      else {
+        arg1 = "printf@PLT";
+        
+        x86_code.push_back("\tmovl\t" + get_addr(arg) + ", %esi");
+        x86_code.push_back("\tmovq\t$" + str_literal_labels["\"%d\\n\""] + ", %rdi");
+        x86_code.push_back("\tmovl\t$0, %eax");
+      }
 
       arg_stack.pop();
 

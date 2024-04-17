@@ -129,7 +129,7 @@ main:
 	leaq	0(%rax), %rdx
 
 	movl	(%rdx), %esi
-	movl	$LC0, %edi
+	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
@@ -139,7 +139,7 @@ main:
 	leaq	4(%rax), %rdx
 
 	movl	(%rdx), %esi
-	movl	$LC0, %edi
+	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
@@ -149,7 +149,7 @@ main:
 	leaq	0(%rax), %rdx
 
 	movl	(%rdx), %esi
-	movl	$LC0, %edi
+	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
@@ -159,7 +159,7 @@ main:
 	leaq	4(%rax), %rdx
 
 	movl	(%rdx), %esi
-	movl	$LC0, %edi
+	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
@@ -169,7 +169,7 @@ main:
 	leaq	8(%rax), %rdx
 
 	movl	(%rdx), %esi
-	movl	$LC0, %edi
+	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 

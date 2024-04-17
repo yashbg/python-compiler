@@ -1,11 +1,10 @@
 main:
 	beginfunc
 	s = "Hello, World!"
-	a = 5
-	param a
-	stackpointer +4
+	param s
+	stackpointer +8
 	call print , 1
-	stackpointer -4
+	stackpointer -8
 	return
 	endfunc
 

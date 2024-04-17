@@ -628,7 +628,7 @@ L22:
 	# param t8
 	# call print , 1
 	movl	-60(%rbp), %esi
-	movl	$LC0, %edi
+	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
@@ -677,7 +677,7 @@ L25:
 	# param t11
 	# call print , 1
 	movl	-72(%rbp), %esi
-	movl	$LC0, %edi
+	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
