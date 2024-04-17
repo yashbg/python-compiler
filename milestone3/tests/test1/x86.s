@@ -1,6 +1,12 @@
 	.section	.rodata
-LC1:
+LC4:
 	.string	"__main__"
+LC2:
+	.string	""
+LC1:
+	.string	"Sorted array using bubble sort:"
+LC3:
+	.string	"Sorted array using insertion sort:"
 LC0:
 	.string	"%d\n"
 
@@ -592,6 +598,11 @@ main:
 	movq	-48(%rbp), %rdi
 	call	insertionSort
 
+	# param "Sorted array using bubble sort:"
+	# call print , 1
+	movq	$LC1, %rdi
+	call	puts@PLT
+
 	# i = 0
 	movl	$0, %eax
 	movl	%eax, -52(%rbp)
@@ -645,6 +656,16 @@ L22:
 	jmp	L21
 
 L23:
+	# param ""
+	# call print , 1
+	movq	$LC2, %rdi
+	call	puts@PLT
+
+	# param "Sorted array using insertion sort:"
+	# call print , 1
+	movq	$LC3, %rdi
+	call	puts@PLT
+
 	# i = 0
 	movl	$0, %eax
 	movl	%eax, -52(%rbp)
@@ -704,7 +725,7 @@ L26:
 L27:
 	# t1 = __name__ == "__main__"
 	movl	-8(%rbp), %eax
-	cmpl	$LC1, %eax
+	cmpl	$LC4, %eax
 	sete	%al
 	movb	%al, -9(%rbp)
 

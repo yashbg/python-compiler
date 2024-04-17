@@ -164,6 +164,10 @@ main:
 	stackpointer +12
 	call insertionSort , 2
 	stackpointer -12
+	param "Sorted array using bubble sort:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 	i = 0
 	i = 0
 
@@ -183,6 +187,14 @@ L22:
 	goto L21
 
 L23:
+	param ""
+	stackpointer +8
+	call print , 1
+	stackpointer -8
+	param "Sorted array using insertion sort:"
+	stackpointer +8
+	call print , 1
+	stackpointer -8
 	i = 0
 
 L24:

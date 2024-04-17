@@ -1,5 +1,10 @@
+def foo(s: str):
+  print(s)
+
+
 def main():
-  print("Hello, World!")
+  s: str = "Hello, World!"
+  foo(s)
 
 
 if __name__ == '__main__':

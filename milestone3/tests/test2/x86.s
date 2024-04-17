@@ -1,6 +1,12 @@
 	.section	.rodata
-LC1:
+LC4:
 	.string	"__main__"
+LC3:
+	.string	"b:"
+LC2:
+	.string	""
+LC1:
+	.string	"a:"
 LC0:
 	.string	"%d\n"
 
@@ -123,6 +129,11 @@ main:
 	movq	-32(%rbp), %rax
 	movq	%rax, -40(%rbp)
 
+	# param "a:"
+	# call print , 1
+	movq	$LC1, %rdi
+	call	puts@PLT
+
 	# param a.x
 	# call print , 1
 	movq	-20(%rbp), %rax
@@ -142,6 +153,16 @@ main:
 	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
+
+	# param ""
+	# call print , 1
+	movq	$LC2, %rdi
+	call	puts@PLT
+
+	# param "b:"
+	# call print , 1
+	movq	$LC3, %rdi
+	call	puts@PLT
 
 	# param b.x
 	# call print , 1
@@ -183,7 +204,7 @@ main:
 L1:
 	# t1 = __name__ == "__main__"
 	movl	-8(%rbp), %eax
-	cmpl	$LC1, %eax
+	cmpl	$LC4, %eax
 	sete	%al
 	movb	%al, -9(%rbp)
 

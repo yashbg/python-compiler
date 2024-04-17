@@ -8,17 +8,46 @@ LC0:
 
 	.text
 
+	.globl	foo
+	.type	foo, @function
+foo:
+	# beginfunc
+	pushq	%rbp
+	movq	%rsp, %rbp
+	subq	$16, %rsp
+	movq	%rdi, -8(%rbp)
+
+	# param s
+	# call print , 1
+	movq	-8(%rbp), %rdi
+	call	puts@PLT
+
+	# return
+	leave
+	ret
+
+	# endfunc
+	.size	foo, .-foo
+
 	.globl	main
 	.type	main, @function
 main:
 	# beginfunc
 	pushq	%rbp
 	movq	%rsp, %rbp
+	subq	$16, %rsp
 
-	# param "Hello, World!"
-	# call print , 1
-	movq	$LC1, %rdi
-	call	puts@PLT
+	# s = "Hello, World!"
+	movq	$LC1, %rax
+	movq	%rax, -8(%rbp)
+
+	# param s
+	# call foo , 1
+	movq	-8(%rbp), %rdi
+	call	foo
+
+	# t1 = popparam
+	movq	%rax, -16(%rbp)
 
 	# return
 	leave

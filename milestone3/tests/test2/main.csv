@@ -1,7 +1,7 @@
 token,lexeme,type,ret_type,size,lineno,offset
-NAME,b,B,,8,19,32
-NAME,t4,B,,8,19,24
-NAME,t3,int,,4,19,20
+NAME,b,B,,8,20,32
+NAME,t4,B,,8,20,24
+NAME,t3,int,,4,20,20
 NAME,a,A,,8,18,12
 NAME,t2,A,,8,18,4
 NAME,t1,int,,4,18,0

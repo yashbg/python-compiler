@@ -1,9 +1,21 @@
-main:
+foo:
 	beginfunc
-	param "Hello, World!"
+	s = popparam
+	param s
 	stackpointer +8
 	call print , 1
 	stackpointer -8
+	return
+	endfunc
+
+main:
+	beginfunc
+	s = "Hello, World!"
+	param s
+	stackpointer +8
+	call foo , 1
+	stackpointer -8
+	t1 = popparam
 	return
 	endfunc
 
