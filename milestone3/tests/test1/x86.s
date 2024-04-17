@@ -31,13 +31,13 @@ bubbleSort:
 	movl	%eax, -12(%rbp)
 
 	# t2 = array[t1]
-	movl	-12(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-12(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -16(%rbp)
 
 	# n = t2
@@ -106,13 +106,13 @@ L7:
 	movl	%eax, -45(%rbp)
 
 	# t7 = array[t6]
-	movl	-45(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-45(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -49(%rbp)
 
 	# t8 = j + 1
@@ -126,13 +126,13 @@ L7:
 	movl	%eax, -57(%rbp)
 
 	# t10 = array[t9]
-	movl	-57(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-57(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -61(%rbp)
 
 	# t11 = t7 > t10
@@ -156,13 +156,13 @@ L8:
 	movl	%eax, -66(%rbp)
 
 	# t13 = array[t12]
-	movl	-66(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-66(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -70(%rbp)
 
 	# temp = t13
@@ -185,24 +185,24 @@ L8:
 	movl	%eax, -90(%rbp)
 
 	# t18 = array[t17]
-	movl	-90(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-90(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -94(%rbp)
 
 	# array[t14] = t18
-	movl	-78(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-78(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
 	movl	-94(%rbp), %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t19 = j + 1
 	movl	-29(%rbp), %eax
@@ -215,14 +215,14 @@ L8:
 	movl	%eax, -102(%rbp)
 
 	# array[t20] = temp
-	movl	-102(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-102(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
 	movl	-74(%rbp), %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# swapped = True
 	movb	$1, %al
@@ -305,13 +305,13 @@ insertionSort:
 	movl	%eax, -12(%rbp)
 
 	# t2 = arr[t1]
-	movl	-12(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-12(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -16(%rbp)
 
 	# n = t2
@@ -342,13 +342,13 @@ L16:
 	movl	%eax, -28(%rbp)
 
 	# t4 = arr[t3]
-	movl	-28(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-28(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -32(%rbp)
 
 	# key = t4
@@ -382,13 +382,13 @@ L18:
 	movl	%eax, -53(%rbp)
 
 	# t9 = arr[t8]
-	movl	-53(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-53(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -57(%rbp)
 
 	# t10 = key < t9
@@ -434,24 +434,24 @@ L19:
 	movl	%eax, -75(%rbp)
 
 	# t16 = arr[t15]
-	movl	-75(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-75(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -79(%rbp)
 
 	# arr[t13] = t16
-	movl	-67(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-67(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
 	movl	-79(%rbp), %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# j = j - 1
 	movl	-48(%rbp), %eax
@@ -473,14 +473,14 @@ L20:
 	movl	%eax, -87(%rbp)
 
 	# arr[t18] = key
-	movl	-87(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-87(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
 	movl	-36(%rbp), %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t20 = i
 	movl	-24(%rbp), %eax
@@ -529,11 +529,11 @@ main:
 	movq	%rax, -16(%rbp)
 
 	# t3[0] = 5
-	movq	-16(%rbp), %rax
-	leaq	0(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	0(%r10), %r11
 
 	movl	$5, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t3 = t3 + 4
 	movl	-16(%rbp), %eax
@@ -541,39 +541,39 @@ main:
 	movl	%eax, -16(%rbp)
 
 	# t3[0] = t1
-	movq	-16(%rbp), %rax
-	leaq	0(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	0(%r10), %r11
 
 	movl	-4(%rbp), %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t3[4] = 45
-	movq	-16(%rbp), %rax
-	leaq	4(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	4(%r10), %r11
 
 	movl	$45, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t3[8] = 0
-	movq	-16(%rbp), %rax
-	leaq	8(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	8(%r10), %r11
 
 	movl	$0, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t3[12] = 11
-	movq	-16(%rbp), %rax
-	leaq	12(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	12(%r10), %r11
 
 	movl	$11, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t3[16] = t2
-	movq	-16(%rbp), %rax
-	leaq	16(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	16(%r10), %r11
 
 	movl	-8(%rbp), %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# data1 = t3
 	movq	-16(%rbp), %rax
@@ -598,11 +598,11 @@ main:
 	movq	%rax, -40(%rbp)
 
 	# t6[0] = 5
-	movq	-40(%rbp), %rax
-	leaq	0(%rax), %rdx
+	movq	-40(%rbp), %r10
+	leaq	0(%r10), %r11
 
 	movl	$5, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t6 = t6 + 4
 	movl	-40(%rbp), %eax
@@ -610,39 +610,39 @@ main:
 	movl	%eax, -40(%rbp)
 
 	# t6[0] = t4
-	movq	-40(%rbp), %rax
-	leaq	0(%rax), %rdx
+	movq	-40(%rbp), %r10
+	leaq	0(%r10), %r11
 
 	movl	-28(%rbp), %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t6[4] = 45
-	movq	-40(%rbp), %rax
-	leaq	4(%rax), %rdx
+	movq	-40(%rbp), %r10
+	leaq	4(%r10), %r11
 
 	movl	$45, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t6[8] = 0
-	movq	-40(%rbp), %rax
-	leaq	8(%rax), %rdx
+	movq	-40(%rbp), %r10
+	leaq	8(%r10), %r11
 
 	movl	$0, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t6[12] = 11
-	movq	-40(%rbp), %rax
-	leaq	12(%rax), %rdx
+	movq	-40(%rbp), %r10
+	leaq	12(%r10), %r11
 
 	movl	$11, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t6[16] = t5
-	movq	-40(%rbp), %rax
-	leaq	16(%rax), %rdx
+	movq	-40(%rbp), %r10
+	leaq	16(%r10), %r11
 
 	movl	-32(%rbp), %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# data2 = t6
 	movq	-40(%rbp), %rax
@@ -687,13 +687,13 @@ L22:
 	movl	%eax, -56(%rbp)
 
 	# t8 = data1[t7]
-	movl	-56(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-24(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-56(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-24(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -60(%rbp)
 
 	# param t8
@@ -746,13 +746,13 @@ L25:
 	movl	%eax, -68(%rbp)
 
 	# t11 = data2[t10]
-	movl	-68(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-48(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-68(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-48(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -72(%rbp)
 
 	# param t11

@@ -79,13 +79,13 @@ L4:
 	movl	%eax, -45(%rbp)
 
 	# t7 = array[t6]
-	movl	-45(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-45(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -49(%rbp)
 
 	# t8 = t7 == x
@@ -121,13 +121,13 @@ L8:
 	movl	%eax, -54(%rbp)
 
 	# t10 = array[t9]
-	movl	-54(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-54(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -58(%rbp)
 
 	# t11 = t10 < x
@@ -216,13 +216,13 @@ linearSearch:
 	movl	%eax, -20(%rbp)
 
 	# t2 = array[t1]
-	movl	-20(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-20(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -24(%rbp)
 
 	# i = 0
@@ -246,13 +246,13 @@ L14:
 	movl	%eax, -28(%rbp)
 
 	# t4 = array[t3]
-	movl	-28(%rbp), %eax
-	cltq
-	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
-	addq	%rax, %rdx
+	movl	-28(%rbp), %r10d
+	movslq %r10d, %r10
+	movq	%r10, %r11
+	movq	-8(%rbp), %r10
+	addq	%r10, %r11
 
-	movl	(%rdx), %eax
+	movl	(%r11), %eax
 	movl	%eax, -32(%rbp)
 
 	# t5 = t4 == x
@@ -331,11 +331,11 @@ main:
 	movq	%rax, -8(%rbp)
 
 	# t1[0] = 8
-	movq	-8(%rbp), %rax
-	leaq	0(%rax), %rdx
+	movq	-8(%rbp), %r10
+	leaq	0(%r10), %r11
 
 	movl	$8, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t1 = t1 + 4
 	movl	-8(%rbp), %eax
@@ -343,60 +343,60 @@ main:
 	movl	%eax, -8(%rbp)
 
 	# t1[0] = 3
-	movq	-8(%rbp), %rax
-	leaq	0(%rax), %rdx
+	movq	-8(%rbp), %r10
+	leaq	0(%r10), %r11
 
 	movl	$3, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t1[4] = 4
-	movq	-8(%rbp), %rax
-	leaq	4(%rax), %rdx
+	movq	-8(%rbp), %r10
+	leaq	4(%r10), %r11
 
 	movl	$4, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t1[8] = 5
-	movq	-8(%rbp), %rax
-	leaq	8(%rax), %rdx
+	movq	-8(%rbp), %r10
+	leaq	8(%r10), %r11
 
 	movl	$5, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t1[12] = 6
-	movq	-8(%rbp), %rax
-	leaq	12(%rax), %rdx
+	movq	-8(%rbp), %r10
+	leaq	12(%r10), %r11
 
 	movl	$6, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t1[16] = 7
-	movq	-8(%rbp), %rax
-	leaq	16(%rax), %rdx
+	movq	-8(%rbp), %r10
+	leaq	16(%r10), %r11
 
 	movl	$7, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t1[20] = 8
-	movq	-8(%rbp), %rax
-	leaq	20(%rax), %rdx
+	movq	-8(%rbp), %r10
+	leaq	20(%r10), %r11
 
 	movl	$8, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t1[24] = 9
-	movq	-8(%rbp), %rax
-	leaq	24(%rax), %rdx
+	movq	-8(%rbp), %r10
+	leaq	24(%r10), %r11
 
 	movl	$9, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# t1[28] = 10
-	movq	-8(%rbp), %rax
-	leaq	28(%rax), %rdx
+	movq	-8(%rbp), %r10
+	leaq	28(%r10), %r11
 
 	movl	$10, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# array = t1
 	movq	-8(%rbp), %rax

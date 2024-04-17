@@ -615,20 +615,20 @@ std::string get_addr(const std::string &name) {
     std::string offset = name.substr(brace + 1, name.size() - brace - 2);
     std::string arr_addr = get_addr(arr);
     if (is_int_literal(offset)) {
-      x86_code.push_back("\tmovq\t" + arr_addr + ", %rax");
-      x86_code.push_back("\tleaq\t" + offset + "(%rax), %rdx");
+      x86_code.push_back("\tmovq\t" + arr_addr + ", %r10");
+      x86_code.push_back("\tleaq\t" + offset + "(%r10), %r11");
       x86_code.push_back("");
-      return "(%rdx)";
+      return "(%r11)";
     }
 
     std::string offset_addr = get_addr(offset);
-    x86_code.push_back("\tmovl\t" + offset_addr + ", %eax");
-    x86_code.push_back("\tcltq");
-    x86_code.push_back("\tmovq\t%rax, %rdx");
-    x86_code.push_back("\tmovq\t" + arr_addr + ", %rax");
-    x86_code.push_back("\taddq\t%rax, %rdx");
+    x86_code.push_back("\tmovl\t" + offset_addr + ", %r10d");
+    x86_code.push_back("\tmovslq %r10d, %r10");
+    x86_code.push_back("\tmovq\t%r10, %r11");
+    x86_code.push_back("\tmovq\t" + arr_addr + ", %r10");
+    x86_code.push_back("\taddq\t%r10, %r11");
     x86_code.push_back("");
-    return "(%rdx)";
+    return "(%r11)";
   }
 
   int dot = name.find('.');
@@ -641,10 +641,10 @@ std::string get_addr(const std::string &name) {
     std::string class_name = lookup_var(obj).type;
     int offset = lookup_attr(class_name, attr).offset;
 
-    x86_code.push_back("\tmovq\t" + obj_addr + ", %rax");
-    x86_code.push_back("\tleaq\t" + std::to_string(offset) + "(%rax), %rdx");
+    x86_code.push_back("\tmovq\t" + obj_addr + ", %r10");
+    x86_code.push_back("\tleaq\t" + std::to_string(offset) + "(%r10), %r11");
     x86_code.push_back("");
-    return "(%rdx)";
+    return "(%r11)";
   }
   
   symtable_entry entry = lookup_var(name);

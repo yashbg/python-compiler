@@ -26,18 +26,18 @@ A.__init__:
 	movq	%rdi, -16(%rbp)
 
 	# self.x = 1
-	movq	-16(%rbp), %rax
-	leaq	0(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	0(%r10), %r11
 
 	movl	$1, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# self.y = 3
-	movq	-16(%rbp), %rax
-	leaq	4(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	4(%r10), %r11
 
 	movl	$3, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# return
 	leave
@@ -56,18 +56,18 @@ A.update:
 	movq	%rdi, -16(%rbp)
 
 	# self.x = 2
-	movq	-16(%rbp), %rax
-	leaq	0(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	0(%r10), %r11
 
 	movl	$2, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# self.y = 4
-	movq	-16(%rbp), %rax
-	leaq	4(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	4(%r10), %r11
 
 	movl	$4, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# return
 	leave
@@ -86,25 +86,25 @@ B.__init__:
 	movq	%rdi, -16(%rbp)
 
 	# self.x = 1
-	movq	-16(%rbp), %rax
-	leaq	0(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	0(%r10), %r11
 
 	movl	$1, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# self.y = 3
-	movq	-16(%rbp), %rax
-	leaq	4(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	4(%r10), %r11
 
 	movl	$3, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# self.z = 5
-	movq	-16(%rbp), %rax
-	leaq	8(%rax), %rdx
+	movq	-16(%rbp), %r10
+	leaq	8(%r10), %r11
 
 	movl	$5, %eax
-	movl	%eax, (%rdx)
+	movl	%eax, (%r11)
 
 	# return
 	leave
@@ -175,20 +175,20 @@ main:
 
 	# param a.x
 	# call print , 1
-	movq	-20(%rbp), %rax
-	leaq	0(%rax), %rdx
+	movq	-20(%rbp), %r10
+	leaq	0(%r10), %r11
 
-	movl	(%rdx), %esi
+	movl	(%r11), %esi
 	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
 	# param a.y
 	# call print , 1
-	movq	-20(%rbp), %rax
-	leaq	4(%rax), %rdx
+	movq	-20(%rbp), %r10
+	leaq	4(%r10), %r11
 
-	movl	(%rdx), %esi
+	movl	(%r11), %esi
 	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
@@ -205,30 +205,30 @@ main:
 
 	# param b.x
 	# call print , 1
-	movq	-40(%rbp), %rax
-	leaq	0(%rax), %rdx
+	movq	-40(%rbp), %r10
+	leaq	0(%r10), %r11
 
-	movl	(%rdx), %esi
+	movl	(%r11), %esi
 	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
 	# param b.y
 	# call print , 1
-	movq	-40(%rbp), %rax
-	leaq	4(%rax), %rdx
+	movq	-40(%rbp), %r10
+	leaq	4(%r10), %r11
 
-	movl	(%rdx), %esi
+	movl	(%r11), %esi
 	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
 	# param b.z
 	# call print , 1
-	movq	-40(%rbp), %rax
-	leaq	8(%rax), %rdx
+	movq	-40(%rbp), %r10
+	leaq	8(%r10), %r11
 
-	movl	(%rdx), %esi
+	movl	(%r11), %esi
 	movq	$LC0, %rdi
 	movl	$0, %eax
 	call	printf@PLT
