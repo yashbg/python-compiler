@@ -87,7 +87,8 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     std::string arg1_addr = get_addr(arg1);
     std::string result_addr = get_addr(result);
 
-    x86_code.push_back("\tcmpl\t$0, " + arg1_addr);
+    x86_code.push_back("\tmovl\t" + arg1_addr + ", %eax");
+    x86_code.push_back("\tcmpl\t$0, %eax");
     x86_code.push_back("\tsetne\t%al");
     x86_code.push_back("\tmovb\t%al, " + result_addr);
     x86_code.push_back("");
