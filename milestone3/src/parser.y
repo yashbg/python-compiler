@@ -53,7 +53,7 @@
   int calc_list_len(const std::string &str);
 
   void type_err_op(const std::string &op, const std::string &arg);
-  void check_type_equiv(const std::string &type1, const std::string &type2);
+  std::string check_type_equiv(const std::string &name1, const std::string &type1, const std::string &name2, const std::string &type2);
   void check_func_args(const std::string &name);
   void check_method_args(const std::string &class_name, const std::string &method_name);
 
@@ -391,28 +391,33 @@ expr_stmt:
   {
     parser_logfile << "testlist_star_expr annassign" << std::endl;
 
-    std::string name = $1;
-    int dot = name.find('.');
+    std::string rhs = $3;
+    if ($3[0] != ':') {
+      rhs = check_type_equiv($1, var_type, $3, get_type($3));
+    }
+
+    std::string lhs = $1;
+    int dot = lhs.find('.');
     if (dot != std::string::npos) {
-      std::string attr = name.substr(dot + 1);
+      std::string attr = lhs.substr(dot + 1);
       check_redecl(attr);
     }
     else {
-      check_redecl(name);
+      check_redecl(lhs);
     }
 
-    if (name.substr(0, 4) == "self") {
-      insert_attr(name.substr(5), var_type);
+    if (lhs.substr(0, 4) == "self") {
+      insert_attr(lhs.substr(5), var_type);
     }
     else {
-      insert_var(name, var_type);
+      insert_var(lhs, var_type);
     }
 
-    if($3[0] != ':') {
-      gen("=", $3, "", name);
+    if ($3[0] != ':') {
+      gen("=", rhs, "", lhs);
     }
 
-    strcpy($$, $3);
+    strcpy($$, lhs.c_str());
   }
 | testlist_star_expr
   {
@@ -473,11 +478,11 @@ expr_stmt:
     parser_logfile << "| testlist_star_expr expr_stmt_suffix_choices" << std::endl;
     
     if($3[0] != '\0'){
-      check_type_equiv(get_type($1), get_type($3));
+      std::string rhs = check_type_equiv(expr_stmt_result, get_type(expr_stmt_result), $3, get_type($3));
 
-      gen("=", $3, "", expr_stmt_result);
+      gen("=", rhs, "", expr_stmt_result);
 
-      strcpy($$, $3);
+      strcpy($$, expr_stmt_result.c_str());
     }
     else {
       strcpy($$, $1);
@@ -523,7 +528,6 @@ annassign:
     check_valid_type(var_type);
 
     if($4[0] != '\0'){
-      check_type_equiv(var_type, get_type($4));
       std::string temp = var_type.substr(0, 4);
       if(temp == "list" && $4[0] == '['){
         int element_number = get_list_element_count($4);
@@ -544,7 +548,7 @@ annassign:
 
       }
       else{
-      strcpy($$, $4);
+        strcpy($$, $4);
       }
     }
     else{
@@ -2817,10 +2821,29 @@ void type_err_op(const std::string &op, const std::string &arg) {
   yyerror(("Incompatible operator " + op +  " with operand of type " + arg).c_str());
 }
 
-void check_type_equiv(const std::string &type1, const std::string &type2) {
-  if (type1 != type2) {
-    yyerror(("Type mismatch: " + type1 + " and " + type2).c_str());
+std::string check_type_equiv(const std::string &name1, const std::string &type1, const std::string &name2, const std::string &type2) {
+  if (type1 == type2) {
+    return name2;
   }
+
+  // implicit type conversion
+
+  if (type1 == "int" && type2 == "bool") {
+    std::string t = new_temp();
+    insert_var(t, "int");
+    gen("int", name2, "", t);
+    return t;
+  }
+
+  if (type1 == "bool" && type2 == "int") {
+    std::string t = new_temp();
+    insert_var(t, "bool");
+    gen("bool", name2, "", t);
+    return t;
+  }
+
+  yyerror(("Type mismatch: " + type1 + " and " + type2).c_str());
+  return name2;
 }
 
 std::string get_list_literal_type(const std::string &str) {

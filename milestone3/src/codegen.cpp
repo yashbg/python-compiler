@@ -69,6 +69,31 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
     return;
   }
 
+  if (op == "int") {
+    // result = (int) arg1
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
+    std::string arg1_addr = get_addr(arg1);
+    std::string result_addr = get_addr(result);
+
+    x86_code.push_back("\tmovzbl\t" + arg1_addr + ", " + "%eax");
+    x86_code.push_back("\tmovl\t%eax, " + result_addr);
+    x86_code.push_back("");
+    return;
+  }
+
+  if (op == "bool") {
+    // result = (bool) arg1
+    x86_code.push_back("\t# " + get_3ac_str(ac3_line));
+    std::string arg1_addr = get_addr(arg1);
+    std::string result_addr = get_addr(result);
+
+    x86_code.push_back("\tcmpl\t$0, " + arg1_addr);
+    x86_code.push_back("\tsetne\t%al");
+    x86_code.push_back("\tmovb\t%al, " + result_addr);
+    x86_code.push_back("");
+    return;
+  }
+
   if (result == "goto") {
     // goto arg1
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));

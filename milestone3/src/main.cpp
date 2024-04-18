@@ -200,6 +200,10 @@ std::string get_3ac_str(const std::vector<std::string> &ac3_line) {
     return result + " = " + arg1;
   }
 
+  if (op == "int" || op == "bool") {
+    return result + " = (" + op + ") " + arg1;
+  }
+
   if (result == "goto") {
     return result + " " + arg1;
   }
