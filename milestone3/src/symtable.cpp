@@ -139,7 +139,6 @@ void check_redecl(const std::string &name) {
       yyerror(("Name error: name '" + name + "' is redeclared").c_str());
       return;
   }
-
 }
 
 void add_func(const std::string &name, const std::vector<std::pair<std::string, std::string>> &params, const std::string &return_type, int lineno) {

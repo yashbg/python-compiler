@@ -391,17 +391,25 @@ expr_stmt:
   {
     parser_logfile << "testlist_star_expr annassign" << std::endl;
 
-    // check_redecl($1); // TODO
-
-    if (std::string($1).substr(0, 4) == "self") {
-      insert_attr(std::string($1).substr(5), var_type);
+    std::string name = $1;
+    int dot = name.find('.');
+    if (dot != std::string::npos) {
+      std::string attr = name.substr(dot + 1);
+      check_redecl(attr);
     }
     else {
-      insert_var($1, var_type);
+      check_redecl(name);
+    }
+
+    if (name.substr(0, 4) == "self") {
+      insert_attr(name.substr(5), var_type);
+    }
+    else {
+      insert_var(name, var_type);
     }
 
     if($3[0] != ':') {
-      gen("=", $3, "", $1);
+      gen("=", $3, "", name);
     }
 
     strcpy($$, $3);
