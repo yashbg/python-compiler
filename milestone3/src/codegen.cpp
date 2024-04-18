@@ -240,9 +240,27 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
       }
       else if (get_type(arg) == "bool") {
         arg1 = "puts@PLT";
-        
-        if(arg == "0") x86_code.push_back("\tmovq\t$" + str_literal_labels["\"True\""] + ", %rdi");
-        else x86_code.push_back("\tmovq\t$" + str_literal_labels["\"False\""] + ", %rdi");
+
+        x86_code.push_back("\tmovb\t" + get_addr(arg) + ", %al");
+        x86_code.push_back("\tcmpb\t$0, %al");
+        std::string newlabel1 = new_label();
+        x86_code.push_back("\tje\t" + newlabel1);
+        x86_code.push_back("");
+
+        x86_code.push_back("\tmovq\t$" + str_literal_labels["\"True\""] + ", %rdi");
+        x86_code.push_back("\tcall\tputs@PLT");
+        std::string newlabel2 = new_label();
+        x86_code.push_back("\tjmp\t" + newlabel2);
+        x86_code.push_back("");
+
+        x86_code.push_back(newlabel1 + ":");
+        x86_code.push_back("\tmovq\t$" + str_literal_labels["\"False\""] + ", %rdi");
+        x86_code.push_back("\tcall\tputs@PLT");
+        x86_code.push_back("");
+
+        x86_code.push_back(newlabel2 + ":");
+        x86_code.push_back("");
+        return;
       }
       else {
         arg1 = "printf@PLT";
@@ -398,9 +416,11 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   if(op == "and"){
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     std::string newlabel1 = new_label();
-    x86_code.push_back("\tcmpb\t$0, " + get_addr(arg1));
+    x86_code.push_back("\tmovb\t" + get_addr(arg1) + ", %al");
+    x86_code.push_back("\tcmpb\t$0, %al");
     x86_code.push_back("\tje\t" + newlabel1);
-    x86_code.push_back("\tcmpb\t$0, " + get_addr(arg2)); 
+    x86_code.push_back("\tmovb\t" + get_addr(arg2) + ", %al");
+    x86_code.push_back("\tcmpb\t$0, %al"); 
     x86_code.push_back("\tje\t" + newlabel1);
     x86_code.push_back("\tmovl\t$1, %eax");
     std::string newlabel2 = new_label();
@@ -416,9 +436,11 @@ void gen_x86_line_code(const std::vector<std::string> &ac3_line) {
   if(op == "or"){
     x86_code.push_back("\t# " + get_3ac_str(ac3_line));
     std::string newlabel1 = new_label();
-    x86_code.push_back("\tcmpb\t$0, " + get_addr(arg1));
+    x86_code.push_back("\tmovb\t" + get_addr(arg1) + ", %al");
+    x86_code.push_back("\tcmpb\t$0, %al");
     x86_code.push_back("\tjne\t" + newlabel1);
-    x86_code.push_back("\tcmpb\t$0, " + get_addr(arg2)); 
+    x86_code.push_back("\tmovb\t" + get_addr(arg2) + ", %al");
+    x86_code.push_back("\tcmpb\t$0, %al"); 
     std::string newlabel2 = new_label();
     x86_code.push_back("\tje\t" + newlabel2);
     x86_code.push_back(newlabel1 + ":");

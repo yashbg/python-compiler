@@ -398,9 +398,11 @@ L18:
 	movb	%al, -58(%rbp)
 
 	# t11 = t7 and t10
-	cmpb	$0, -49(%rbp)
+	movb	-49(%rbp), %al
+	cmpb	$0, %al
 	je	L31
-	cmpb	$0, -58(%rbp)
+	movb	-58(%rbp), %al
+	cmpb	$0, %al
 	je	L31
 	movl	$1, %eax
 	jmp	L32
