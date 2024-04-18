@@ -184,8 +184,8 @@ L4:
 
 L8:
 	# t8 = s1 < s2
-	leaq	-24(%rbp), %rdx
-	leaq	-32(%rbp), %rax
+	movq	-24(%rbp), %rdx
+	movq	-32(%rbp), %rax
 	movq	%rax, %rsi
 	movq	%rdx, %rdi
 	call	strcmp@PLT
@@ -216,8 +216,8 @@ L9:
 L10:
 L12:
 	# t10 = s1 > s2
-	leaq	-24(%rbp), %rdx
-	leaq	-32(%rbp), %rax
+	movq	-24(%rbp), %rdx
+	movq	-32(%rbp), %rax
 	movq	%rax, %rsi
 	movq	%rdx, %rdi
 	call	 strcmp@PLT
@@ -254,8 +254,8 @@ L11:
 
 L15:
 	# t12 = s1 <= s2
-	leaq	-24(%rbp), %rdx
-	leaq	-32(%rbp), %rax
+	movq	-24(%rbp), %rdx
+	movq	-32(%rbp), %rax
 	movq	%rax, %rsi
 	movq	%rdx, %rdi
 	call	 strcmp@PLT
@@ -286,8 +286,8 @@ L16:
 L17:
 L19:
 	# t14 = s1 >= s2
-	leaq	-24(%rbp), %rdx
-	leaq	-32(%rbp), %rax
+	movq	-24(%rbp), %rdx
+	movq	-32(%rbp), %rax
 	movq	%rax, %rsi
 	movq	%rdx, %rdi
 	call	 strcmp@PLT
